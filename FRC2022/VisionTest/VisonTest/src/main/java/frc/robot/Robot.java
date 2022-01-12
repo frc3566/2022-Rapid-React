@@ -74,26 +74,28 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   Drive drive = new Drive();
-  Drive turn = new Drive();
+  Drive2 turn = new Drive2();
   Drive move = new Drive();
   Drive stop = new Drive();
 
+  Drive2 d2 = Drive2.getInstance();
+
   @Override
   public void teleopInit() {
-    move.setMove(0.0,0.0);
-    turn.setTurn(180);
-    
+    // move.setMove(0.5,0.5);
+    // turn.setTurn(-5);
+
+    d2.setTrack();
+    // d2.track();
   }
 
   private static boolean notStarted = true;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.JSTest();
-
     // if(drive.startButton.get()) notStarted = false;
     // move.move(notStarted);
-    // turn.turn(move.finished);
+    // turn.turn(true);
     // stop.stop(turn.finished);
     
     // System.out.print(drive.leftE.getPosition());
@@ -103,6 +105,8 @@ public class Robot extends TimedRobot {
     // drive.move();
     // drive.RC();
 
+    d2.track();
+    // System.out.println("running");
   }
 
   /** This function is called once when the robot is disabled. */

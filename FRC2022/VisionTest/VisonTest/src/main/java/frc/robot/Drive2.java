@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 // import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 // import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.*;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-public class Drive {
+public class Drive2 {
   
   public static CANSparkMax left1;
   public static WPI_TalonSRX left2;
@@ -48,22 +49,34 @@ public class Drive {
   public JoystickButton eStopTriger;
   public JoystickButton startButton;
 
-  public Drive(){
+  private static Drive2 instance;
+  public static Drive2 getInstance() {
+      if(instance==null)
+          synchronized(Drive2.class){
+              if(instance==null)
+                  instance=new Drive2();
+          }
+      return instance;
+  }
+
+  public Drive2(){
     left1 = new CANSparkMax(12, MotorType.kBrushless);
-    setSpark(left1);
-    left1.setInverted(false);
+    setSpark(left1, false);
+
     left2 = new WPI_TalonSRX(3);
-    left2.setInverted(false);
+    setTalon(left2, false);
+
     left3 = new WPI_TalonSRX(4);
-    left3.setInverted(false);
+    setTalon(left3, false);
 
     right1 = new CANSparkMax(11, MotorType.kBrushless);
-    setSpark(right1);
-    right1.setInverted(true);
+    setSpark(right1, true);
+
     right2 = new WPI_TalonSRX(1);
-    right2.setInverted(false);
+    setTalon(right2, false);
+
     right3 = new WPI_TalonSRX(2);
-    right3.setInverted(true);
+    setTalon(right3, true);
 
     
     JS = new Joystick(0);
@@ -104,20 +117,10 @@ public class Drive {
 
   public void go(Double leftSpeed, Double rightSpeed ){
 
-    // System.out.println(JS.getRawAxis(1));
-    // System.out.println(JS.getRawAxis(0));
-    // System.out.println(leftSpeed);
-    // System.out.print(" ");
-    // System.out.println(rightSpeed);
-    // left1.setIdleMode(IdleMode.kCoast);
-    // left2.setNeutralMode(NeutralMode.Coast);
     left1.set(leftSpeed);
     left2.set(leftSpeed);
     left3.set(leftSpeed);
 
-
-    // right1.setIdleMode(IdleMode.kCoast);
-    // right2.setNeutralMode(NeutralMode.Coast);
     right1.set(rightSpeed);
     right2.set(rightSpeed);
     right3.set(rightSpeed);
@@ -163,6 +166,39 @@ public class Drive {
   }
   
   public PigeonIMU IMU;
+
+  public Vision vision = Vision.getInstance();
+
+  static Drive2 turn;
+
+  public void setTrack(){
+    setTurn(0);
+    if( turn == null) turn = new Drive2();
+    turn.setTurn(0);
+  }
+
+
+
+  public void track() {
+    double error = vision.getTar() * 0.9;
+
+    System.out.println("Track: " + error);
+
+    if(error != 0 && turn.finished && Math.abs(error) >1.8){
+      turn.stop(true);
+      turn = new Drive2();
+      turn.setTurn(error);
+      System.out.println("setTurn");
+      turn.stop(true);
+    }
+
+    turn.turn(true);
+    // turn.stop(turn.finished);
+
+    System.out.println(turn.finished);
+
+  }
+
   public double gyroZero;
   public double gyroTar;
   public double prevGyro;
@@ -172,7 +208,7 @@ public class Drive {
   public void setTurn(double angle){
     double [] xyz_deg = new double[3];
     IMU.getAccumGyro(xyz_deg);
-    gyroZero = xyz_deg[2]; //
+    gyroZero = xyz_deg[2];
     // System.out.println(gyroZero);
     gyroTar = gyroZero + angle;
 
@@ -180,11 +216,14 @@ public class Drive {
     gyroPrevError = 0;
 
     prevTime = 0.0;
+    finished = false;
   }
 
   public void turn(boolean prevFinished){
+
     if(!prevFinished) return;
     if(finished) return;
+    System.out.println("turn");
     double [] xyz_deg = new double[3];
     IMU.getAccumGyro(xyz_deg);
 
@@ -201,25 +240,25 @@ public class Drive {
     double t = timer.get()-prevTime;
     prevTime = timer.get();
 
-    double pid = computePID(gyroError, gyroInt, gyroPrevError, t, 1.0, 0.0, 0.11); // prev: 1, 0, 0.016
+    double pid = computePID(gyroError, gyroInt, gyroPrevError, t, 0.9, 0.0, 0.11); // prev: 1, 0, 0.016
 
+    System.out.println("pid: " + pid);
+    // double leftSpeed = mapValue(-1, 1, 1, -1, pid);
+    // double rightSpeed = mapValue(-1, 1, -1, 1, pid);
     double leftSpeed = mapValue(-20, 20, 0.3, -0.3, pid);
     double rightSpeed = mapValue(-20, 20, -0.3, 0.3, pid);
-
     System.out.println("Left Speed: " + leftSpeed + " Right Speed: " + rightSpeed);
     System.out.println("Error: " + gyroError);
-
     gyroPrevError = gyroError;
 
     go(leftSpeed, rightSpeed);
 
-    if(gyroError < 0.005) finished = true;
-    System.out.println("Turn stoped");
+    if(Math.abs(gyroError)  < 2) finished = true;
+    // System.out.println("Turn stoped");
   }
 
   public double computePID(double error, Double integral, Double prevError, Double t, Double P, Double I, Double D){
-    // integral += (error*t); 
-    // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+    //integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
     // I doubt intergral is going to work since we are only working on one side.
     double derivative = (error - prevError) / t;
     // System.out.println(derivative);
@@ -230,17 +269,21 @@ public class Drive {
   }
 
   public void stop(boolean started){
+    System.out.println("stoping");
     if(started){
       go(0.0,0.0);
     }
   }
 
-  private void setSpark(final CANSparkMax spark) {
+  private void setSpark(CANSparkMax spark, boolean inverted) {
     spark.restoreFactoryDefaults();
-    spark.setOpenLoopRampRate(0.4);
-    spark.setClosedLoopRampRate(0.4);
-    // spark.enableVoltageCompensation(12.0);
-    spark.setSmartCurrentLimit(40);
+    // spark.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    spark.setInverted(inverted);
+  }
+
+  private void setTalon(WPI_TalonSRX talon, boolean inverted){
+    talon.setInverted(inverted);
+    // left2.setNeutralMode(NeutralMode.Brake);;
   }
 
   private double mapValue(double inLow, double inHigh, double outLow, double outHigh, double ip){
