@@ -17,6 +17,10 @@ public class GoalCamera extends SubsystemBase {
 
   private NetworkTableEntry tarX;
 
+  private boolean updated;
+
+  private double prevTarX;
+
   public GoalCamera() {}
 
   public double getTar(){
