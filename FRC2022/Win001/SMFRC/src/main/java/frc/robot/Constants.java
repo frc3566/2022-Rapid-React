@@ -16,6 +16,9 @@ public final class Constants {
     
     public static double L_PulsePerMeter = 21.4032;
     public static double R_PulsePerMeter = 22.61056;
+    
+    public static double FOV =60;
+    public static double pixelWidth = 360;
 
 
 }
