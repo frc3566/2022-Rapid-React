@@ -35,24 +35,57 @@ public class DriveWithJoystick extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double X = -0.5*JS.getRawAxis(1);
-    double Y = 0.5*JS.getRawAxis(0);
-
-    System.out.println(X);
-    System.out.println(Y);
-
-    double leftSpeed;
-    double rightSpeed;
+    double speed = getForwardThrottle();
+    boolean isQuickTurn = isQuickTurn();
     
-    leftSpeed = X + Y;
-    rightSpeed = X - Y;
+    speed = speed * speed * Math.signum(speed);
+    if (!isOverride())  // override gives full power for hitting
+      speed *= 0.8;
 
-    drive.setSpeed(leftSpeed, rightSpeed);
+    double rotation_sign = (isQuickTurn || speed>0? 1:-1) ;
+    double rotation = getRotationThrottle();
+    rotation *= 0.7;
+
+    if (isReversed())speed *= -1;
+
+    double[] speeds = cheesyDrive(
+      speed,
+      rotation * rotation_sign, 
+      isQuickTurn, 
+      false
+    );
+
+    drive.setSpeed(speeds[0], speeds[1]);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
+
+   // drivetrain
+
+  public boolean isOverride() {
+    return JS.getRawButton(11);
+  }
+  public boolean isReversed() {
+    return getSlider() < 0.5;
+  }
+
+  public boolean isQuickTurn() {
+    return JS.getRawButton(3);
+  }
+
+  public double getForwardThrottle() {
+    return JS.getRawAxis(1) * -1;
+  }
+
+  public double getRotationThrottle() {
+    return JS.getRawAxis(0);
+  }
+
+  public double getSlider() {
+    return (1 - JS.getRawAxis(3)) / 2;
+  }
 
   private static final double kThrottleDeadband = 0.035;
   private static final double kWheelDeadband = 0.02;
@@ -121,7 +154,7 @@ public class DriveWithJoystick extends CommandBase {
   if (Math.abs(linearPower) < kQuickStopDeadband) {
   double alpha = kQuickStopWeight;
   mQuickStopAccumlator = (1 - alpha) * mQuickStopAccumlator
-  + alpha * Util.limit(wheel, 1.0) * kQuickStopScalar;
+  + alpha * Math.abs(throttle)* kQuickStopScalar;
   }
   overPower = 1.0;
   angularPower = wheel * kWheelQuckTurnScalar;
@@ -154,7 +187,7 @@ public class DriveWithJoystick extends CommandBase {
   leftPwm += overPower * (-1.0 - rightPwm);
   rightPwm = -1.0;
   }
-  return new double[2]{leftPwm, rightPwm};
+  return new double[]{leftPwm, rightPwm};
 }
 
 public double handleDeadband(double val, double deadband) {
