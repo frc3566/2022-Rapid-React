@@ -4,10 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -63,7 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
     // left2.setNeutralMode(NeutralMode.Brake);;
   }
 
-  public void setSpeeds(Double leftSpeed, Double rightSpeed){
+  public void setSpeed(Double leftSpeed, Double rightSpeed){
     left1.set(leftSpeed);
     left2.set(leftSpeed);
     left3.set(leftSpeed);
@@ -73,6 +75,18 @@ public class DriveSubsystem extends SubsystemBase {
     right3.set(rightSpeed);
 
     return;
+  }
+
+  public void setBrakeMode(boolean isBrake) {
+    IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
+    left1.setIdleMode(sparkMode);
+    right1.setIdleMode(sparkMode);
+    
+    NeutralMode talonMode = isBrake? NeutralMode.Brake : NeutralMode.Coast;
+    right2.setNeutralMode(talonMode);
+    right3.setNeutralMode(talonMode);
+    left2.setNeutralMode(talonMode);
+    left3.setNeutralMode(talonMode);
   }
 
   public double getGyro(){
@@ -94,6 +108,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //TODO: put networkTable logs
   }
 
   @Override
