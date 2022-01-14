@@ -29,6 +29,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private PigeonIMU IMU;
 
+    private double gyroZero;
+
   public DriveSubsystem() {
     left1 = new CANSparkMax(12, MotorType.kBrushless);
     setSpark(left1, false);
@@ -52,6 +54,8 @@ public class DriveSubsystem extends SubsystemBase {
     leftE = left1.getEncoder();
 
     IMU = new PigeonIMU(right2);
+
+    setGyroZero();
   }
 
   private void setSpark(CANSparkMax spark, boolean inverted) {
@@ -114,10 +118,21 @@ public class DriveSubsystem extends SubsystemBase {
   public double getGyro(){
     double [] xyz_deg = new double[3];
     IMU.getAccumGyro(xyz_deg);
-    double gyro = xyz_deg[2];
+
+    double gyro = xyz_deg[2] - gyroZero;
     gyro%=360;
 
     return gyro;
+  }
+
+  public double setGyroZero(){
+    double [] xyz_deg = new double[3];
+    IMU.getAccumGyro(xyz_deg);
+
+    double gyroZero = xyz_deg[2];
+    gyroZero%=360;
+
+    return gyroZero;
   }
 
   public double getLeft(){

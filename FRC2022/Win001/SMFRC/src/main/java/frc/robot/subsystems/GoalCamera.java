@@ -20,11 +20,23 @@ public class GoalCamera extends SubsystemBase {
   private boolean updated;
 
   private double prevTarX;
+  private double tarAngle;
 
   public GoalCamera() {}
 
   public double getTar(){
+    return tarAngle;
+}
+
+public boolean hasUpdated(){ 
+    return updated;
+}
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
     tarX = nt.getEntry("target_x");
+
     double[] tarXs = tarX.getDoubleArray(new double[1]);
 
     double primaryTarX = 0.0;
@@ -37,27 +49,15 @@ public class GoalCamera extends SubsystemBase {
 
     double tarAngle = Constants.FOV / 2 * primaryTarX;
 
-    System.out.println(tarAngle);
-
     prevTarX = tarAngle;
     if(prevTarX == tarAngle){
         updated = false;
     }else{
         prevTarX = tarAngle;
         updated = true;
+        System.out.println(tarAngle);
     }
 
-    return tarAngle;
-}
-
-public boolean hasUpdated(){ 
-    return updated;
-}
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    tarX = nt.getEntry("target_x");
   }
 
   @Override
