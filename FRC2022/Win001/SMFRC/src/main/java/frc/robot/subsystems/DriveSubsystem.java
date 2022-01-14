@@ -77,6 +77,28 @@ public class DriveSubsystem extends SubsystemBase {
     return;
   }
 
+  public void setLeftSpeed(Double leftSpeed){
+    left1.set(leftSpeed);
+    left2.set(leftSpeed);
+    left3.set(leftSpeed);
+  }
+
+  public void setRightSpeed(Double rightSpeed){
+    right1.set(rightSpeed);
+    right2.set(rightSpeed);
+    right3.set(rightSpeed);
+  }
+
+  private double currLSpeed;
+  private double currRSpeed;
+
+  public double getLeftSpeed(){
+    return currLSpeed;
+  }
+  public double getRightSpeed(){
+    return currRSpeed;
+  }
+
   public void setBrakeMode(boolean isBrake) {
     IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
     left1.setIdleMode(sparkMode);
@@ -93,6 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
     double [] xyz_deg = new double[3];
     IMU.getAccumGyro(xyz_deg);
     double gyro = xyz_deg[2];
+    gyro%=360;
 
     return gyro;
   }
@@ -109,6 +132,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //TODO: put networkTable logs
+
+
   }
 
   @Override
