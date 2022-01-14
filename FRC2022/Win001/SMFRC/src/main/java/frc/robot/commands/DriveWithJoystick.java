@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Util;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -109,8 +110,8 @@ public class DriveWithJoystick extends CommandBase {
 
   public double[] cheesyDrive(double throttle, double wheel, boolean isQuickTurn, boolean isHighGear) {
 
-  wheel = handleDeadband(wheel, kWheelDeadband);
-  throttle = handleDeadband(throttle, kThrottleDeadband);
+  wheel = Util.deadband(wheel, kWheelDeadband);
+  throttle = Util.deadband(throttle, kThrottleDeadband);
 
   double negInertia = wheel - mOldWheel;
   mOldWheel = wheel;
@@ -188,10 +189,6 @@ public class DriveWithJoystick extends CommandBase {
   rightPwm = -1.0;
   }
   return new double[]{leftPwm, rightPwm};
-}
-
-public double handleDeadband(double val, double deadband) {
-  return (Math.abs(val) > Math.abs(deadband)) ? val : 0.0;
 }
 
   // Returns true when the command should end.
