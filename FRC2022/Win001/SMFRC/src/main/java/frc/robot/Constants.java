@@ -14,11 +14,41 @@ package frc.robot;
  */
 public final class Constants {
     
-    public static double L_PulsePerMeter = 21.4032;
-    public static double R_PulsePerMeter = 22.61056;
+    public static final double L_PulsePerMeter = 21.4032;
+    public static final double R_PulsePerMeter = 22.61056;
     
-    public static double FOV =60;
-    public static double pixelWidth = 360;
+    public static final double FOV =60;
+    public static final double pixelWidth = 360;
 
+    public static final double GEAR_RATIO = 11.0 / 50.0 * 24.0 / 50.0; // MotorCnt / WheelCnt;
+    public static final double WHEEL_DIAMETER =  6.28 * 0.0254 * Math.PI;
+    public static final double ENCODER_UNITpMETER = (1 / GEAR_RATIO) / WHEEL_DIAMETER;
+    public static final double RPMpMPS = ENCODER_UNITpMETER * 60.0;
 
+    // drivetrain physical characteristic
+    public static final double ks = 0.101;
+    public static final double kv = 2.44;
+    public static final double ka = 0.38;
+
+    //motorcontroller gains
+    public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
+        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
+
+    public static class Gains {
+        public final double kP;
+        public final double kI;
+        public final double kD;
+        public final double kF;
+        public final double kIzone;
+        public final double kPeakOutput;
+    
+        public Gains(double _kP, double _kI, double _kD, double _kF, double _kIzone, double _kPeakOutput) {
+          kP = _kP;
+          kI = _kI;
+          kD = _kD;
+          kF = _kF;
+          kIzone = _kIzone;
+          kPeakOutput = _kPeakOutput;
+        }
+      }
 }

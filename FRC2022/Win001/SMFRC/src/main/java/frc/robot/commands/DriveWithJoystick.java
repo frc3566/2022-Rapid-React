@@ -4,10 +4,11 @@
 
 package frc.robot.commands;
 
-import frc.robot.Util;
-import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.util.DriveSignal;
+import frc.robot.util.Util;
 
 /** An example command that uses an example subsystem. */
 public class DriveWithJoystick extends CommandBase {
@@ -49,14 +50,15 @@ public class DriveWithJoystick extends CommandBase {
 
     if (isReversed())speed *= -1;
 
-    double[] speeds = cheesyDrive(
+    DriveSignal signal = cheesyDrive(
       speed,
       rotation * rotation_sign, 
       isQuickTurn, 
       false
     );
 
-    drive.setSpeed(speeds[0], speeds[1]);
+    drive.setVoltage(signal);
+    System.out.println(signal);
   }
 
   // Called once the command ends or is interrupted.
@@ -108,7 +110,7 @@ public class DriveWithJoystick extends CommandBase {
   private double mQuickStopAccumlator = 0.0;
   private double mNegInertiaAccumlator = 0.0;
 
-  public double[] cheesyDrive(double throttle, double wheel, boolean isQuickTurn, boolean isHighGear) {
+  private DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn, boolean isHighGear) {
 
   wheel = Util.deadband(wheel, kWheelDeadband);
   throttle = Util.deadband(throttle, kThrottleDeadband);
@@ -188,7 +190,7 @@ public class DriveWithJoystick extends CommandBase {
   leftPwm += overPower * (-1.0 - rightPwm);
   rightPwm = -1.0;
   }
-  return new double[]{leftPwm, rightPwm};
+  return new DriveSignal(leftPwm, rightPwm);
 }
 
   // Returns true when the command should end.

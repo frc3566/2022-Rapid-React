@@ -29,7 +29,7 @@ def main():
    # NetworkTables.initialize(server='10.35.66.2')
 
    # Table for vision output information
-   vision_nt = NetworkTables.getTable('Vision')
+   vision_nt = NetworkTables.getTable('GoalCamera')
 
    # Allocating new images is very expensive, always try to preallocate
    img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
@@ -53,8 +53,8 @@ def main():
 
       start_time = time.time()
 
-      hsv_min = (70, 200, 190)
-      hsv_max = (90, 255, 220)
+      hsv_min = (50, 240, 155)
+      hsv_max = (70, 255, 175)
 
       h_min = vision_nt.getAutoUpdateValue("h_min", defaultValue = hsv_min[0]).getNumber(defaultValue = hsv_min[0])
       s_min = vision_nt.getAutoUpdateValue("s_min", defaultValue = hsv_min[1]).getNumber(defaultValue = hsv_min[1])

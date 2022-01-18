@@ -13,7 +13,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class GoalCamera extends SubsystemBase {
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  private NetworkTable nt = inst.getTable("Vision");
+  private NetworkTable nt = inst.getTable("GoalCamera");
 
   private NetworkTableEntry tarX;
 
@@ -22,20 +22,24 @@ public class GoalCamera extends SubsystemBase {
   private double prevTarX;
   private double tarAngle;
 
-  public GoalCamera() {}
+  public GoalCamera() {
+    tarX = nt.getEntry("target_x");
+            
+    updated = true;
+  }
 
   public double getTar(){
+    updated = false;
     return tarAngle;
 }
 
-public boolean hasUpdated(){ 
+public boolean isUpdated(){ 
     return updated;
 }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    tarX = nt.getEntry("target_x");
 
     double[] tarXs = tarX.getDoubleArray(new double[1]);
 
@@ -47,17 +51,21 @@ public boolean hasUpdated(){
 
     // double TarAngle = (primaryTarX - x_mid) * DPP ; // angle to turn, clockwise is positive
 
-    double tarAngle = Constants.FOV / 2 * primaryTarX;
+    tarAngle = Constants.FOV / 2 * primaryTarX;
 
-    prevTarX = tarAngle;
-    if(prevTarX == tarAngle){
-        updated = false;
-    }else{
-        prevTarX = tarAngle;
+    // System.out.println(tarAngle);
+    // System.out.println(updated);
+
+    if(prevTarX != tarAngle){
         updated = true;
-        System.out.println(tarAngle);
+        // System.out.println(tarAngle);
     }
 
+    prevTarX = tarAngle;
+  }
+
+  public void reset(){
+    updated = true;
   }
 
   @Override

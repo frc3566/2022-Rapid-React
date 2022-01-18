@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.util;
 
 public class Util {
     public static double deadband(double val, double lower) {

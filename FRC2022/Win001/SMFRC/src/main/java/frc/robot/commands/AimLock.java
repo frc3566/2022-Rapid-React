@@ -10,24 +10,20 @@ import frc.robot.subsystems.GoalCamera;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class AimGoal extends CommandBase {
+public class AimLock extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   private DriveSubsystem drive;
   private GoalCamera camera;
-
-  private TurnDrivetrain turn;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AimGoal(DriveSubsystem driveSubsystem, GoalCamera goalCamera, TurnDrivetrain turnDrivetrain) {
+  public AimLock(DriveSubsystem driveSubsystem, GoalCamera goalCamera) {
     drive = driveSubsystem;
     camera = goalCamera;
-
-    turn = turnDrivetrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
@@ -35,7 +31,7 @@ public class AimGoal extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+    camera.reset();
   }
 
   double tar;
@@ -44,9 +40,10 @@ public class AimGoal extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(camera.hasUpdated()){
+    if(camera.isUpdated()){
       tar = camera.getTar();
-      turn.setTar(tar);
+      drive.setTurn(tar);
+      // System.out.println("update turning");
     }
   }
 

@@ -24,6 +24,7 @@ public class TimerSubsystem extends SubsystemBase {
 
   public TimerSubsystem() {
     timer = new Timer();
+    dt = 0.02;
   }
 
   public void start(){
