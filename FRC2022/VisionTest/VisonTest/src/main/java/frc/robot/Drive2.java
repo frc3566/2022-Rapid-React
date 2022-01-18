@@ -184,7 +184,7 @@ public class Drive2 {
 
     System.out.println("Track: " + error);
 
-    if(error != 0 && turn.finished && Math.abs(error) >1.8){
+    if(error != 0 && Math.abs(error) >1.8){
       turn.stop(true);
       turn = new Drive2();
       turn.setTurn(error);
