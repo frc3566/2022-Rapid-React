@@ -9,6 +9,7 @@ import time
 import logging
 
 def main():
+
    with open('/boot/frc.json') as f:
       config = json.load(f)
    camera = config['cameras'][0]
@@ -46,15 +47,16 @@ def main():
    x_mid = hsv_width // 2
    y_mid = hsv_height // 2
 
+   FOV =60
+
    while True:
       if(NetworkTables.isConnected() == False):
          NetworkTables.initialize(server='10.35.66.2')
       
-
       start_time = time.time()
 
-      hsv_min = (50, 240, 155)
-      hsv_max = (70, 255, 175)
+      hsv_min = (50, 240, 190)
+      hsv_max = (70, 255, 210)
 
       h_min = vision_nt.getAutoUpdateValue("h_min", defaultValue = hsv_min[0]).getNumber(defaultValue = hsv_min[0])
       s_min = vision_nt.getAutoUpdateValue("s_min", defaultValue = hsv_min[1]).getNumber(defaultValue = hsv_min[1])
@@ -120,9 +122,24 @@ def main():
       # print(hsv_width, " ", hsv_height)
       # print(x_mid, " ", y_mid)
 
+
+      primaryTarX = 0.0
+
+      #get angle
+      if(len(x_list) != 0):
+         primaryTarX = x_list[0]
+      
+      tarAngle = FOV / 2 * primaryTarX
+      vision_nt.putNumber("angle", tarAngle)
+
       print(NetworkTables.isConnected())
       print(hsv_img[60, 80,0], hsv_img[60, 80,1], hsv_img[60, 80,2], sep=' ')
 
       print(x_list)
 
 main()
+
+
+
+
+
