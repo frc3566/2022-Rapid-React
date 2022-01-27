@@ -59,8 +59,8 @@ def main():
       
       start_time = time.time()
 
-      hsv_min = (50, 240, 190)
-      hsv_max = (70, 255, 210)
+      hsv_min = (57, 100, 24)
+      hsv_max = (84, 255, 255)
 
       h_min = vision_nt.getAutoUpdateValue("h_min", defaultValue = hsv_min[0]).getNumber(defaultValue = hsv_min[0])
       s_min = vision_nt.getAutoUpdateValue("s_min", defaultValue = hsv_min[1]).getNumber(defaultValue = hsv_min[1])
