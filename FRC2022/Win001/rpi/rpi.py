@@ -7,6 +7,7 @@ import json
 import numpy as np
 import time
 import logging
+import os
 
 def main():
 
@@ -20,6 +21,7 @@ def main():
    CameraServer.getInstance().startAutomaticCapture()
 
    input_stream = CameraServer.getInstance().getVideo()
+   #input_stream = cv2.VideoCapture(0)
 
    output_stream = CameraServer.getInstance().putVideo('Processed', width, height)
    binary_stream = CameraServer.getInstance().putVideo('Binary', width, height)
@@ -47,7 +49,9 @@ def main():
    x_mid = hsv_width // 2
    y_mid = hsv_height // 2
 
-   FOV =60
+   FOV = 60
+   os.path.abspath(os.getcwd)
+   os.path.dirname
 
    while True:
       if(NetworkTables.isConnected() == False):
@@ -92,11 +96,18 @@ def main():
       for contour in contour_list:
 
          # Ignore small contours that could be because of noise/bad thresholding
-         if cv2.contourArea(contour) < 15:
+         area = cv2.contourArea(contour)
+         if area < 15:
             continue
 
-         cv2.drawContours(output_img, contour, -1, color = (255, 255, 255), thickness = -1)
+         x, y, w, h = cv2.boundingRect(contour)
+         # if area / w / h < Constants.MIN_TARGET2RECT_RATIO:
+         #    continue
 
+         print("y" + y)
+
+         cv2.drawContours(output_img, contour, -1, color = (255, 255, 255), thickness = -1)
+         
          rect = cv2.minAreaRect(contour)
          center, size, angle = rect
          center = [int(dim) for dim in center] # Convert to int so we can draw
