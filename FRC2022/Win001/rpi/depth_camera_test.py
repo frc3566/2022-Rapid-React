@@ -17,21 +17,56 @@ hole_filler = rs.hole_filling_filter()
 
 MIN_DIS = 0.3
 MAX_DIS = 2.5
-DEPTH_H = 240
-DEPTH_W = 424
+DEPTH_H = 480
+DEPTH_W = 640
 FPS = 30
 
 DIS_RADIUS_PRODUCT_MIN = 22
 DIS_RADIUS_PRODUCT_MAX = 40
 
 hMin = 0
-hMax = 5
-sMin = 78
-sMax = 212
-vMin = 80
+hMax = 255
+sMin = 0
+sMax = 255
+vMin = 0
 vMax = 255
 
 HEIGHT = 17 * 0.0254
+
+def show(s, img):
+    cv2.imshow(s, img)
+    cv2.waitKey(1)
+
+def calculate_intrinsics(profile):
+    intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
+    K = np.array([
+        [intrin.fx, 0, intrin.ppx],
+        [0, intrin.fy, intrin.ppy],
+        [0, 0, 1]
+    ])
+    K_inv = la.inv(K)
+    return K, K_inv
+
+def calculate_plane_distance(points, plane):
+    return (np.dot(points, plane[:3]) + plane[3]) / np.sqrt(
+        plane[0] ** 2 + plane[1] ** 2 + plane[2] ** 2)
+
+def circle_sample(image_3d, x, y, r):
+    adjusted_r = int(1 / m.sqrt(2) * r * 0.8)
+    dis_list = []
+    for i in range(100):
+        new_x = int(x + random.randint(0, adjusted_r * 2) - adjusted_r)
+        new_y = int(y + random.randint(0, adjusted_r * 2) - adjusted_r)
+        if not (0 <= new_x < DEPTH_W and 0 <= new_y < DEPTH_H):
+            continue
+        x_3d, y_3d, z_3d = image_3d[new_y, new_x]
+        dis = m.sqrt(x_3d * x_3d + y_3d * y_3d + z_3d * z_3d)
+        if not (MIN_DIS <= dis <= MAX_DIS):
+            continue
+        dis_list.append(dis)
+    if len(dis_list) == 0:
+        return 0
+    return mean(dis_list)
 
 
 print("hi")
@@ -44,6 +79,7 @@ config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
 config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
 
 profile_d435 = pipeline_d435.start(config_d435)
+#profile_d435 = config_d435.resolve(rs.pipeline_wrapper(pipeline_d435))
 
 K, K_inv = calculate_intrinsics(profile_d435)
 
@@ -58,9 +94,9 @@ preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
 for i in range(int(preset_range.max)):
     visulpreset = depth_sensor.get_option_value_description(
         rs.option.visual_preset, i)
-    if visulpreset == 'Default':
-        print('set default')
-        depth_sensor.set_option(rs.option.visual_preset, i)
+    # if visulpreset == 'Default':
+    #     print('set default')
+    #     depth_sensor.set_option(rs.option.visual_preset, i)
 
 try:
     while True:
@@ -83,7 +119,7 @@ try:
         frame_HSV = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
         thresh = cv2.inRange(frame_HSV, (hMin, sMin, vMin),
                                         (hMax, sMax, vMax))
-        show(thresh)
+        show('thresh', thresh)
 
         image_3d = cv2.rgbd.depthTo3d(depth_image, K)
         unknown_mask = np.isnan(image_3d[..., -1])
@@ -95,7 +131,7 @@ try:
         mask = np.logical_or(valid_mask, unknown_mask).astype(np.uint8) * thresh
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
-        show(mask)
+        show('mask', mask)
 
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)
@@ -147,7 +183,7 @@ try:
         thresh = np.stack((thresh, thresh, thresh), axis=-1)
         mask = np.stack((mask, mask, mask), axis=-1)
         output = cv2.vconcat([thresh, mask, color_image])
-        show(output)
+        show('output', output)
         if ball_dis < 10:
             pos, r = ball_circle
             cv2.circle(color_image, pos, 10, (255, 0, 0), -1)
@@ -157,46 +193,9 @@ try:
             print("hi")
         except Full:
             pass
-        show(color_image)
+        show('color',color_image)
         # self.putFrame("intake", color_image)
 
 finally:
     print('stop')
     pipeline_d435.stop()
-
-
-def circle_sample(image_3d, x, y, r):
-    adjusted_r = int(1 / m.sqrt(2) * r * 0.8)
-    dis_list = []
-    for i in range(100):
-        new_x = int(x + random.randint(0, adjusted_r * 2) - adjusted_r)
-        new_y = int(y + random.randint(0, adjusted_r * 2) - adjusted_r)
-        if not (0 <= new_x < DEPTH_W and 0 <= new_y < DEPTH_H):
-            continue
-        x_3d, y_3d, z_3d = image_3d[new_y, new_x]
-        dis = m.sqrt(x_3d * x_3d + y_3d * y_3d + z_3d * z_3d)
-        if not (MIN_DIS <= dis <= MAX_DIS):
-            continue
-        dis_list.append(dis)
-    if len(dis_list) == 0:
-        return 0
-    return mean(dis_list)
-
-def show(img):
-    cv2.imshow('img', img)
-    cv2.waitKey(1)
-
-
-def calculate_intrinsics(profile):
-    intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
-    K = np.array([
-        [intrin.fx, 0, intrin.ppx],
-        [0, intrin.fy, intrin.ppy],
-        [0, 0, 1]
-    ])
-    K_inv = la.inv(K)
-    return K, K_inv
-
-def calculate_plane_distance(points, plane):
-    return (np.dot(points, plane[:3]) + plane[3]) / np.sqrt(
-        plane[0] ** 2 + plane[1] ** 2 + plane[2] ** 2)
