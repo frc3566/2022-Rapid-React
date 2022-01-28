@@ -35,14 +35,19 @@ HEIGHT = 17 * 0.0254
 
 class D435Process(mp.Process):
 
-    def process_method(self):
+    def main():
         pipeline_d435 = rs.pipeline()
         config_d435 = rs.config()
-        config_d435.enable_device('923322071945')
+
+        # config_d435.enable_device('923322071945')
+
         config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
         config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
+
         profile_d435 = pipeline_d435.start(config_d435)
+
         K, K_inv = calculate_intrinsics(profile_d435)
+        
         normal_computer = cv2.rgbd.RgbdNormals_create(DEPTH_H, DEPTH_W, cv2.CV_32F, K)
         plane_computer = cv2.rgbd.RgbdPlane_create(
             cv2.rgbd.RgbdPlane_RGBD_PLANE_METHOD_DEFAULT,
