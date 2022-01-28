@@ -47,7 +47,7 @@ class D435Process(mp.Process):
         profile_d435 = pipeline_d435.start(config_d435)
 
         K, K_inv = calculate_intrinsics(profile_d435)
-        
+
         normal_computer = cv2.rgbd.RgbdNormals_create(DEPTH_H, DEPTH_W, cv2.CV_32F, K)
         plane_computer = cv2.rgbd.RgbdPlane_create(
             cv2.rgbd.RgbdPlane_RGBD_PLANE_METHOD_DEFAULT,
@@ -66,7 +66,6 @@ class D435Process(mp.Process):
         try:
             while True:
                 frames = pipeline_d435.wait_for_frames()
-                frame_yaw = self.xyz_rpy_value[5]
 
                 aligned_frames = align.process(frames)
                 depth_frame = aligned_frames.get_depth_frame()
@@ -153,29 +152,16 @@ class D435Process(mp.Process):
                     pos, r = ball_circle
                     cv2.circle(color_image, pos, 10, (255, 0, 0), -1)
                 try:
-                    self.ball_queue.put_nowait((ball_dis, -ball_angle,
-                                                frame_yaw - ball_angle))
+                    # self.ball_queue.put_nowait((ball_dis, -ball_angle,
+                    #                             frame_yaw - ball_angle))
                 except Full:
                     pass
                 # show(color_image)
                 self.putFrame("intake", color_image)
+
         finally:
             print('stop')
             pipeline_d435.stop()
-
-    def run(self):
-        try:
-            self.process_method()
-        except Exception:
-            self.logger.exception("exception uncaught in process_method, "
-                                  "wait for root process to restart this")
-
-    def putFrame(self, name, frame):
-        try:
-            self.frame_queue.put_nowait((name, frame))
-        except Full:
-            # self.logger.warning("frame_queue_full")
-            pass
 
 
 def circle_sample(image_3d, x, y, r):
