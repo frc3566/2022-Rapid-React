@@ -195,6 +195,10 @@ try:
             pass
         show('color',color_image)
         # self.putFrame("intake", color_image)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
 
 finally:
     print('stop')
