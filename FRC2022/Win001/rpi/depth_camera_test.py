@@ -40,6 +40,14 @@ sMax = 255
 vMin = 0
 vMax = 255
 
+#blue
+# hMin = 90
+# hMax = 100
+# sMin = 70
+# sMax = 255
+# vMin = 0
+# vMax = 255
+
 HEIGHT = 17 * 0.0254
 
 def show(s, img):
