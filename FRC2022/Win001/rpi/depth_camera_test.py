@@ -25,6 +25,8 @@ FPS = 30
 DIS_RADIUS_PRODUCT_MIN = 22
 DIS_RADIUS_PRODUCT_MAX = 40
 
+MIN_CONTOUR_SIZE = 30
+
 # hMin = 0
 # hMax = 255
 # sMin = 0
@@ -184,7 +186,7 @@ try:
         best_score = 1e9
         for index, contour in enumerate(contours):
             contour_area = cv2.contourArea(contour)
-            if contour_area < 100:
+            if contour_area < MIN_CONTOUR_SIZE:
                 continue
             (x_2d, y_2d), r = cv2.minEnclosingCircle(contour)
             if contour_area / (m.pi * r * r) < 0.55:
@@ -193,7 +195,9 @@ try:
             if dis < MIN_DIS:
                 continue
 
-            print(dis * r)
+            print(f"dis * r: {dis * r}")
+            print(f"pi * r^2: {np.pi * (r ** 2)}")
+            
            # TODO
             # if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
                 # print(f"raidus distance ratio skip {dis * r:.3f}")
@@ -202,7 +206,7 @@ try:
             x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
 
             contour_mask = np.zeros((DEPTH_H, DEPTH_W), dtype=np.uint8)
-            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), 255, -1)
+            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), 255, 4)
 
             cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
             cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, -1)
@@ -218,7 +222,7 @@ try:
             # contour_mask.tofile("contour_mask")
             # image_3d.tofile("image_3d")
 
-            confidence, sphere = fit_sphere_LSE_RANSAC(points, min_pixel_cnt = 30)
+            confidence, sphere = fit_sphere_LSE_RANSAC(points, min_pixel_cnt = MIN_CONTOUR_SIZE)
 
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5

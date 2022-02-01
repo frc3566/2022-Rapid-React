@@ -46,6 +46,7 @@ def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015, min_pixel_c
 
     max_inlier_num = -1
     max_inlier_list = None
+    
     N = points.shape[0]
     if N <= min_pixel_cnt:
         return 0, (0, 0, 0, 0)
