@@ -50,8 +50,6 @@ def main():
    y_mid = hsv_height // 2
 
    FOV = 60
-   os.path.abspath(os.getcwd)
-   os.path.dirname
 
    while True:
       if(NetworkTables.isConnected() == False):
@@ -147,6 +145,8 @@ def main():
       print(hsv_img[60, 80,0], hsv_img[60, 80,1], hsv_img[60, 80,2], sep=' ')
 
       print(x_list)
+
+      print(os.path.dirname(os.path.abspath(__file__)))
 
 main()
 
