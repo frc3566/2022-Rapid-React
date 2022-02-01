@@ -31,7 +31,7 @@ def get_point_dist(points, sphere):
     return abs(dis - r)
 
 
-def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015):
+def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015, min_pixel_cnt = 250):
     """
     :param points: N * 3 points
     :param max_iters:
@@ -47,7 +47,7 @@ def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015):
     max_inlier_num = -1
     max_inlier_list = None
     N = points.shape[0]
-    if N <= 250:
+    if N <= min_pixel_cnt:
         return 0, (0, 0, 0, 0)
 
     for i in range(max_iters):

@@ -192,6 +192,8 @@ try:
             dis = circle_sample(image_3d, x_2d, y_2d, r)
             if dis < MIN_DIS:
                 continue
+
+            print(dis * r)
            # TODO
             # if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
                 # print(f"raidus distance ratio skip {dis * r:.3f}")
@@ -207,16 +209,16 @@ try:
 
 
 
-            contour_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
+            final_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
             show("contour mask", contour_mask.astype(np.uint8) * 255)
-            points = image_3d[contour_mask]
+            points = image_3d[final_mask]
 
-            print(f"min dis to ball {depth_image[contour_mask].min()}")
+            # print(f"min dis to ball {depth_image[contour_mask].min()}")
 
             # contour_mask.tofile("contour_mask")
             # image_3d.tofile("image_3d")
 
-            confidence, sphere = fit_sphere_LSE_RANSAC(points)
+            confidence, sphere = fit_sphere_LSE_RANSAC(points, min_pixel_cnt = 30)
 
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
