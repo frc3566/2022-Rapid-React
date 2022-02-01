@@ -15,8 +15,8 @@ align = rs.align(align_to)
 
 hole_filler = rs.hole_filling_filter()
 
-MIN_DIS = 0
-MAX_DIS = 100
+MIN_DIS = 0.25
+MAX_DIS = 9
 
 DEPTH_H = 480
 DEPTH_W = 640
@@ -90,13 +90,15 @@ pipeline_d435 = rs.pipeline()
 config_d435 = rs.config()
 
 # config_d435.enable_device('923322071945')
+
+config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
+config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
+
 profile_d435 = pipeline_d435.start(config_d435)
 depth_sensor = profile_d435.get_device().first_depth_sensor()
 # depth_sensor.set_option(rs.option.depth_units, 0.0001)
 DEPTH_UNIT = depth_sensor.get_option(rs.option.depth_units)
-
-config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
-config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
+print(DEPTH_UNIT)
 
 #profile_d435 = config_d435.resolve(rs.pipeline_wrapper(pipeline_d435))
 
@@ -113,10 +115,10 @@ plane_computer = cv2.rgbd.RgbdPlane_create(
 
 
 
-# preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
-# for i in range(int(preset_range.max)):
-#     visulpreset = depth_sensor.get_option_value_description(
-#         rs.option.visual_preset, i)
+preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
+for i in range(int(preset_range.max)):
+    visulpreset = depth_sensor.get_option_value_description(
+        rs.option.visual_preset, i)
     # if visulpreset == 'Default':
     #     print('set default')
     #     depth_sensor.set_option(rs.option.visual_preset, i)
@@ -133,12 +135,13 @@ try:
             raise Exception(
                 "depth_frame and/or color_frame unavailable")
         color_img = np.asanyarray(color_frame.get_data())
-        color_img = color_img[:,:,::-1]
+        # color_img = color_img[:, :, ::-1]
+        # print(color_img.dtype)
         # Convert images to numpy arrays
         depth_frame = hole_filler.process(depth_frame)
         depth_image = np.asanyarray(depth_frame.get_data())
-        depth_image = depth_image/DEPTH_UNIT * 0.001
-
+        # depth_image = depth_image/DEPTH_UNIT * 0.001
+        depth_image = depth_image * 10 * 25.0 / 1000000
 
         hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
         color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
@@ -157,6 +160,8 @@ try:
         normal = normal_computer.apply(image_3d)
         plane_labels, plane_coeffs = plane_computer.apply(image_3d, normal)
         dis_to_cam = la.norm(image_3d, axis=-1)
+
+        # print(dis_to_cam)
 
         valid_mask = (dis_to_cam < MAX_DIS) * (dis_to_cam > MIN_DIS) * \
                         (plane_labels == 255)
@@ -216,7 +221,7 @@ try:
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
 
-            print(f"{confidence:.2f} {sphere_r:.2f} {dis:.2f} {center_dis:.2f}")
+            print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
             if confidence < 0.4 or sphere_r > 0.4 or sphere_r < 0.1:
                 print("skip")
                 continue

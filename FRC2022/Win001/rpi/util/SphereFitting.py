@@ -15,7 +15,7 @@ def sphereFit(points):
     #   Assemble the f matrix
     f = np.zeros((len(spX),1))
     f[:,0] = (spX*spX) + (spY*spY) + (spZ*spZ)
-    C, residules, rank, singval = np.linalg.lstsq(A,f)
+    C, residules, rank, singval = np.linalg.lstsq(A, f, rcond=None)
 
     #   solve for the radius
     t = (C[0]*C[0])+(C[1]*C[1])+(C[2]*C[2])+C[3]
