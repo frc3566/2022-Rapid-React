@@ -141,7 +141,7 @@ try:
         depth_frame = hole_filler.process(depth_frame)
         depth_image = np.asanyarray(depth_frame.get_data())
         # depth_image = depth_image/DEPTH_UNIT * 0.001
-        depth_image = depth_image * 10 * 25.0 / 1000000
+        depth_image = depth_image * DEPTH_UNIT
 
         hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
         color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
