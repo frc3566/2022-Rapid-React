@@ -86,16 +86,18 @@ def circle_sample(image_3d, x, y, r):
     return mean(dis_list)
 
 
-# print("hi")
 pipeline_d435 = rs.pipeline()
 config_d435 = rs.config()
 
 # config_d435.enable_device('923322071945')
+profile_d435 = pipeline_d435.start(config_d435)
+depth_sensor = profile_d435.get_device().first_depth_sensor()
+# depth_sensor.set_option(rs.option.depth_units, 0.0001)
+DEPTH_UNIT = depth_sensor.get_option(rs.option.depth_units)
 
 config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
 config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
 
-profile_d435 = pipeline_d435.start(config_d435)
 #profile_d435 = config_d435.resolve(rs.pipeline_wrapper(pipeline_d435))
 
 #get camera intrinsics matrix
@@ -109,18 +111,18 @@ plane_computer = cv2.rgbd.RgbdPlane_create(
     0.01, 0, 0 # quadratic error
 )
 
-depth_sensor = profile_d435.get_device().first_depth_sensor()
-preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
-for i in range(int(preset_range.max)):
-    visulpreset = depth_sensor.get_option_value_description(
-        rs.option.visual_preset, i)
+
+
+# preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
+# for i in range(int(preset_range.max)):
+#     visulpreset = depth_sensor.get_option_value_description(
+#         rs.option.visual_preset, i)
     # if visulpreset == 'Default':
     #     print('set default')
     #     depth_sensor.set_option(rs.option.visual_preset, i)
 
 try:
     while True:
-        # print("inside")
         frames = pipeline_d435.wait_for_frames()
 
         aligned_frames = align.process(frames)
@@ -131,10 +133,12 @@ try:
             raise Exception(
                 "depth_frame and/or color_frame unavailable")
         color_img = np.asanyarray(color_frame.get_data())
-
+        color_img = color_img[:,:,::-1]
         # Convert images to numpy arrays
         depth_frame = hole_filler.process(depth_frame)
         depth_image = np.asanyarray(depth_frame.get_data())
+        depth_image = depth_image/DEPTH_UNIT * 0.001
+
 
         hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
         color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
@@ -196,9 +200,13 @@ try:
             cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
             cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, -1)
 
+
+
             contour_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
             show("contour mask", contour_mask.astype(np.uint8) * 255)
             points = image_3d[contour_mask]
+
+            print(f"min dis to ball {depth_image[contour_mask].min()}")
 
             # contour_mask.tofile("contour_mask")
             # image_3d.tofile("image_3d")
