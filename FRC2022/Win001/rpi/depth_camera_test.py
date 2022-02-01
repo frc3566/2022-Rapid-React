@@ -16,7 +16,7 @@ align = rs.align(align_to)
 hole_filler = rs.hole_filling_filter()
 
 MIN_DIS = 0.3
-MAX_DIS = 2.5
+MAX_DIS = 4
 DEPTH_H = 480
 DEPTH_W = 640
 FPS = 30
@@ -24,9 +24,17 @@ FPS = 30
 DIS_RADIUS_PRODUCT_MIN = 22
 DIS_RADIUS_PRODUCT_MAX = 40
 
+# hMin = 0
+# hMax = 255
+# sMin = 0
+# sMax = 255
+# vMin = 0
+# vMax = 255
+
+#red
 hMin = 0
-hMax = 255
-sMin = 0
+hMax = 7
+sMin = 146
 sMax = 255
 vMin = 0
 vMax = 255
@@ -69,7 +77,7 @@ def circle_sample(image_3d, x, y, r):
     return mean(dis_list)
 
 
-print("hi")
+# print("hi")
 pipeline_d435 = rs.pipeline()
 config_d435 = rs.config()
 
@@ -100,7 +108,7 @@ for i in range(int(preset_range.max)):
 
 try:
     while True:
-        print("inside")
+        # print("inside")
         frames = pipeline_d435.wait_for_frames()
 
         aligned_frames = align.process(frames)
@@ -119,15 +127,26 @@ try:
         frame_HSV = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
         thresh = cv2.inRange(frame_HSV, (hMin, sMin, vMin),
                                         (hMax, sMax, vMax))
-        show('thresh', thresh)
+        # show('thresh', thresh)
 
         image_3d = cv2.rgbd.depthTo3d(depth_image, K)
+
+        # show('image_3d', image_3d)
+
         unknown_mask = np.isnan(image_3d[..., -1])
         normal = normal_computer.apply(image_3d)
         plane_labels, plane_coeffs = plane_computer.apply(image_3d, normal)
         dis_to_cam = la.norm(image_3d, axis=-1)
+
         valid_mask = (dis_to_cam < MAX_DIS) * (dis_to_cam > MIN_DIS) * \
                         (plane_labels == 255)
+
+        # print(valid_mask)
+
+        # print(valid_mask.shape)
+        show("valid_mask", valid_mask.astype(np.uint8) * 255)
+
+        
         mask = np.logical_or(valid_mask, unknown_mask).astype(np.uint8) * thresh
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
@@ -149,23 +168,32 @@ try:
             dis = circle_sample(image_3d, x_2d, y_2d, r)
             if dis < MIN_DIS:
                 continue
-            if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
+           # TODO
+            # if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
                 # print(f"raidus distance ratio skip {dis * r:.3f}")
-                continue
+                # continue
 
             x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
 
             contour_mask = np.zeros((DEPTH_H, DEPTH_W), dtype=np.uint8)
             contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), (255), -1)
+            
             contour_mask = (mask==255) * valid_mask * (contour_mask == 255)
+            show("contour mask", contour_mask.astype(np.uint8) * 255)
             points = image_3d[contour_mask]
+            contour_mask.tofile("contour_mask")
+            image_3d.tofile("image_3d")
+            exit(1)
             confidence, sphere = fit_sphere_LSE_RANSAC(points)
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
-            # print(f"{confidence:.2f} {sphere_r:.2f} {dis:.2f} {center_dis:.2f}")
-            if confidence < 0.4 or sphere_r > 0.3 or sphere_r < 0.05:
-                # print("skip")
+
+            print(f"{confidence:.2f} {sphere_r:.2f} {dis:.2f} {center_dis:.2f}")
+            if confidence < 0.4 or sphere_r > 0.4 or sphere_r < 0.1:
+                print("skip")
                 continue
+
+            
 
             pt_3d = K_inv @ [x_2d, y_2d, 1] * dis
             angle = m.degrees(m.atan(pt_3d[0] / dis))
@@ -177,6 +205,7 @@ try:
                 ball_angle = angle
                 ball_circle = ((x_2d, y_2d), r)
                 best_score = score
+                print(ball_dis, -ball_angle, sep=" ")
             cv2.drawContours(color_image, contours, index, (200, 0, 200), 2)
             cv2.circle(color_image, (x_2d, y_2d), r, (0, 0, 200), 2)
 
@@ -187,18 +216,20 @@ try:
         if ball_dis < 10:
             pos, r = ball_circle
             cv2.circle(color_image, pos, 10, (255, 0, 0), -1)
-        try:
+        # try:
             # self.ball_queue.put_nowait((ball_dis, -ball_angle,
-            #                             frame_yaw - ball_angle))
-            print("hi")
-        except Full:
-            pass
+                                        # frame_yaw - ball_angle))
+            
         show('color',color_image)
         # self.putFrame("intake", color_image)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break
+        
+        if cv2.waitKey(1) & 0xFF == ord('s'):
+            numpy.save("")
+
 
 finally:
     print('stop')
