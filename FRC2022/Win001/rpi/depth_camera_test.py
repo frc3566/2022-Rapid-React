@@ -15,8 +15,9 @@ align = rs.align(align_to)
 
 hole_filler = rs.hole_filling_filter()
 
-MIN_DIS = 0.3
-MAX_DIS = 4
+MIN_DIS = 0
+MAX_DIS = 100
+
 DEPTH_H = 480
 DEPTH_W = 640
 FPS = 30
@@ -33,8 +34,8 @@ DIS_RADIUS_PRODUCT_MAX = 40
 
 #red
 hMin = 0
-hMax = 7
-sMin = 146
+hMax = 5
+sMin = 50
 sMax = 255
 vMin = 0
 vMax = 255
@@ -118,16 +119,20 @@ try:
         if not depth_frame or not color_frame:
             raise Exception(
                 "depth_frame and/or color_frame unavailable")
-        color_image = np.asanyarray(color_frame.get_data())
+        color_img = np.asanyarray(color_frame.get_data())
 
         # Convert images to numpy arrays
         depth_frame = hole_filler.process(depth_frame)
         depth_image = np.asanyarray(depth_frame.get_data())
 
-        frame_HSV = cv2.cvtColor(color_image, cv2.COLOR_BGR2HSV)
-        thresh = cv2.inRange(frame_HSV, (hMin, sMin, vMin),
-                                        (hMax, sMax, vMax))
-        # show('thresh', thresh)
+        hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
+        color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
+                                       (hMax, sMax, vMax))
+
+        color_thresh_img = cv2.dilate(color_thresh_img, None, iterations=4)
+        color_thresh_img = cv2.erode(color_thresh_img, None, iterations=2)
+
+        show('color_thresh_img', color_thresh_img)
 
         image_3d = cv2.rgbd.depthTo3d(depth_image, K)
 
@@ -147,13 +152,12 @@ try:
         show("valid_mask", valid_mask.astype(np.uint8) * 255)
 
         
-        mask = np.logical_or(valid_mask, unknown_mask).astype(np.uint8) * thresh
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
-        show('mask', mask)
+        color_masked = np.logical_or(valid_mask, unknown_mask).astype(np.uint8) * color_thresh_img
+        color_masked = cv2.morphologyEx(color_masked, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+        color_masked = cv2.morphologyEx(color_masked, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
 
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-                                        cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(color_masked, cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)
 
         ball_dis = 1e9
         ball_angle = 0
@@ -176,15 +180,20 @@ try:
             x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
 
             contour_mask = np.zeros((DEPTH_H, DEPTH_W), dtype=np.uint8)
-            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), (255), -1)
-            
-            contour_mask = (mask==255) * valid_mask * (contour_mask == 255)
+            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), 255, -1)
+
+            cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
+            cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, -1)
+
+            contour_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
             show("contour mask", contour_mask.astype(np.uint8) * 255)
             points = image_3d[contour_mask]
-            contour_mask.tofile("contour_mask")
-            image_3d.tofile("image_3d")
-            exit(1)
+
+            # contour_mask.tofile("contour_mask")
+            # image_3d.tofile("image_3d")
+
             confidence, sphere = fit_sphere_LSE_RANSAC(points)
+
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
 
@@ -192,8 +201,6 @@ try:
             if confidence < 0.4 or sphere_r > 0.4 or sphere_r < 0.1:
                 print("skip")
                 continue
-
-            
 
             pt_3d = K_inv @ [x_2d, y_2d, 1] * dis
             angle = m.degrees(m.atan(pt_3d[0] / dis))
@@ -206,21 +213,24 @@ try:
                 ball_circle = ((x_2d, y_2d), r)
                 best_score = score
                 print(ball_dis, -ball_angle, sep=" ")
-            cv2.drawContours(color_image, contours, index, (200, 0, 200), 2)
-            cv2.circle(color_image, (x_2d, y_2d), r, (0, 0, 200), 2)
+            cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
+            cv2.circle(color_img, (x_2d, y_2d), r, (0, 0, 200), 2)
 
-        thresh = np.stack((thresh, thresh, thresh), axis=-1)
-        mask = np.stack((mask, mask, mask), axis=-1)
-        output = cv2.vconcat([thresh, mask, color_image])
-        show('output', output)
+        color_thresh_img = np.stack((color_thresh_img, color_thresh_img, color_thresh_img), axis=-1)
+        color_masked = np.stack((color_masked, color_masked, color_masked), axis=-1)
+        output = cv2.vconcat([color_thresh_img, color_masked, color_img])
+
+        show('color_masked', color_masked)
+        
+        # show('output', output)
         if ball_dis < 10:
             pos, r = ball_circle
-            cv2.circle(color_image, pos, 10, (255, 0, 0), -1)
+            cv2.circle(color_img, pos, 10, (255, 0, 0), -1)
         # try:
             # self.ball_queue.put_nowait((ball_dis, -ball_angle,
                                         # frame_yaw - ball_angle))
             
-        show('color',color_image)
+        show('color', color_img)
         # self.putFrame("intake", color_image)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
