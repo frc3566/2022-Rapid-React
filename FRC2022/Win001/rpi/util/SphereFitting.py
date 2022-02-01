@@ -51,8 +51,8 @@ def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015):
         return 0, (0, 0, 0, 0)
 
     for i in range(max_iters):
-        chose_id = np.random.choice(N, 4, replace=False)
-        chose_points = points[chose_id, :]
+        chose_list = np.random.choice(N, 4, replace=False)
+        chose_points = points[chose_list, :]
         tmp_sphere = sphereFit(chose_points)
 
         dists = get_point_dist(points, tmp_sphere)

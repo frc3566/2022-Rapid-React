@@ -46,7 +46,7 @@ def show(s, img):
     cv2.imshow(s, img)
     cv2.waitKey(1)
 
-def calculate_intrinsics(profile):
+def get_intrinsics(profile):
     intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
     K = np.array([
         [intrin.fx, 0, intrin.ppx],
@@ -90,14 +90,17 @@ config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS
 profile_d435 = pipeline_d435.start(config_d435)
 #profile_d435 = config_d435.resolve(rs.pipeline_wrapper(pipeline_d435))
 
-K, K_inv = calculate_intrinsics(profile_d435)
+#get camera intrinsics matrix
+K, K_inv = get_intrinsics(profile_d435)
 
+#define plane detecting computers
 normal_computer = cv2.rgbd.RgbdNormals_create(DEPTH_H, DEPTH_W, cv2.CV_32F, K)
 plane_computer = cv2.rgbd.RgbdPlane_create(
     cv2.rgbd.RgbdPlane_RGBD_PLANE_METHOD_DEFAULT,
     int(DEPTH_W * DEPTH_H / 5000), int(DEPTH_W * DEPTH_H / 15), 0.013,
     0.01, 0, 0 # quadratic error
 )
+
 depth_sensor = profile_d435.get_device().first_depth_sensor()
 preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
 for i in range(int(preset_range.max)):
