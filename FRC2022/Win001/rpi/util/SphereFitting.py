@@ -62,7 +62,6 @@ def fit_sphere_LSE_RANSAC(points, max_iters=80, inlier_thresh=0.015):
         if num_inliers > max_inlier_num:
             max_inlier_num = num_inliers
             max_inlier_list = tmp_inlier_list
-            final_sphere = tmp_sphere
 
     final_sphere = sphereFit(points[max_inlier_list])
     return len(max_inlier_list) / len(points), final_sphere
