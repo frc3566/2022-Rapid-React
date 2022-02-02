@@ -11,6 +11,7 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.GoalCamera;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TimerSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -31,6 +32,7 @@ public class RobotContainer {
   private TimerSubsystem timer = new TimerSubsystem();
   private DriveSubsystem drive = new DriveSubsystem(timer);
   private GoalCamera goalCamera = new GoalCamera();
+  private Shooter shooter = new Shooter();
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(drive);
 
