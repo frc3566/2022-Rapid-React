@@ -22,10 +22,10 @@ DEPTH_H = 480
 DEPTH_W = 640
 FPS = 30
 
-DIS_RADIUS_PRODUCT_MIN = 22
-DIS_RADIUS_PRODUCT_MAX = 40
+DIS_RADIUS_PRODUCT_MIN = 50
+DIS_RADIUS_PRODUCT_MAX = 100
 
-MIN_CONTOUR_SIZE = 30
+MIN_CONTOUR_SIZE = 100
 
 # hMin = 0
 # hMax = 255
@@ -37,7 +37,7 @@ MIN_CONTOUR_SIZE = 30
 #red
 hMin = 0
 hMax = 5
-sMin = 50
+sMin = 150
 sMax = 255
 vMin = 0
 vMax = 255
@@ -115,7 +115,30 @@ plane_computer = cv2.rgbd.RgbdPlane_create(
     0.01, 0, 0 # quadratic error
 )
 
+def callback(value):
+    pass
 
+def setup_trackbars(range_filter):
+    cv2.namedWindow("Trackbars", 0)
+
+    for i in ["MIN", "MAX"]:
+        v = 0 if i == "MIN" else 255
+
+        for j in range_filter:
+            cv2.createTrackbar("%s_%s" % (j, i), "Trackbars", v, 255, callback)
+
+def get_trackbar_values(range_filter):
+    values = []
+
+    for i in ["MIN", "MAX"]:
+        for j in range_filter:
+            v = cv2.getTrackbarPos("%s_%s" % (j, i), "Trackbars")
+            values.append(v)
+
+    return values
+
+range_filter = 'HSV'
+setup_trackbars(range_filter)
 
 preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
 for i in range(int(preset_range.max)):
@@ -144,6 +167,8 @@ try:
         depth_image = np.asanyarray(depth_frame.get_data())
         # depth_image = depth_image/DEPTH_UNIT * 0.001
         depth_image = depth_image * DEPTH_UNIT
+
+        hMin, sMin, vMin, hMax, sMax, vMax = get_trackbar_values(range_filter)
 
         hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
         color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
@@ -189,32 +214,29 @@ try:
             if contour_area < MIN_CONTOUR_SIZE:
                 continue
             (x_2d, y_2d), r = cv2.minEnclosingCircle(contour)
+            # print(contour_area / (m.pi * r * r))
             if contour_area / (m.pi * r * r) < 0.55:
                 continue
             dis = circle_sample(image_3d, x_2d, y_2d, r)
             if dis < MIN_DIS:
                 continue
 
-            print(f"dis * r: {dis * r}")
-            print(f"pi * r^2: {np.pi * (r ** 2)}")
-            
-           # TODO
             # if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
-                # print(f"raidus distance ratio skip {dis * r:.3f}")
-                # continue
+            #     print(f"raidus distance ratio skip {dis * r:.3f}")
+            #     continue
 
             x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
 
             contour_mask = np.zeros((DEPTH_H, DEPTH_W), dtype=np.uint8)
-            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), 255, 4)
+            contour_mask = cv2.circle(contour_mask, (x_2d, y_2d), int(r * 0.9), 255, -1)
 
             cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
-            cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, -1)
+            # cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, 4)
 
 
 
             final_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
-            show("contour mask", contour_mask.astype(np.uint8) * 255)
+            show("final mask", final_mask.astype(np.uint8) * 255)
             points = image_3d[final_mask]
 
             # print(f"min dis to ball {depth_image[contour_mask].min()}")
@@ -228,9 +250,11 @@ try:
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
 
             print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
-            if confidence < 0.4 or sphere_r > 0.4 or sphere_r < 0.1:
-                print("skip")
+            if confidence < 0.4 or sphere_r > 2 or sphere_r < 0.05:
+                # print("skip")
                 continue
+
+            # print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
 
             pt_3d = K_inv @ [x_2d, y_2d, 1] * dis
             angle = m.degrees(m.atan(pt_3d[0] / dis))
@@ -244,7 +268,11 @@ try:
                 best_score = score
                 print(ball_dis, -ball_angle, sep=" ")
             cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
+
             cv2.circle(color_img, (x_2d, y_2d), r, (0, 0, 200), 2)
+
+            print(f"dis * r: {dis * r}")
+            print(f"pi * r^2: {np.pi * (r ** 2)}")
 
         color_thresh_img = np.stack((color_thresh_img, color_thresh_img, color_thresh_img), axis=-1)
         color_masked = np.stack((color_masked, color_masked, color_masked), axis=-1)
@@ -253,9 +281,7 @@ try:
         show('color_masked', color_masked)
         
         # show('output', output)
-        if ball_dis < 10:
-            pos, r = ball_circle
-            cv2.circle(color_img, pos, 10, (255, 0, 0), -1)
+
         # try:
             # self.ball_queue.put_nowait((ball_dis, -ball_angle,
                                         # frame_yaw - ball_angle))
@@ -274,3 +300,4 @@ try:
 finally:
     print('stop')
     pipeline_d435.stop()
+    cv2.destroyAllwindows()

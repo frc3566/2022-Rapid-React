@@ -53,6 +53,7 @@ def main():
                                   rs.format.bgr8, FPS)
         profile_d435 = pipeline_d435.start(config_d435)
 
+
     while True:
         if not D435:
             ret, image = cap.read()
