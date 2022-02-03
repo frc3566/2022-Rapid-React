@@ -115,31 +115,32 @@ plane_computer = cv2.rgbd.RgbdPlane_create(
     0.01, 0, 0 # quadratic error
 )
 
-def callback(value):
-    pass
+# def callback(value):
+#     pass
+#
+# def setup_trackbars(range_filter):
+#     cv2.namedWindow("Trackbars", 0)
+#
+#     for i in ["MIN", "MAX"]:
+#         v = 0 if i == "MIN" else 255
+#
+#         for j in range_filter:
+#             cv2.createTrackbar("%s_%s" % (j, i), "Trackbars", v, 255, callback)
+#
+# def get_trackbar_values(range_filter):
+#     values = []
+#
+#     for i in ["MIN", "MAX"]:
+#         for j in range_filter:
+#             v = cv2.getTrackbarPos("%s_%s" % (j, i), "Trackbars")
+#             values.append(v)
+#
+#     return values
+#
+# range_filter = 'HSV'
+# setup_trackbars(range_filter)
 
-def setup_trackbars(range_filter):
-    cv2.namedWindow("Trackbars", 0)
-
-    for i in ["MIN", "MAX"]:
-        v = 0 if i == "MIN" else 255
-
-        for j in range_filter:
-            cv2.createTrackbar("%s_%s" % (j, i), "Trackbars", v, 255, callback)
-
-def get_trackbar_values(range_filter):
-    values = []
-
-    for i in ["MIN", "MAX"]:
-        for j in range_filter:
-            v = cv2.getTrackbarPos("%s_%s" % (j, i), "Trackbars")
-            values.append(v)
-
-    return values
-
-range_filter = 'HSV'
-setup_trackbars(range_filter)
-
+#setup preset
 preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
 for i in range(int(preset_range.max)):
     visulpreset = depth_sensor.get_option_value_description(
@@ -168,7 +169,7 @@ try:
         # depth_image = depth_image/DEPTH_UNIT * 0.001
         depth_image = depth_image * DEPTH_UNIT
 
-        hMin, sMin, vMin, hMax, sMax, vMax = get_trackbar_values(range_filter)
+        # hMin, sMin, vMin, hMax, sMax, vMax = get_trackbar_values(range_filter)
 
         hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
         color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
