@@ -10,6 +10,8 @@ import logging
 import random
 from util.SphereFitting import *
 
+import util.showImage
+
 align_to = rs.stream.color
 align = rs.align(align_to)
 
@@ -51,10 +53,6 @@ vMax = 255
 # vMax = 255
 
 HEIGHT = 17 * 0.0254
-
-def show(s, img):
-    cv2.imshow(s, img)
-    cv2.waitKey(1)
 
 def get_intrinsics(profile):
     intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()

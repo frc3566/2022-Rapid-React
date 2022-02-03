@@ -2,17 +2,23 @@ import cv2
 import numpy as np
 import math
 
-from D435Process import show
+import util.showImage
+
 from util.transformation import rotationMatrixToEulerAngles
 from Constants import Constants
 
+
+
 cap = cv2.VideoCapture(0) # change when debugging on local
+
 cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, Constants.EXPOSURE_AUTO)
 cap.set(cv2.CAP_PROP_EXPOSURE, Constants.EXPOSURE_ABS)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.HEIGHT)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.WIDTH)
 
 while True:
+    frame_yaw = 0
+
     ret, frame = cap.read()
     if not ret:
         raise Exception('no frame')
@@ -25,6 +31,8 @@ while True:
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_SIMPLE)
 
+    print(contours.shape)
+
     thresh = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
     thresh = cv2.addWeighted(thresh, 0.6, frame, 0.4, 0)
 
@@ -33,6 +41,7 @@ while True:
     for contour in contours:
         # start prelim checks
         area = cv2.contourArea(contour)
+
         if area < Constants.MIN_TARGET_AREA:
             continue
         x, y, w, h = cv2.boundingRect(contour)
@@ -75,12 +84,12 @@ while True:
                 Constants.MAX_ALLOWABLE_YPR_DIFF\
                 or abs((roll - Constants.ROLL + 180) % 360 - 180) > \
                 Constants.MAX_ALLOWABLE_YPR_DIFF:
-            self.logger.warning(f"orientation error with yaw {yaw:.2f}"
+            print(f"orientation error with yaw {yaw:.2f}"
                                 f" pitch {pitch:.2f} roll {roll:.2f}")
             continue
 
         for c, v in zip("xyztpr", [field_x, field_y, field_z, yaw, pitch, roll]):
-            self.putNtable(f'CV/camera_{c}', v)
+            print(f'CV/camera_{c}', v)
 
         # transform to WPI robotics convention
         y, z, x = tvec[:, 0] * (-1, -1, 1)
@@ -90,8 +99,8 @@ while True:
                       - 180 - target_relative_dir_left
 
         # found the correct target
-        self.debug("field_coord:" + ''.join(f"{v:7.2f}" for v in field_xyz))
-        self.debug(f'distance {target_distance:5.2f} '
+        print("field_coord:" + ''.join(f"{v:7.2f}" for v in field_xyz))
+        print(f'distance {target_distance:5.2f} '
                    f'toleft {target_relative_dir_left:5.1f} '
                    f'field_theta {field_theta:5.1f} ')
         # if found more than one target reject all
@@ -99,14 +108,10 @@ while True:
             cv2.circle(thresh, tuple(point), 4, (0, 0, 255), -1)
         if target is not None:
             target = None
-            self.logger.warning("double target")
+            print("double target")
             break
         target = (True,
                   target_distance,
                   target_relative_dir_left,
                   target_t265_azm,
                   [field_x, field_y, field_theta])
-
-
-    # show(thresh)
-    self.putFrame('shoot', thresh)
