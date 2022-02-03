@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import math
 
-import util.showImage
+from util.showImage import show
 
 from util.transformation import rotationMatrixToEulerAngles
 from Constants import Constants
@@ -24,17 +24,21 @@ while True:
         raise Exception('no frame')
 
     # HSV filtering
-    frame_HSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    frame_HSV = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+
     thresh = cv2.inRange(frame_HSV, Constants.HSV_LOW, Constants.HSV_HIGH)
+
     # thresh = cv2.blur(thresh, (5, 5)) # may not be necessary
 
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_SIMPLE)
 
-    print(contours.shape)
+    # print(contours)
 
     thresh = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
-    thresh = cv2.addWeighted(thresh, 0.6, frame, 0.4, 0)
+    thresh = cv2.addWeighted(thresh, 0.6, frame_HSV, 0.4, 0)
+
+
 
     # find target contour
     target = None
@@ -115,3 +119,6 @@ while True:
                   target_relative_dir_left,
                   target_t265_azm,
                   [field_x, field_y, field_theta])
+
+    show("color_threashed", thresh)
+    show("color", frame_HSV)
