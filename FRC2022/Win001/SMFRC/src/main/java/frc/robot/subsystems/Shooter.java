@@ -17,21 +17,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
     private CANSparkMax motor;
+    private RelativeEncoder encoder;
 
     /** Creates a new ExampleSubsystem. */
     public Shooter() {
         motor = new CANSparkMax(20, MotorType.kBrushless);
-
+        encoder = motor.getEncoder();
     }
 
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-        spin();
+        spin(1);
     }
 
-    public void spin(){
-        motor.set(0.5);
+    public void spin(int RPM){
+        motor.set(RPM);
+        System.out.println("RPM: " + encoder.getVelocity());
     }
 
     @Override
