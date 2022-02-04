@@ -176,13 +176,13 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     leftController.setReference(
-      leftMPS * Constants.RPMpMPS,
+      leftMPS,
       ControlType.kVelocity, 
       0, 
       Constants.ks_Drive * Math.signum(leftMPS) + Constants.kv_Drive * leftMPS
     );
     rightController.setReference(
-      rightMPS * Constants.RPMpMPS,
+      rightMPS,
       ControlType.kVelocity, 
       0, 
       Constants.ks_Drive * Math.signum(rightMPS) + Constants.kv_Drive * rightMPS
