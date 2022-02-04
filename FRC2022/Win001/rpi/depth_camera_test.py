@@ -4,13 +4,11 @@ import numpy as np
 import numpy.linalg as la
 import cv2
 from statistics import mean
-import multiprocessing as mp
-from queue import Full
-import logging
+from util.showImage import show
+
 import random
 from util.SphereFitting import *
 
-import util.showImage
 
 align_to = rs.stream.color
 align = rs.align(align_to)
@@ -24,10 +22,10 @@ DEPTH_H = 480
 DEPTH_W = 640
 FPS = 30
 
-DIS_RADIUS_PRODUCT_MIN = 50
+DIS_RADIUS_PRODUCT_MIN = 40
 DIS_RADIUS_PRODUCT_MAX = 100
 
-MIN_CONTOUR_SIZE = 100
+MIN_CONTOUR_SIZE = 50
 
 # hMin = 0
 # hMax = 255
@@ -220,9 +218,9 @@ try:
             if dis < MIN_DIS:
                 continue
 
-            # if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
-            #     print(f"raidus distance ratio skip {dis * r:.3f}")
-            #     continue
+            if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
+                print(f"raidus distance ratio skip {dis * r:.3f}")
+                continue
 
             x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
 
@@ -243,7 +241,7 @@ try:
             # contour_mask.tofile("contour_mask")
             # image_3d.tofile("image_3d")
 
-            confidence, sphere = fit_sphere_LSE_RANSAC(points, min_pixel_cnt = MIN_CONTOUR_SIZE)
+            confidence, sphere = fit_sphere_LSE_RANSAC(points)
 
             sphere_r, center_x, center_y, center_z = sphere
             center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
@@ -299,4 +297,3 @@ try:
 finally:
     print('stop')
     pipeline_d435.stop()
-    cv2.destroyAllwindows()
