@@ -30,6 +30,9 @@ public final class Constants {
     public static final double kv = 2.44;
     public static final double ka = 0.38;
 
+    //turning control
+    public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
+
     // shooter subsystem
     public static final double SHOOTER_KS = 0; //TODO tuning
 

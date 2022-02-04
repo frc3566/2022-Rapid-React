@@ -11,11 +11,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
     private CANSparkMax shooterMaster;
@@ -28,6 +25,7 @@ public class Shooter extends SubsystemBase {
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
         shooterMaster.setInverted(false);
         shooterMaster.setClosedLoopRampRate(0.3);
+        shooterMaster.setIdleMode(IdleMode.kCoast);
         
         encoder = shooterMaster.getEncoder();
         shooterPIDController = shooterMaster.getPIDController();

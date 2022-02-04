@@ -14,13 +14,16 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.DriveSignal;
-import frc.robot.util.Util;
+import edu.wpi.first.math.util.Units;
 
 public class DriveSubsystem extends SubsystemBase {
-  private TimerSubsystem timer;
   
   private CANSparkMax left1;
   private WPI_TalonSRX left2, left3;
@@ -30,14 +33,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   private RelativeEncoder leftEncoder, rightEncoder;
 
-  private PigeonIMU IMU;
-
-  private double currGyro;
-  private double gyroZero;
-  public double tarGyro;
-  private double prevGyroError;
-
+  private double leftEncoderZero, rightEncoderZero;
+  
   private SparkMaxPIDController leftController, rightController;
+
+  private PigeonIMU gyro;
+
+  private double gyroZero;
+
+  private final DifferentialDriveOdometry odometry;
 
   public enum DriveControlState {
     VOLTAGE_CONTROL,
@@ -48,7 +52,6 @@ public class DriveSubsystem extends SubsystemBase {
   private DriveControlState driveControlState = DriveControlState.POSITION_CONTROL;
 
   public DriveSubsystem(TimerSubsystem timerSubsystem) {
-    this.timer = timerSubsystem;
 
     left1 = new CANSparkMax(12, MotorType.kBrushless);
     setSpark(left1, false);
@@ -73,18 +76,23 @@ public class DriveSubsystem extends SubsystemBase {
     setTalon(right3, true);
 
     rightEncoder = right1.getEncoder();
+    rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
+    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
+
     leftEncoder = left1.getEncoder();
+    rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
+    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
 
-    IMU = new PigeonIMU(right2);
+    gyro = new PigeonIMU(right2);
 
-    setGyroZero();
-    getGyro();
+    resetGyro();
+    getHeading();
 
-    tarGyro = 0.0;
-    prevGyroError = 0.0;
+    odometry = new DifferentialDriveOdometry(this.getRotation2d());
   }
 
-  public void setVoltage(Double leftVoltage, Double rightVoltage){
+  //moters
+  public void setPower(Double leftVoltage, Double rightVoltage){
     left1.set(leftVoltage);
     left2.set(leftVoltage);
     left3.set(leftVoltage);
@@ -95,12 +103,12 @@ public class DriveSubsystem extends SubsystemBase {
     return;
   }
 
-  public void setVoltage (DriveSignal signal){
+  public void setPower (DriveSignal signal){
     if (this.driveControlState != DriveControlState.VOLTAGE_CONTROL) {
       driveControlState = DriveControlState.VOLTAGE_CONTROL;
       System.out.println("enter voltage control mode");
     }
-    setVoltage(signal.getLeft(),signal.getRight());
+    setPower(signal.getLeft(),signal.getRight());
   }
 
   //we will not need this if we have all spark motors
@@ -114,7 +122,26 @@ public class DriveSubsystem extends SubsystemBase {
     left2.set(rightPwm);
   }
 
-  public void setBrakeMode(boolean isBrake) {
+  private void setSpark(CANSparkMax spark, boolean inverted) {
+    spark.restoreFactoryDefaults();
+    // spark.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    spark.setInverted(inverted);
+  }
+
+  private void setTalon(WPI_TalonSRX talon, boolean inverted){
+    talon.setInverted(inverted);
+    // left2.setNeutralMode(NeutralMode.Brake);;
+  }
+
+  private void setControler(SparkMaxPIDController controller){
+    controller.setP(Constants.DRIVETRAIN_VELOCITY_GAINS.kP);
+    controller.setI(0);
+    controller.setFF(Constants.DRIVETRAIN_VELOCITY_GAINS.kF);
+    controller.setD(Constants.DRIVETRAIN_VELOCITY_GAINS.kD);
+    controller.setOutputRange(-1, 1);
+  }
+
+  public void setBrake(boolean isBrake) {
     IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
     left1.setIdleMode(sparkMode);
     right1.setIdleMode(sparkMode);
@@ -126,44 +153,17 @@ public class DriveSubsystem extends SubsystemBase {
     left3.setNeutralMode(talonMode);
   }
 
-  public double getGyro(){
-    double [] xyz_deg = new double[3];
-    IMU.getAccumGyro(xyz_deg);
-
-    currGyro = xyz_deg[2] - gyroZero;
-    currGyro%=360;
-
-    return currGyro;
+  public double getLeftEncoderDistance(){
+    return leftEncoder.getPosition() - rightEncoderZero;
   }
 
-  public double setGyroZero(){
-    double [] xyz_deg = new double[3];
-    IMU.getAccumGyro(xyz_deg);
-
-    gyroZero = xyz_deg[2];
-    gyroZero%=360;
-
-    return gyroZero;
+  public double getRightEncoderDistance(){
+    return rightEncoder.getPosition() - leftEncoderZero;
   }
 
-  public double getLeftEncoder(){
-    return leftEncoder.getPosition();
-  }
-
-  public double getRightEncoder(){
-    return rightEncoder.getPosition();
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    //TODO: put networkTable logs
-
-    getGyro();
-    
-    if(this.driveControlState == DriveControlState.POSITION_CONTROL){
-      turn();
-    }
+  public void resetEncoders(){
+    leftEncoderZero = leftEncoder.getPosition();
+    rightEncoderZero = rightEncoder.getPosition();
   }
 
   public void setVelocity(final double leftMPS, final double rightMPS) {
@@ -189,54 +189,91 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
-  private void turn(){
-    this.driveControlState = DriveControlState.POSITION_CONTROL;
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(), rightEncoder.getVelocity());
+  }
 
-    double gyroError = tarGyro - currGyro; // Error = Target - Actual
-    gyroError %=360;
+  //gyro
+  public double getHeading(){
+    double[] xyz_deg = new double[3];
+    gyro.getAccumGyro(xyz_deg);
 
-    // System.out.println("error:" + gyroError);
+    double currGyro = xyz_deg[2] - gyroZero;
 
-    double pid = Util.pid(gyroError, 0.0, prevGyroError, timer.getDT(), 0.9, 0.0, 0.11); // prev: 1, 0, 0.016
+    return currGyro;
+  }
 
-    double leftVoltage = Util.mapValue(-20, 20, 0.3, -0.3, pid);
-    double rightVoltage = Util.mapValue(-20, 20, -0.3, 0.3, pid);
+  public double getRurnRate(){
+    double[] xyz_dps = new double[3];
+    gyro.getRawGyro(xyz_dps);
 
-    // System.out.println("Left Speed: " + leftSpeed + " Right Speed: " + rightSpeed);
-    // System.out.println("Error: " + gyroError);
+    return xyz_dps[2];
+  }
+
+  public Rotation2d getRotation2d(){
+    return new Rotation2d(Units.degreesToRadians(getHeading()));
+  }
+
+  public double resetGyro(){
+    double [] xyz_deg = new double[3];
+    gyro.getAccumGyro(xyz_deg);
+
+    gyroZero = xyz_deg[2];
+
+    return gyroZero;
+  }
+
+  //odometry
+  public Pose2d getPose(){
+    return odometry.getPoseMeters();
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    resetEncoders();
+    odometry.resetPosition(pose, this.getRotation2d());
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    //TODO: put networkTable logs
+
+    getHeading();
+
+    odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
+     this.getRightEncoderDistance());
     
-    prevGyroError = gyroError;
-
-    this.setVoltage(leftVoltage, rightVoltage);
-    // System.out.println("Turn stoped");
   }
 
-  public void setTurn(double tar){
-    if (this.driveControlState != DriveControlState.POSITION_CONTROL) {
-      driveControlState = DriveControlState.POSITION_CONTROL;
-      System.out.println("enter position control mode");
-    }
-    tarGyro = currGyro + tar;
-  }
+  // private void turn(){
+  //   this.driveControlState = DriveControlState.POSITION_CONTROL;
 
-  private void setSpark(CANSparkMax spark, boolean inverted) {
-    spark.restoreFactoryDefaults();
-    // spark.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    spark.setInverted(inverted);
-  }
+  //   double gyroError = tarGyro - currGyro; // Error = Target - Actual
+  //   gyroError %=360;
 
-  private void setTalon(WPI_TalonSRX talon, boolean inverted){
-    talon.setInverted(inverted);
-    // left2.setNeutralMode(NeutralMode.Brake);;
-  }
+  //   // System.out.println("error:" + gyroError);
 
-  private void setControler(SparkMaxPIDController controller){
-    controller.setP(Constants.DRIVETRAIN_VELOCITY_GAINS.kP);
-    controller.setI(0);
-    controller.setFF(Constants.DRIVETRAIN_VELOCITY_GAINS.kF);
-    controller.setD(Constants.DRIVETRAIN_VELOCITY_GAINS.kD);
-    controller.setOutputRange(-1, 1);
-  }
+  //   double pid = Util.pid(gyroError, 0.0, prevGyroError, timer.getDT(), 0.9, 0.0, 0.11); // prev: 1, 0, 0.016
+
+  //   double leftVoltage = Util.mapValue(-20, 20, 0.3, -0.3, pid);
+  //   double rightVoltage = Util.mapValue(-20, 20, -0.3, 0.3, pid);
+
+  //   // System.out.println("Left Speed: " + leftSpeed + " Right Speed: " + rightSpeed);
+  //   // System.out.println("Error: " + gyroError);
+    
+  //   prevGyroError = gyroError;
+
+  //   this.setPower(leftVoltage, rightVoltage);
+  //   // System.out.println("Turn stoped");
+  // }
+
+  // public void setTurn(double tar){
+  //   if (this.driveControlState != DriveControlState.POSITION_CONTROL) {
+  //     driveControlState = DriveControlState.POSITION_CONTROL;
+  //     System.out.println("enter position control mode");
+  //   }
+  //   tarGyro = currGyro + tar;
+  // }
 
   @Override
   public void simulationPeriodic() {

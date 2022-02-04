@@ -57,7 +57,7 @@ public class DriveWithJoystick extends CommandBase {
       false
     );
 
-    drive.setVoltage(signal);
+    drive.setPower(signal);
     System.out.println(signal);
   }
 
@@ -110,7 +110,8 @@ public class DriveWithJoystick extends CommandBase {
   private double mQuickStopAccumlator = 0.0;
   private double mNegInertiaAccumlator = 0.0;
 
-  private DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn, boolean isHighGear) {
+  private DriveSignal cheesyDrive(double throttle, double wheel,
+   boolean isQuickTurn, boolean isHighGear) {
 
   wheel = Util.deadband(wheel, kWheelDeadband);
   throttle = Util.deadband(throttle, kThrottleDeadband);

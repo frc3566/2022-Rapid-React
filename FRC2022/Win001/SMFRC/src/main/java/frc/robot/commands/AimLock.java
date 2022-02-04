@@ -4,9 +4,11 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.GoalCamera;
-
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -15,6 +17,9 @@ public class AimLock extends CommandBase {
 
   private DriveSubsystem drive;
   private GoalCamera camera;
+
+  private PIDController pid = new PIDController(Constants.TURNING_GAINS.kP,
+   Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
 
   /**
    * Creates a new ExampleCommand.
@@ -26,12 +31,15 @@ public class AimLock extends CommandBase {
     camera = goalCamera;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
+
+    pid.setTolerance(2, 5);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     camera.reset();
+    pid.reset();
   }
 
   double tar;
@@ -41,8 +49,11 @@ public class AimLock extends CommandBase {
   @Override
   public void execute() {
     if(camera.isUpdated()){
-      tar = camera.getTar();
-      drive.setTurn(tar);
+
+      double setPoint = drive.getHeading() + camera.getTar();
+      double power = MathUtil.clamp(pid.calculate(drive.getHeading(), setPoint),-0.3,0.3);
+
+      drive.setPower(-power, power);
       // System.out.println("update turning");
     }
   }

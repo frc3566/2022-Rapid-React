@@ -12,19 +12,12 @@ public class TimerSubsystem extends SubsystemBase {
 
   private Timer timer;
 
-  private double dt;
-
   private double timeSinceT;
 
   private double T;
 
-  private double prevT;
-
-  private double currT;
-
   public TimerSubsystem() {
     timer = new Timer();
-    dt = 0.02;
   }
 
   public void start(){
@@ -33,25 +26,18 @@ public class TimerSubsystem extends SubsystemBase {
     return;
   }
 
-  public double getDT(){
-    return dt;
-  }
-
   public double getStartTime(){
     return T;
   }
 
-  public double getTimeSinceT(){
+  public double getTime(){
+    timeSinceT = Timer.getFPGATimestamp() - T;
     return timeSinceT;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    prevT = currT;
-    currT = Timer.getFPGATimestamp();
-    dt = currT - prevT;
-    timeSinceT = currT - T;
   }
 
   @Override
