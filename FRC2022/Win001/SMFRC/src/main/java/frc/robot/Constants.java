@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -16,25 +18,30 @@ public final class Constants {
     
     public static final double L_PulsePerMeter = 21.4032;
     public static final double R_PulsePerMeter = 22.61056;
-    
-    public static final double FOV =60;
-    public static final double pixelWidth = 360;
 
+//TODO meaure these
     public static final double GEAR_RATIO = 11.0 / 50.0 * 24.0 / 50.0; // MotorCnt / WheelCnt;
     public static final double WHEEL_DIAMETER =  6.28 * 0.0254 * Math.PI;
     public static final double ENCODER_UNITpMETER = (1 / GEAR_RATIO) / WHEEL_DIAMETER;
     public static final double RPMpMPS = ENCODER_UNITpMETER * 60.0;
 
     // drivetrain physical characteristic
-    public static final double ks = 0.101;
-    public static final double kv = 2.44;
-    public static final double ka = 0.38;
+    public static final double kTrackwidthMeters = 0.7112 / 0.93;
+    public static final DifferentialDriveKinematics kDriveKinematics = 
+    new DifferentialDriveKinematics(kTrackwidthMeters);
+//TODO sysid
+    public static final double ks_Drive = 0.101;
+    public static final double kv_Drive = 2.44;
+    public static final double ka_Drive = 0.38;
+
+    public static final double kMaxSpeed_Drive = 1.5; 
+    public static final double kMaxAcceleration_Drive = 1.5;
 
     //turning control
     public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
 
     // shooter subsystem
-    public static final double SHOOTER_KS = 0; //TODO tuning
+    public static final double SHOOTER_KS = 0; //TODO sysid
 
     //motorcontroller gains
     public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(

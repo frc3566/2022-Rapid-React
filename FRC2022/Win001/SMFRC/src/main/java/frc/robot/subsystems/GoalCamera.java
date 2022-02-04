@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -15,7 +14,7 @@ public class GoalCamera extends SubsystemBase {
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private NetworkTable nt = inst.getTable("GoalCamera");
 
-  private NetworkTableEntry tarX;
+  private NetworkTableEntry targetEntry = nt.getEntry("angle");
 
   private boolean updated;
 
@@ -23,8 +22,7 @@ public class GoalCamera extends SubsystemBase {
   private double tarAngle;
 
   public GoalCamera() {
-    tarX = nt.getEntry("target_x");
-            
+
     updated = true;
   }
 
@@ -39,24 +37,11 @@ public boolean isUpdated(){
 
   @Override
   public void periodic() {
-    tarAngle = nt.getEntry("angle").getDouble(0.0);
-    
-    System.out.println(tarAngle);
     // This method will be called once per scheduler run
 
-    /*
-    double[] tarXs = tarX.getDoubleArray(new double[1]);
-
-    double primaryTarX = 0.0;
-
-    if(tarXs.length!= 0) primaryTarX = tarXs[0];
-    */
+    tarAngle = targetEntry.getDouble(0.0);
     
-     // a persontage distance from the center
-
-    // double TarAngle = (primaryTarX - x_mid) * DPP ; // angle to turn, clockwise is positive
-
-//    tarAngle = Constants.FOV / 2 * primaryTarX;
+    System.out.println(tarAngle);
 
     // System.out.println(tarAngle);
     // System.out.println(updated);

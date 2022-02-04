@@ -41,7 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private double gyroZero;
 
-  private final DifferentialDriveOdometry odometry;
+  private DifferentialDriveOdometry odometry;
 
   public enum DriveControlState {
     VOLTAGE_CONTROL,
@@ -51,7 +51,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private DriveControlState driveControlState = DriveControlState.POSITION_CONTROL;
 
-  public DriveSubsystem(TimerSubsystem timerSubsystem) {
+  public DriveSubsystem() {
 
     left1 = new CANSparkMax(12, MotorType.kBrushless);
     setSpark(left1, false);
@@ -179,13 +179,13 @@ public class DriveSubsystem extends SubsystemBase {
       leftMPS * Constants.RPMpMPS,
       ControlType.kVelocity, 
       0, 
-      Constants.ks * Math.signum(leftMPS) + Constants.kv * leftMPS
+      Constants.ks_Drive * Math.signum(leftMPS) + Constants.kv_Drive * leftMPS
     );
     rightController.setReference(
       rightMPS * Constants.RPMpMPS,
       ControlType.kVelocity, 
       0, 
-      Constants.ks * Math.signum(rightMPS) + Constants.kv * rightMPS
+      Constants.ks_Drive * Math.signum(rightMPS) + Constants.kv_Drive * rightMPS
     );
   }
 

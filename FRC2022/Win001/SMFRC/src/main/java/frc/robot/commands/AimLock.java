@@ -24,7 +24,8 @@ public class AimLock extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param driveSubsystem DriveSubsystem
+   * @param goalCamera GoalCamera
    */
   public AimLock(DriveSubsystem driveSubsystem, GoalCamera goalCamera) {
     drive = driveSubsystem;

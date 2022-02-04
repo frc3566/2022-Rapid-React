@@ -20,12 +20,12 @@ public class DriveWithJoystick extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param driveSubsystem DriveSubsystem
    */
-  public DriveWithJoystick(DriveSubsystem subsystem) {
-    drive = subsystem;
+  public DriveWithJoystick(DriveSubsystem driveSubsystem) {
+    drive = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(driveSubsystem);
 
     JS = new Joystick(0);
   }
