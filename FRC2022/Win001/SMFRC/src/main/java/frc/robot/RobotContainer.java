@@ -64,6 +64,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     // return new InstantCommand(() -> drive.setTurn(90),drive);
-    return aimLock;
+    return new InstantCommand(shooter::setRPM, shooter);
   }
 }

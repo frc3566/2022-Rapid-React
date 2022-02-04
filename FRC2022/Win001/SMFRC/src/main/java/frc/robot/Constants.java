@@ -30,6 +30,9 @@ public final class Constants {
     public static final double kv = 2.44;
     public static final double ka = 0.38;
 
+    // shooter subsystem
+    public static final double SHOOTER_KS = 0; //TODO tuning
+
     //motorcontroller gains
     public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
         1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);

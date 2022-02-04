@@ -4,36 +4,49 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    private CANSparkMax motor;
+    private CANSparkMax shooterMaster;
     private RelativeEncoder encoder;
+    private SparkMaxPIDController shooterPIDController;
 
     /** Creates a new ExampleSubsystem. */
     public Shooter() {
-        motor = new CANSparkMax(20, MotorType.kBrushless);
-        encoder = motor.getEncoder();
+
+        shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
+        shooterMaster.setInverted(false);
+        shooterMaster.setClosedLoopRampRate(0.3);
+        
+        encoder = shooterMaster.getEncoder();
+        shooterPIDController = shooterMaster.getPIDController();
     }
 
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-        spin(1);
+        //spin(0.90);
     }
 
-    public void spin(int RPM){
-        motor.set(RPM);
-        System.out.println("RPM: " + encoder.getVelocity());
+    public void setRPM(){
+        setRPM(5000);
+    }
+
+    public void setRPM(double RPM){
+        shooterPIDController.setReference(RPM, ControlType.kVelocity,
+        0, Constants.SHOOTER_KS);
+        System.out.println("Shooter RPM: " + encoder.getVelocity());
     }
 
     @Override
