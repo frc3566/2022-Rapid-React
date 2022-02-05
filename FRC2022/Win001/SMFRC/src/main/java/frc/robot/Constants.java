@@ -47,6 +47,11 @@ public final class Constants {
 
     public static final Gains SHOOTER_GAINS = new Gains(0.00018048,0,0,0,0,1);
 
+    //ten points in the frommat (meter, RPM) that are used to interpolate RPM for certain distance
+    public static final double[][] shooterData = 
+    {{0,0},{0,0},{0,0},{0,0},{0,0},
+    {0,0},{0,0},{0,0},{0,0},{0,0}};
+
     //motorcontroller gains
     public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
         1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);

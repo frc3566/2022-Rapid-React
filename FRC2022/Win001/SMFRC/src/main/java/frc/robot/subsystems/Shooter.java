@@ -13,11 +13,16 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.InterpolatingDouble;
+import frc.robot.util.InterpolatingTreeMap;
 
 public class Shooter extends SubsystemBase {
     private CANSparkMax shooterMaster;
     private RelativeEncoder encoder;
     private SparkMaxPIDController shooterPIDController;
+
+    private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+     interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
 
     /** Creates a new ExampleSubsystem. */
     public Shooter() {
@@ -38,6 +43,10 @@ public class Shooter extends SubsystemBase {
         shooterPIDController.setFeedbackDevice(encoder);
         // shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         setRPM(0);
+
+        for(double[] t : Constants.shooterData){
+            interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
+        }
     }
 
     @Override
@@ -58,6 +67,14 @@ public class Shooter extends SubsystemBase {
 
         shooterPIDController.setReference(RPM, ControlType.kVelocity, 
         0, feedForward);
+    }
+
+    public double getRPM(){
+        return encoder.getVelocity();
+    }
+
+    public double distanceToRPM(double distance){
+        return interpolator.getInterpolated(new InterpolatingDouble(distance)).value;
     }
 
     @Override

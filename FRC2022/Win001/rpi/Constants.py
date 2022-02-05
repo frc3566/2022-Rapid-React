@@ -23,10 +23,13 @@ class Constants:
         HSV_HIGH = (H_MAX, S_MAX, V_MAX)
 
         # CV - target in WPI world-coord
-        TARGET_3D = np.array([[0.0, 0.5, 2.49],
-                              [0.0, 0.25, 2.06],
-                              [0.0, -0.25, 2.06],
-                              [0.0, -0.5, 2.49]])
+        #2022 rapic react vision target
+        #origin at the center of the target circle
+        TARGET_3D = np.array([[0.0635, 0.178, 0.6755],  #top left
+                              [0.0635, 0, 0.6755],  #bottom left
+                              [-0.0635, 0.178, 0.6755], #top right
+                              [-0.0635, 0, 0.6755]])#bottom right
+                              
         MIN_TARGET_AREA = 180
         MAX_TARGET2RECT_RATIO = 0.25
         MAX_TARGET_DISTANCE = 10
