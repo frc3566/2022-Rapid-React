@@ -41,7 +41,7 @@ public boolean isUpdated(){
 
     tarAngle = targetEntry.getDouble(0.0);
     
-    System.out.println(tarAngle);
+    // System.out.println(tarAngle);
 
     // System.out.println(tarAngle);
     // System.out.println(updated);

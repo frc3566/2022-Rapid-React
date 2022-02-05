@@ -30,9 +30,9 @@ public class RunTrajectory extends CommandBase {
 DifferentialDriveVoltageConstraint autoVoltageConstraint =
     new DifferentialDriveVoltageConstraint(
         new SimpleMotorFeedforward(
-            Constants.ks_Drive,
-            Constants.kv_Drive,
-            Constants.ka_Drive),
+            Constants.Drive_ks,
+            Constants.Drive_kv,
+            Constants.Drive_ka),
         Constants.kDriveKinematics,
         10);
 

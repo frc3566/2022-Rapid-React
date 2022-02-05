@@ -30,9 +30,9 @@ public final class Constants {
     public static final DifferentialDriveKinematics kDriveKinematics = 
     new DifferentialDriveKinematics(kTrackwidthMeters);
 //TODO sysid
-    public static final double ks_Drive = 0.101;
-    public static final double kv_Drive = 2.44;
-    public static final double ka_Drive = 0.38;
+    public static final double Drive_ks = 0.101;
+    public static final double Drive_kv = 2.44;
+    public static final double Drive_ka = 0.38;
 
     public static final double kMaxSpeed_Drive = 1.5; 
     public static final double kMaxAcceleration_Drive = 1.5;
@@ -41,7 +41,11 @@ public final class Constants {
     public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
 
     // shooter subsystem
-    public static final double SHOOTER_KS = 0; //TODO sysid
+    public static final double Shooter_ks = 0.55891;
+    public static final double Shooter_kv = 0.11742;
+    public static final double Shooter_ka = 0.053996;
+
+    public static final Gains SHOOTER_GAINS = new Gains(0.00018048,0,0,0,0,1);
 
     //motorcontroller gains
     public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
@@ -51,15 +55,15 @@ public final class Constants {
         public final double kP;
         public final double kI;
         public final double kD;
-        public final double kF;
+        public final double kFF;
         public final double kIzone;
         public final double kPeakOutput;
     
-        public Gains(double _kP, double _kI, double _kD, double _kF, double _kIzone, double _kPeakOutput) {
+        public Gains(double _kP, double _kI, double _kD, double _kFF, double _kIzone, double _kPeakOutput) {
           kP = _kP;
           kI = _kI;
           kD = _kD;
-          kF = _kF;
+          kFF = _kFF;
           kIzone = _kIzone;
           kPeakOutput = _kPeakOutput;
         }

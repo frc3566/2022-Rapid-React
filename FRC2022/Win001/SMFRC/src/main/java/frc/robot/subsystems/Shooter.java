@@ -28,23 +28,36 @@ public class Shooter extends SubsystemBase {
         shooterMaster.setIdleMode(IdleMode.kCoast);
         
         encoder = shooterMaster.getEncoder();
+        encoder.setVelocityConversionFactor(1);
+
         shooterPIDController = shooterMaster.getPIDController();
+        shooterPIDController.setP(Constants.SHOOTER_GAINS.kP);
+        shooterPIDController.setI(Constants.SHOOTER_GAINS.kI);
+        shooterPIDController.setD(Constants.SHOOTER_GAINS.kD);
+        shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
+        shooterPIDController.setFeedbackDevice(encoder);
+        // shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
+        setRPM(0);
     }
 
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-        //spin(0.90);
+        System.out.println("Shooter RPM: " + encoder.getVelocity());
     }
 
     public void setRPM(){
-        setRPM(5000);
+        setRPM(1000);
     }
 
     public void setRPM(double RPM){
-        shooterPIDController.setReference(RPM, ControlType.kVelocity,
-        0, Constants.SHOOTER_KS);
-        System.out.println("Shooter RPM: " + encoder.getVelocity());
+
+        RPM *= 2;
+
+        double feedForward = Constants.Shooter_ks;
+
+        shooterPIDController.setReference(RPM, ControlType.kVelocity, 
+        0, feedForward);
     }
 
     @Override

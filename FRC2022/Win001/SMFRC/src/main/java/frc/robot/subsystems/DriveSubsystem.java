@@ -136,7 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
   private void setControler(SparkMaxPIDController controller){
     controller.setP(Constants.DRIVETRAIN_VELOCITY_GAINS.kP);
     controller.setI(0);
-    controller.setFF(Constants.DRIVETRAIN_VELOCITY_GAINS.kF);
+    controller.setFF(Constants.DRIVETRAIN_VELOCITY_GAINS.kFF);
     controller.setD(Constants.DRIVETRAIN_VELOCITY_GAINS.kD);
     controller.setOutputRange(-1, 1);
   }
@@ -179,13 +179,13 @@ public class DriveSubsystem extends SubsystemBase {
       leftMPS,
       ControlType.kVelocity, 
       0, 
-      Constants.ks_Drive * Math.signum(leftMPS) + Constants.kv_Drive * leftMPS
+      Constants.Drive_ks * Math.signum(leftMPS) + Constants.Drive_kv * leftMPS
     );
     rightController.setReference(
       rightMPS,
       ControlType.kVelocity, 
       0, 
-      Constants.ks_Drive * Math.signum(rightMPS) + Constants.kv_Drive * rightMPS
+      Constants.Drive_ks * Math.signum(rightMPS) + Constants.Drive_kv * rightMPS
     );
   }
 
