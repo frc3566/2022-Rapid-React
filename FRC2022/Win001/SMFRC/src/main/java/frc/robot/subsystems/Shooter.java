@@ -17,7 +17,7 @@ import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 
 public class Shooter extends SubsystemBase {
-    private CANSparkMax shooterMaster;
+    private CANSparkMax shooterMaster, shooterSlave;
     private RelativeEncoder encoder;
     private SparkMaxPIDController shooterPIDController;
 
@@ -28,9 +28,15 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
 
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
+        shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
+
         shooterMaster.setInverted(false);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
+
+        shooterSlave.setInverted(false);
+        shooterSlave.setClosedLoopRampRate(0.3);
+        shooterSlave.setIdleMode(IdleMode.kCoast);
         
         encoder = shooterMaster.getEncoder();
         encoder.setVelocityConversionFactor(1);
@@ -47,6 +53,8 @@ public class Shooter extends SubsystemBase {
         for(double[] t : Constants.shooterData){
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
+
+        shooterSlave.follow(shooterMaster);
     }
 
     @Override
