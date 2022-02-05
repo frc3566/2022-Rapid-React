@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.DriveSignal;
-import frc.robot.util.Util;
+import frc.robot.util.MathUtil;
 
 /** An example command that uses an example subsystem. */
 public class DriveWithJoystick extends CommandBase {
@@ -113,8 +113,8 @@ public class DriveWithJoystick extends CommandBase {
   private DriveSignal cheesyDrive(double throttle, double wheel,
    boolean isQuickTurn, boolean isHighGear) {
 
-  wheel = Util.deadband(wheel, kWheelDeadband);
-  throttle = Util.deadband(throttle, kThrottleDeadband);
+  wheel = MathUtil.deadband(wheel, kWheelDeadband);
+  throttle = MathUtil.deadband(throttle, kThrottleDeadband);
 
   double negInertia = wheel - mOldWheel;
   mOldWheel = wheel;

@@ -34,9 +34,11 @@ public class Shooter extends SubsystemBase {
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
-        shooterSlave.setInverted(false);
+        shooterSlave.setInverted(true);
         shooterSlave.setClosedLoopRampRate(0.3);
         shooterSlave.setIdleMode(IdleMode.kCoast);
+
+        shooterSlave.follow(shooterMaster);
         
         encoder = shooterMaster.getEncoder();
         encoder.setVelocityConversionFactor(1);
@@ -47,14 +49,13 @@ public class Shooter extends SubsystemBase {
         shooterPIDController.setD(Constants.SHOOTER_GAINS.kD);
         shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         shooterPIDController.setFeedbackDevice(encoder);
+
         // shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         setRPM(0);
 
         for(double[] t : Constants.shooterData){
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
-
-        shooterSlave.follow(shooterMaster);
     }
 
     @Override
