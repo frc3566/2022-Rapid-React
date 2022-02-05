@@ -27,12 +27,14 @@ class Constants:
         #origin at the center of the target circle
         TARGET_3D = np.array([[0.0635, 0.178, 0.6755],  #top left
                               [0.0635, 0, 0.6755],  #bottom left
-                              [-0.0635, 0.178, 0.6755], #top right
-                              [-0.0635, 0, 0.6755]])#bottom right
+                              [-0.0635, 0, 0.6755],  # bottom right
+                              [-0.0635, 0.178, 0.6755]]) #top right
                               
         MIN_TARGET_AREA = 180
         MAX_TARGET2RECT_RATIO = 0.25
         MAX_TARGET_DISTANCE = 10
         MIN_TARGET_DISTANCE = 2
-        EXTREME_VECTOR = np.array([[-1, -0.3], [-1, 2], [1, 2], [1, -0.3]])
+        EXTREME_VECTOR = np.array([[-2.5, 1], [-2.5, -1], [2.5, -1], [2.5, 1]])
         # TopLeft, ButLeft, ButRight, TopRight
+
+        PITCH = 18

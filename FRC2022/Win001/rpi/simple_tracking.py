@@ -102,8 +102,6 @@ def main():
          # if area / w / h < Constants.MIN_TARGET2RECT_RATIO:
          #    continue
 
-         print("y" + y)
-
          cv2.drawContours(output_img, contour, -1, color = (255, 255, 255), thickness = -1)
          
          rect = cv2.minAreaRect(contour)

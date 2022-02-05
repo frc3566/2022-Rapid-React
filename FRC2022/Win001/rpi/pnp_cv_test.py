@@ -1,27 +1,56 @@
 import cv2
 import numpy as np
 import math
+import cv2
+import json
+import time
+
+from cscore import CameraServer
+from networktables import NetworkTables
 
 from util.showImage import show
 
 from util.transformation import rotationMatrixToEulerAngles
 from Constants import Constants
 
+with open('/boot/frc.json') as f:
+    config = json.load(f)
+camera = config['cameras'][0]
 
+width = camera['width']
+height = camera['height']
 
-cap = cv2.VideoCapture(0) # change when debugging on local
+CameraServer.getInstance().startAutomaticCapture()
 
-cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, Constants.EXPOSURE_AUTO)
-cap.set(cv2.CAP_PROP_EXPOSURE, Constants.EXPOSURE_ABS)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.HEIGHT)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.WIDTH)
+input_stream = CameraServer.getInstance().getVideo()
+# input_stream = cv2.VideoCapture(0)
+
+output_stream = CameraServer.getInstance().putVideo('Processed', width, height)
+binary_stream = CameraServer.getInstance().putVideo('Binary', width, height)
+
+NetworkTables.startClientTeam(3566)
+
+# NetworkTables.initialize(server='10.35.66.2')
+
+# Table for vision output information
+vision_nt = NetworkTables.getTable('GoalCamera')
+
+# Allocating new images is very expensive, always try to preallocate
+img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
+
+# Wait for NetworkTables to start
+time.sleep(0.5)
+
+# preallocate, get shape
+frame_time, frame = input_stream.grabFrame(img)
+frame_HSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
 while True:
+    if (NetworkTables.isConnected() == False):
+        NetworkTables.initialize(server='10.35.66.2')
     frame_yaw = 0
 
-    ret, frame = cap.read()
-    if not ret:
-        raise Exception('no frame')
+    frame_time, frame = input_stream.grabFrame(img)
 
     # HSV filtering
     frame_HSV = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
@@ -30,15 +59,13 @@ while True:
 
     # thresh = cv2.blur(thresh, (5, 5)) # may not be necessary
 
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
+    _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
             cv2.CHAIN_APPROX_SIMPLE)
 
     # print(contours)
 
     thresh = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
     thresh = cv2.addWeighted(thresh, 0.6, frame_HSV, 0.4, 0)
-
-
 
     # find target contour
     target = None
@@ -120,5 +147,8 @@ while True:
                   target_t265_azm,
                   [field_x, field_y, field_theta])
 
-    show("color_threashed", thresh)
-    show("color", frame_HSV)
+    # show("color_threashed", thresh)
+    # show("color", frame_HSV)
+
+    output_stream.putFrame(frame_HSV)
+    binary_stream.putFrame(thresh)

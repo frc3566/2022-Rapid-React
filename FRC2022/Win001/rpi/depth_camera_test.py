@@ -87,7 +87,7 @@ def circle_sample(image_3d, x, y, r):
 pipeline_d435 = rs.pipeline()
 config_d435 = rs.config()
 
-# config_d435.enable_device('923322071945')
+# config_d435.enable_device('f1230148')
 
 config_d435.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
 config_d435.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)

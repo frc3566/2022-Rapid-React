@@ -1,6 +1,6 @@
 package frc.robot.util;
 
-public class Util {
+public class MathUtil {
     public static double deadband(double val, double lower) {
 
         return (Math.abs(val) > Math.abs(lower) ? val : 0.0);
