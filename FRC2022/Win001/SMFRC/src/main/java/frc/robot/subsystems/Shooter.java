@@ -30,17 +30,17 @@ public class Shooter extends SubsystemBase {
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
         shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
 
-        shooterMaster.restoreFactoryDefaults();
+        // shooterMaster.restoreFactoryDefaults();
         shooterMaster.setInverted(false);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
-        shooterSlave.restoreFactoryDefaults();
+        // shooterSlave.restoreFactoryDefaults();
         shooterSlave.setInverted(true);
         shooterSlave.setClosedLoopRampRate(0.3);
         shooterSlave.setIdleMode(IdleMode.kCoast);
 
-        // shooterSlave.follow(shooterMaster);
+        shooterSlave.follow(shooterMaster, true);
 
         masterEncoder = shooterMaster.getEncoder();
         masterEncoder.setVelocityConversionFactor(1);
@@ -54,13 +54,6 @@ public class Shooter extends SubsystemBase {
         masterPIDController.setD(Constants.SHOOTER_GAINS.kD);
         masterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         masterPIDController.setFeedbackDevice(masterEncoder);
-
-        // slavePIDController = shooterSlave.getPIDController();
-        // slavePIDController.setP(Constants.SHOOTER_GAINS.kP);
-        // slavePIDController.setI(Constants.SHOOTER_GAINS.kI);
-        // slavePIDController.setD(Constants.SHOOTER_GAINS.kD);
-        // slavePIDController.setFF(Constants.SHOOTER_GAINS.kFF);
-        // slavePIDController.setFeedbackDevice(slaveEncoder);
 
         // shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         setRPM(0);
@@ -78,7 +71,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setRPM(){
-        setRPM(6000);
+        setRPM();
     }
 
     public void setRPM(double RPM){
@@ -87,14 +80,14 @@ public class Shooter extends SubsystemBase {
 
         double feedForward = Constants.Shooter_ks;
 
-        // masterPIDController.setReference(RPM, ControlType.kVelocity, 
-        // 0, feedForward);
+        masterPIDController.setReference(RPM, ControlType.kVelocity, 
+        0, feedForward);
 
-        // slavePIDController.setReference(RPM, ControlType.kVelocity, 
-        // 0, feedForward);
+        slavePIDController.setReference(RPM, ControlType.kVelocity, 
+        0, feedForward);
 
         // shooterMaster.set(1);
-        shooterSlave.set(1);
+        // shooterSlave.set(1);
     }
 
     public double getRPM(){
