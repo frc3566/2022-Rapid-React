@@ -1,7 +1,0 @@
-2022-02-08 02:38:41,215 - T265Process - ERROR - exception uncaught in process_method, wait for root process to restart this
-Traceback (most recent call last):
-  File "D:\OneDrive - St. Mark's School\FRC\2022-Rapid-React\FRC2022\Win001\rpi\T265Process.py", line 73, in run
-    self.process_method()
-  File "D:\OneDrive - St. Mark's School\FRC\2022-Rapid-React\FRC2022\Win001\rpi\T265Process.py", line 18, in process_method
-    profile = cfg.resolve(pipe)
-RuntimeError: No device connected
