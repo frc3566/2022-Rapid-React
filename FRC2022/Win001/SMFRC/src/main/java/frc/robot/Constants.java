@@ -42,7 +42,7 @@ public final class Constants {
 
     // shooter subsystem
     public static final double Shooter_ks = 0.55891;
-    public static final double Shooter_kv = 0.11742;
+    public static final double Shooter_kv = 0.0024;
     public static final double Shooter_ka = 0.053996;
 
     public static final Gains SHOOTER_GAINS = new Gains(0.00018048,0,0,0,0,1);

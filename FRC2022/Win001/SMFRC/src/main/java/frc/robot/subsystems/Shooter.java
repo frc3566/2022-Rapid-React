@@ -71,19 +71,14 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setRPM(){
-        setRPM();
+        setRPM(5400);
     }
 
     public void setRPM(double RPM){
 
-        RPM *= 2;
-
-        double feedForward = Constants.Shooter_ks;
+        double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
         masterPIDController.setReference(RPM, ControlType.kVelocity, 
-        0, feedForward);
-
-        slavePIDController.setReference(RPM, ControlType.kVelocity, 
         0, feedForward);
 
         // shooterMaster.set(1);

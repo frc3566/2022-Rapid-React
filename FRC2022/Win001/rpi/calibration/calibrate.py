@@ -44,7 +44,7 @@ def main():
     args.setdefault('--square_size', 1.0)
     args.setdefault('--threads', 4)
     if not img_mask:
-        img_mask = '../data/left??.jpg'  # default
+        img_mask = 'data/img.jpg'  # default
     else:
         img_mask = img_mask[0]
 
@@ -63,6 +63,9 @@ def main():
     obj_points = []
     img_points = []
     h, w = cv.imread(img_names[0], cv.IMREAD_GRAYSCALE).shape[:2]  # TODO: use imquery call to retrieve results
+
+    # h = 480
+    # w = 640
 
     def processImage(fn):
         print('processing %s... ' % fn)
