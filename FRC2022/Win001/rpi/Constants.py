@@ -51,3 +51,11 @@ class Constants:
         # TopLeft, ButLeft, ButRight, TopRight
 
         PITCH = 18
+
+        # Connection, these constants may be changed for different process
+        DISCONNECT_DURATION = 1.0  # sec
+        RESTART_DURATION = 10.0  # sec
+
+        DEBUG = False
+        MA_MOMENTUM = 0.9
+        UPDATE_PERIOD = 3  # sec

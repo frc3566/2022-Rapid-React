@@ -1,0 +1,11 @@
+2022-02-08 02:51:08,137 - T265ProcessManager - INFO - start process
+2022-02-08 02:51:08,505 - T265Process - ERROR - exception uncaught in process_method, wait for root process to restart this
+Traceback (most recent call last):
+  File "D:\OneDrive - St. Mark's School\FRC\2022-Rapid-React\FRC2022\Win001\rpi\T265Process.py", line 73, in run
+    self.process_method()
+  File "D:\OneDrive - St. Mark's School\FRC\2022-Rapid-React\FRC2022\Win001\rpi\T265Process.py", line 18, in process_method
+    profile = cfg.resolve(pipe)
+RuntimeError: No device connected
+2022-02-08 02:51:12,153 - IntakeCameraProcessManager - INFO - start process
+2022-02-08 02:51:12,156 - TargetCameraProcessManager - INFO - start process
+2022-02-08 02:51:12,159 - T265ProcessManager - INFO - update rate  0.0hz
