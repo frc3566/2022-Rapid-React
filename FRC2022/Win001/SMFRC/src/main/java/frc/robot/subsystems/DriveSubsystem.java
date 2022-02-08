@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.DriveSignal;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class DriveSubsystem extends SubsystemBase {
   
@@ -50,6 +53,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private DriveControlState driveControlState = DriveControlState.POSITION_CONTROL;
+
+  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private NetworkTable nt = inst.getTable("DriveSubsystem");
+  private NetworkTableEntry leftEncoderEntry = nt.getEntry("left_encoder");
+  private NetworkTableEntry rightEncoderEntry = nt.getEntry("right_encoder");
+  private NetworkTableEntry headingEntry = nt.getEntry("heading");
 
   public DriveSubsystem() {
 
@@ -89,21 +98,22 @@ public class DriveSubsystem extends SubsystemBase {
     getHeading();
 
     odometry = new DifferentialDriveOdometry(this.getRotation2d());
+
   }
 
   //moters
-  public void setPower(Double leftVoltage, Double rightVoltage){
-    left1.set(leftVoltage);
-    left2.set(leftVoltage);
-    left3.set(leftVoltage);
+  public void setPower(Double leftPower, Double rightPower){
+    left1.set(leftPower);
+    left2.set(leftPower);
+    left3.set(leftPower);
     
-    right1.set(rightVoltage);
-    right2.set(rightVoltage);
-    right3.set(rightVoltage);
+    right1.set(rightPower);
+    right2.set(rightPower);
+    right3.set(rightPower);
     return;
   }
 
-  public void setPower (DriveSignal signal){
+  public void setPower(DriveSignal signal){
     if (this.driveControlState != DriveControlState.VOLTAGE_CONTROL) {
       driveControlState = DriveControlState.VOLTAGE_CONTROL;
       System.out.println("enter voltage control mode");
@@ -233,47 +243,23 @@ public class DriveSubsystem extends SubsystemBase {
     odometry.resetPosition(pose, this.getRotation2d());
   }
 
+  public void disabled(){
+    setBrake(false);
+    setPower(0.0, 0.0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //TODO: put networkTable logs
 
-    getHeading();
+    leftEncoderEntry.setDouble(getLeftEncoderDistance());
+    rightEncoderEntry.setDouble(getRightEncoderDistance());
+    headingEntry.setDouble(getHeading());
 
     odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
      this.getRightEncoderDistance());
     
   }
-
-  // private void turn(){
-  //   this.driveControlState = DriveControlState.POSITION_CONTROL;
-
-  //   double gyroError = tarGyro - currGyro; // Error = Target - Actual
-  //   gyroError %=360;
-
-  //   // System.out.println("error:" + gyroError);
-
-  //   double pid = Util.pid(gyroError, 0.0, prevGyroError, timer.getDT(), 0.9, 0.0, 0.11); // prev: 1, 0, 0.016
-
-  //   double leftVoltage = Util.mapValue(-20, 20, 0.3, -0.3, pid);
-  //   double rightVoltage = Util.mapValue(-20, 20, -0.3, 0.3, pid);
-
-  //   // System.out.println("Left Speed: " + leftSpeed + " Right Speed: " + rightSpeed);
-  //   // System.out.println("Error: " + gyroError);
-    
-  //   prevGyroError = gyroError;
-
-  //   this.setPower(leftVoltage, rightVoltage);
-  //   // System.out.println("Turn stoped");
-  // }
-
-  // public void setTurn(double tar){
-  //   if (this.driveControlState != DriveControlState.POSITION_CONTROL) {
-  //     driveControlState = DriveControlState.POSITION_CONTROL;
-  //     System.out.println("enter position control mode");
-  //   }
-  //   tarGyro = currGyro + tar;
-  // }
 
   @Override
   public void simulationPeriodic() {

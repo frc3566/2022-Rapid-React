@@ -11,31 +11,36 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 
-public class Shooter extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax shooterMaster, shooterSlave;
     private RelativeEncoder masterEncoder, slaveEncoder;
-    private SparkMaxPIDController masterPIDController, slavePIDController;
+    private SparkMaxPIDController masterPIDController;
 
     private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
      interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
 
-    /** Creates a new ExampleSubsystem. */
-    public Shooter() {
+     
+    private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private NetworkTable nt = inst.getTable("ShooterSubsystem");
+    private NetworkTableEntry RPMEntry = nt.getEntry("heading");
+
+    public ShooterSubsystem() {
 
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
         shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
 
-        // shooterMaster.restoreFactoryDefaults();
         shooterMaster.setInverted(false);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
-        // shooterSlave.restoreFactoryDefaults();
         shooterSlave.setInverted(true);
         shooterSlave.setClosedLoopRampRate(0.3);
         shooterSlave.setIdleMode(IdleMode.kCoast);
@@ -55,19 +60,11 @@ public class Shooter extends SubsystemBase {
         masterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         masterPIDController.setFeedbackDevice(masterEncoder);
 
-        // shooterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
         setRPM(0);
 
         for(double[] t : Constants.shooterData){
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
-    }
-
-    @Override
-    public void periodic() {
-    // This method will be called once per scheduler run
-        System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
-        System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
     }
 
     public void setRPM(){
@@ -91,6 +88,19 @@ public class Shooter extends SubsystemBase {
 
     public double distanceToRPM(double distance){
         return interpolator.getInterpolated(new InterpolatingDouble(distance)).value;
+    }
+
+    public void disabled(){
+        setRPM(0);
+    }
+
+    @Override
+    public void periodic() {
+    // This method will be called once per scheduler run
+        System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
+        System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
+
+        RPMEntry.setDouble(getRPM());
     }
 
     @Override
