@@ -2,7 +2,7 @@
 
 St. Mark's School Team Gone Finin's code for 2022 season Rapid React. 
 
-##Dependencies:
+## Dependencies:
 
 ### pyrealsense2: [rpi installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_raspbian.md)
 
