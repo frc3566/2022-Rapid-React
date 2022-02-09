@@ -18,4 +18,4 @@ St. Mark's School Team Gone Finin's code for 2022 season Rapid React.
 2. [Intel Realsense SDK (pyrealsense2)](https://github.com/JetsonHacksNano/installLibrealsense) [rpi installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_raspbian.md)
 
 4. [pynetworktables](https://robotpy.readthedocs.io/en/stable/install/index.html)
-5. [robotpy-cscore](https://robotpy.readthedocs.io/en/stable/install/cscore.html) (optional, for CameraServer video streaming)
+5. [robotpy-cscore](https://robotpy.readthedocs.io/en/stable/install/cscore.html)
