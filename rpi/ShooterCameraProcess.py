@@ -5,11 +5,10 @@ import numpy as np
 import time
 import logging
 import os
-from _pynetworktables.table import NetworkTable
-# from cscore import CameraServer
+
+from cscore import CameraServer
 from networktables import NetworkTables
 from Constants import Constants
-from util.CameraServerWrapper import CameraServerWrapper
 
 
 class ShooterCameraProcess(mp.Process):
@@ -27,10 +26,10 @@ class ShooterCameraProcess(mp.Process):
         width = camera['width']
         height = camera['height']
 
-        CameraServer.getInstance().startAutomaticCapture()
+        # CameraServer.getInstance().startAutomaticCapture()
 
-        input_stream = CameraServer.getInstance().getVideo()
-        # input_stream = cv2.VideoCapture(0)
+        # input_stream = CameraServer.getInstance().getVideo()
+        input_stream = cv2.VideoCapture(0)
 
         output_stream = CameraServer.getInstance().putVideo('Processed', width, height)
         binary_stream = CameraServer.getInstance().putVideo('Binary', width, height)
@@ -47,7 +46,8 @@ class ShooterCameraProcess(mp.Process):
         time.sleep(0.5)
 
         # preallocate, get shape
-        frame_time, input_img = input_stream.grabFrame(img)
+        # frame_time, input_img = input_stream.grabFrame(img)
+        ret, input_img = input_stream.read()
         hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
 
         hsv_height, hsv_width, channels = hsv_img.shape
@@ -66,15 +66,18 @@ class ShooterCameraProcess(mp.Process):
             hsv_min = (57, 100, 24)
             hsv_max = (84, 255, 255)
 
-            frame_time, input_img = input_stream.grabFrame(img)
+            # frame_time, input_img = input_stream.grabFrame(img)
+            ret, input_img = input_stream.read()
 
             # input_stream = cv2.flip(input_stream, 0)
 
             output_img = np.copy(input_img)
 
             # Notify output of error and skip iteration
-            if frame_time == 0:
+            # if frame_time == 0:
+            if not ret:
                 output_stream.notifyError(input_stream.getError())
+                self.logger.exception("no frame")
                 continue
 
             # Convert to HSV and threshold image

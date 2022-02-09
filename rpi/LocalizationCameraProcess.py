@@ -80,19 +80,19 @@ class LocalizationCameraProcess(mp.Process):
             self.logger.exception("exception uncaught in process_method, "
                                   "wait for root process to restart this")
 
-def get_xyzrpy(data):
-    w = data.rotation.w
-    x = -data.rotation.z
-    y = data.rotation.x
-    z = -data.rotation.y
+    def get_xyzrpy(self, data):
+        w = data.rotation.w
+        x = -data.rotation.z
+        y = data.rotation.x
+        z = -data.rotation.y
 
-    pitch = -m.asin(2.0 * (x * z - w * y)) * 180.0 / m.pi
-    roll = m.atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * 180.0 / m.pi
-    yaw = m.atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * 180.0 / m.pi
+        pitch = -m.asin(2.0 * (x * z - w * y)) * 180.0 / m.pi
+        roll = m.atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * 180.0 / m.pi
+        yaw = m.atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * 180.0 / m.pi
 
-    xyzrpy = (-data.translation.z, -data.translation.x, data.translation.y,
-               roll, pitch, -yaw)
-    return xyzrpy
+        xyzrpy = (-data.translation.z, -data.translation.x, data.translation.y,
+                   roll, pitch, -yaw)
+        return xyzrpy
 
 """
 given t265  xvec0, theta0

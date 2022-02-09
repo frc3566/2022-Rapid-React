@@ -19,13 +19,15 @@ from ProcessManager import ProcessManager
 print(sys.version)
 
 # logging setup
-with open('config/logging_config.yaml', 'r') as yaml_file:
-    logging_config = yaml.safe_load(yaml_file)
-for _, handler in logging_config['handlers'].items():
-    if 'filename' in handler:
-        timestamp = datetime.now().strftime(r'%m%d_%H%M%S')
-        handler['filename'] = str(f'log/{timestamp}.log')
-logging.config.dictConfig(logging_config)
+# with open('config/logging_config.yaml', 'r') as yaml_file:
+#     logging_config = yaml.safe_load(yaml_file)
+# for _, handler in logging_config['handlers'].items():
+#     if 'filename' in handler:
+#         timestamp = datetime.now().strftime(r'%m%d_%H%M%S')
+#         handler['filename'] = str(f'log/{timestamp}.log')
+# logging.config.dictConfig(logging_config)
+
+logging.getLogger().setLevel(logging.DEBUG)
 
 NetworkTables.startClientTeam(3566)
 
@@ -41,10 +43,12 @@ def localizationCamera_is_updated():
     global localizationCamera_last_update_time
     global localizationCameraTable
 
-    if localizationCamera_last_update_time == localizationCameraTable.getNumber("last_update_time"):
+    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
+
+    if localizationCamera_last_update_time == current_update_time:
         return False
-    elif localizationCamera_last_update_time < localizationCameraTable.getNumber("last_update_time"):
-        localizationCamera_last_update_time = localizationCameraTable.getNumber("last_update_time")
+    elif localizationCamera_last_update_time < current_update_time:
+        localizationCamera_last_update_time = current_update_time
         return True
     else:
         logging.error("Localization Camera Time Error")
@@ -59,10 +63,12 @@ def intakeCamera_is_updated():
     global intakeCamera_last_update_time
     global intakeCameraTable
 
-    if intakeCamera_last_update_time == intakeCameraTable.getNumber("last_update_time"):
+    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
+
+    if intakeCamera_last_update_time == current_update_time:
         return False
-    elif intakeCamera_last_update_time < intakeCameraTable.getNumber("last_update_time"):
-        intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time")
+    elif intakeCamera_last_update_time < current_update_time:
+        intakeCamera_last_update_time = current_update_time
         return True
     else:
         logging.error("Intake Camera Time Error")
@@ -72,14 +78,17 @@ def intakeCamera_is_updated():
 shooterCameraTable = NetworkTables.getTable("ShooterCamera");
 shooterCamera_last_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
 
+
 def shooterCamera_is_updated():
     global shooterCamera_last_update_time
     global shooterCameraTable
 
-    if shooterCamera_last_update_time == shooterCameraTable.getNumber("last_update_time"):
+    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
+
+    if shooterCamera_last_update_time == current_update_time:
         return False
-    elif shooterCamera_last_update_time < shooterCameraTable.getNumber("last_update_time"):
-        shooterCamera_last_update_time = shooterCameraTable.getNumber("last_update_time")
+    elif shooterCamera_last_update_time < current_update_time:
+        shooterCamera_last_update_time = current_update_time
         return True
     else:
         logging.error("Intake Camera Time Error")
@@ -102,6 +111,8 @@ if __name__ == '__main__':
 
         if (NetworkTables.isConnected() == False):
             NetworkTables.initialize(server='10.35.66.2')
+            if Constants.noRoboRIO:
+                NetworkTables.initialize()
 
         # get pose
         localizationCamera_process_manager.checkin(localizationCamera_is_updated())

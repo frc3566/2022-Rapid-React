@@ -18,6 +18,9 @@ class ProcessManager:
         self.restart_duration = restart_duration
 
         self.process = self.new_process_fn()
+        self.process.daemon = True
+        self.process.start()
+
         self.logger = logging.getLogger(type(self.process).__name__ + 'Manager')
         self.logger.info('start process')
 
@@ -25,9 +28,6 @@ class ProcessManager:
         self.update_rate = 0
         self.is_connected = False
         self.last_update_time = time.time()
-
-        self.process.daemon = True
-        self.process.start()
 
 
     def checkin(self, isUpdated):
@@ -57,8 +57,8 @@ class ProcessManager:
             self.last_update_time = time.time()
 
     def restart_process(self):
-        if not self.process.is_alive():
-            self.process.terminate()
+        self.process.terminate()
         self.process = self.new_process_fn()
+        self.process.daemon = True
         self.process.start()
         self.last_connect_time = time.time()

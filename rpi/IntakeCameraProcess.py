@@ -65,7 +65,7 @@ class IntakeCameraProcess(mp.Process):
         self.nt = NetworkTables.getTable('IntakeCamera')
 
 
-    def get_intrinsics(profile):
+    def get_intrinsics(self, profile):
         intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
         K = np.array([
             [intrin.fx, 0, intrin.ppx],
@@ -76,12 +76,12 @@ class IntakeCameraProcess(mp.Process):
         return K, K_inv
 
 
-    def calculate_plane_distance(points, plane):
+    def calculate_plane_distance(self, points, plane):
         return (np.dot(points, plane[:3]) + plane[3]) / np.sqrt(
             plane[0] ** 2 + plane[1] ** 2 + plane[2] ** 2)
 
 
-    def circle_sample(image_3d, x, y, r):
+    def circle_sample(self, image_3d, x, y, r):
         adjusted_r = int(1 / m.sqrt(2) * r * 0.8)
         dis_list = []
         for i in range(100):
@@ -116,7 +116,7 @@ class IntakeCameraProcess(mp.Process):
         # profile = config.resolve(rs.pipeline_wrapper(pipeline_d435))
 
         # get camera intrinsics matrix
-        K, K_inv = get_intrinsics(profile)
+        K, K_inv = self.get_intrinsics(profile)
 
         # define plane detecting computers
         normal_computer = cv2.rgbd.RgbdNormals_create(DEPTH_H, DEPTH_W, cv2.CV_32F, K)
