@@ -41,11 +41,13 @@ public final class Constants {
     public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
 
     // shooter subsystem
-    public static final double Shooter_ks = 0.55891;
-    public static final double Shooter_kv = 0.0024;
-    public static final double Shooter_ka = 0.053996;
+    public static final double Shooter_ks = 0.004588166667;
+    public static final double Shooter_kv = 0.0021445;
+    public static final double Shooter_ka = 0.0001474133333;
 
-    public static final Gains SHOOTER_GAINS = new Gains(0.00018048,0,0,0,0,1);
+    public static final Gains SHOOTER_GAINS = new Gains(0.0007,0,0,0,0,12); // prevP 0.00041032
+    // public static final Gains SHOOTER_GAINS = new Gains(1,0,0,0,0,12);
+
 
     //ten points in the frommat (meter, RPM) that are used to interpolate RPM for certain distance
     public static final double[][] shooterData = 
