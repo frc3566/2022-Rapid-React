@@ -18,6 +18,7 @@ class ShooterCameraProcess(mp.Process):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.nt = NetworkTables.getTable('ShooterCamera')
+        self.goal_detect = False
 
     def process_method(self):
         with open('/boot/frc.json') as f:
@@ -77,7 +78,6 @@ class ShooterCameraProcess(mp.Process):
             output_img = np.copy(input_img)
 
             # Notify output of error and skip iteration
-            # if frame_time == 0:
             if not ret:
                 output_stream.notifyError(input_stream.getError())
                 self.logger.exception("no frame")
@@ -93,15 +93,14 @@ class ShooterCameraProcess(mp.Process):
             y_list = []
 
             for contour in contour_list:
-
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
                 if area < 15:
                     continue
 
                 x, y, w, h = cv2.boundingRect(contour)
-                # if area / w / h < Constants.MIN_TARGET2RECT_RATIO:
-                #    continue
+                if area / w / h < Constants.MIN_TARGET2RECT_RATIO:
+                   continue
 
                 cv2.drawContours(output_img, contour, -1, color=(255, 255, 255), thickness=-1)
 
@@ -109,18 +108,17 @@ class ShooterCameraProcess(mp.Process):
                 center, size, angle = rect
                 center = [int(dim) for dim in center]  # Convert to int so we can draw
 
-                # x_list.append((center[0] - width / 2) / (width / 2))
-                # y_list.append((center[1] - height / 2) / (height / 2))
-
                 x_list.append(center[0])
                 y_list.append(center[1])
-
-            cv2.circle(output_img, center=(x_mid, y_mid), radius=3, color=(0, 0, 255), thickness=-1)
 
             x = x_mid
             y = y_mid
 
-            #TODO loop through the list to find the correct target
+            if(len(x_list)==0 or len(y_list)==0):
+                goal_detected = False
+                continue
+            else:
+                goal_detected = True
 
             x_angle = math.atan((center[0] - x_mid) / Constants.FOCAL_LENGTH_X)
             y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_y) + Constants.CAMERA_MOUNT_ANGLE
@@ -136,22 +134,7 @@ class ShooterCameraProcess(mp.Process):
 
             binary_stream.putFrame(binary_img)
 
-            # print(hsv_img.shape)
-            # print(hsv_width, " ", hsv_height)
-            # print(x_mid, " ", y_mid)
 
-            primaryTarX = 0.0
-
-            # get angle
-            if (len(x_list) != 0):
-                primaryTarX = x_list[0]
-
-            tarAngle = FOV / 2 * primaryTarX
-
-            # print(NetworkTables.isConnected())
-            # print(hsv_img[60, 80, 0], hsv_img[60, 80, 1], hsv_img[60, 80, 2], sep=' ')
-            #
-            # print(x_list)
 
             # update nt
             self.nt.putNumber("last_update_time", time.time());
@@ -159,9 +142,13 @@ class ShooterCameraProcess(mp.Process):
             self.nt.putNumber("processing_time", processing_time);
             self.nt.putNumber("fps", fps)
 
+            self.nt.putBoolean("goal_detected", goal_detected)
+
             self.nt.putNumber("x_angle", x_angle)
             self.nt.putNumber("y_angle", y_angle)
             self.nt.putNUmber("distance", distance)
+
+            self.nt.flush()
 
 
 

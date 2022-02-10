@@ -66,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setRPM(){
-        setRPM(10000);
+        setRPM(6000);
     }
     public void setRPM(double RPM){
 

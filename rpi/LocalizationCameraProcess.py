@@ -70,6 +70,8 @@ class LocalizationCameraProcess(mp.Process):
 
                 self.nt.putNumber("last_update_time", time.time());
 
+                self.nt.flush()
+
         finally:
             pipe.stop()
 

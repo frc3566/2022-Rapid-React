@@ -38,20 +38,20 @@ MIN_CONTOUR_SIZE = 50
 # vMax = 255
 
 # red
-hMin = 0
-hMax = 5
-sMin = 150
-sMax = 255
-vMin = 0
-vMax = 255
+red_hMin = 0
+red_hMax = 5
+red_sMin = 150
+red_sMax = 255
+red_vMin = 0
+red_vMax = 255
 
 # blue
-# hMin = 90
-# hMax = 100
-# sMin = 70
-# sMax = 255
-# vMin = 0
-# vMax = 255
+blue_hMin = 90
+blue_hMax = 100
+blue_sMin = 70
+blue_sMax = 255
+blue_vMin = 0
+blue_vMax = 255
 
 HEIGHT = 17 * 0.0254
 
@@ -148,21 +148,25 @@ class IntakeCameraProcess(mp.Process):
                         "depth_frame and/or color_frame unavailable")
                 color_img = np.asanyarray(color_frame.get_data())
                 # color_img = color_img[:, :, ::-1]
-                # print(color_img.dtype)
+
                 # Convert images to numpy arrays
                 depth_frame = hole_filler.process(depth_frame)
                 depth_image = np.asanyarray(depth_frame.get_data())
-                # depth_image = depth_image/DEPTH_UNIT * 0.001
                 depth_image = depth_image * DEPTH_UNIT
 
-                # hMin, sMin, vMin, hMax, sMax, vMax = get_trackbar_values(range_filter)
-
                 hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
-                color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
-                                               (hMax, sMax, vMax))
+
+                color_thresh_img = cv2.inRange(hsv_color_img, (red_hMin, red_sMin, red_vMin),
+                                               (red_hMax, red_sMax, red_vMax))
 
                 color_thresh_img = cv2.dilate(color_thresh_img, None, iterations=4)
                 color_thresh_img = cv2.erode(color_thresh_img, None, iterations=2)
+
+                # color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
+                #                                (hMax, sMax, vMax))
+                #
+                # color_thresh_img = cv2.dilate(color_thresh_img, None, iterations=4)
+                # color_thresh_img = cv2.erode(color_thresh_img, None, iterations=2)
 
                 show('color_thresh_img', color_thresh_img)
 
@@ -195,6 +199,11 @@ class IntakeCameraProcess(mp.Process):
                 ball_dis = 1e9
                 ball_angle = 0
                 best_score = 1e9
+
+                ball_x_list = []
+                ball_y_list = []
+                ball_color_list = []
+
                 for index, contour in enumerate(contours):
                     contour_area = cv2.contourArea(contour)
                     if contour_area < MIN_CONTOUR_SIZE:
@@ -203,7 +212,7 @@ class IntakeCameraProcess(mp.Process):
                     # print(contour_area / (m.pi * r * r))
                     if contour_area / (m.pi * r * r) < 0.55:
                         continue
-                    dis = circle_sample(image_3d, x_2d, y_2d, r)
+                    dis = self.circle_sample(image_3d, x_2d, y_2d, r)
                     if dis < MIN_DIS:
                         continue
 
@@ -220,13 +229,10 @@ class IntakeCameraProcess(mp.Process):
                     # cv2.circle(color_img, (x_2d, y_2d), int(r * 0.9), 255, 4)
 
                     final_mask = (color_masked == 255) * valid_mask * (contour_mask == 255)
-                    show("final mask", final_mask.astype(np.uint8) * 255)
+                    # show("final mask", final_mask.astype(np.uint8) * 255)
                     points = image_3d[final_mask]
 
                     # print(f"min dis to ball {depth_image[contour_mask].min()}")
-
-                    # contour_mask.tofile("contour_mask")
-                    # image_3d.tofile("image_3d")
 
                     confidence, sphere = fit_sphere_LSE_RANSAC(points)
 
@@ -240,50 +246,57 @@ class IntakeCameraProcess(mp.Process):
 
                     # print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
 
-                    pt_3d = K_inv @ [x_2d, y_2d, 1] * dis
-                    angle = m.degrees(m.atan(pt_3d[0] / dis))
-                    # convert dis to planer dis for output
-                    dis_2d = m.sqrt(max(0.1, dis * dis - HEIGHT * HEIGHT))
+                    pt_3d = center_x, center_y, center_z
+
+                    # convert for output
+                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5
+                    angle = m.degrees(m.atan(pt_3d[0] / dis_2d))
+
                     score = dis_2d + abs(angle) / 40
                     if score < best_score:
                         ball_dis = dis_2d
                         ball_angle = angle
-                        ball_circle = ((x_2d, y_2d), r)
                         best_score = score
                         print(ball_dis, -ball_angle, sep=" ")
                     cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
 
                     cv2.circle(color_img, (x_2d, y_2d), r, (0, 0, 200), 2)
 
-                    print(f"dis * r: {dis * r}")
-                    print(f"pi * r^2: {np.pi * (r ** 2)}")
+                    # print(f"dis * r: {dis * r}")
+                    # print(f"pi * r^2: {np.pi * (r ** 2)}")
 
-                color_thresh_img = np.stack((color_thresh_img, color_thresh_img, color_thresh_img), axis=-1)
-                color_masked = np.stack((color_masked, color_masked, color_masked), axis=-1)
-                # output = cv2.vconcat([color_thresh_img, color_masked, color_img])
+                # color_thresh_img = np.stack((color_thresh_img, color_thresh_img, color_thresh_img), axis=-1)
+                # color_masked = np.stack((color_masked, color_masked, color_masked), axis=-1)
 
-                show('color_masked', color_masked)
+                # show('color_masked', color_masked)
 
-                # show('output', output)
-
-                # try:
-                # self.ball_queue.put_nowait((ball_dis, -ball_angle,
-                # frame_yaw - ball_angle))
-
-                show('color', color_img)
-                # self.putFrame("intake", color_image)
-
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    cv2.destroyAllWindows()
-                    break
-
-                if cv2.waitKey(1) & 0xFF == ord('s'):
-                    numpy.save("")
+                # show('color', color_img)
+                #
+                # if cv2.waitKey(1) & 0xFF == ord('q'):
+                #     cv2.destroyAllWindows()
+                #     break
+                #
+                # if cv2.waitKey(1) & 0xFF == ord('s'):
+                #     numpy.save("")
 
                 #update nt
-                self.nt.putNumber("last_update_time", time.time());
+                self.nt.putNumber("last_update_time", time.time())
+
+                self.nt.putNumber("red_ball_distance", ball_dis)
+                self.nt.putNumber("red_ball_angle", ball_angle)
+
+                self.net.putNumberArray("red_ball_x_list")
+                self.net.putNumberArray("red_ball_y_list")
+
+                self.nt.putNumber("blue_ball_distance", ball_dis)
+                self.nt.putNumber("blue_ball_angle", ball_angle)
+
+                self.net.putNumberArray("blue_ball_x_list")
+                self.net.putNumberArray("blue_ball_y_list")
 
                 output_stream.putFrame(color_img)
+
+                self.nt.flush()
 
         finally:
             print('stop')
