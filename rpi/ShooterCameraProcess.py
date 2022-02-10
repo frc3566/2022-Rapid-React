@@ -41,21 +41,19 @@ class ShooterCameraProcess(mp.Process):
 
         # NetworkTables.initialize(server='10.35.66.2')
 
-        # Allocating new images is very expensive, always try to preallocate
-        img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
-
         # Wait for NetworkTables to start
         time.sleep(0.5)
 
         # preallocate, get shape
         # frame_time, input_img = input_stream.grabFrame(img)
-        ret, input_img = input_stream.read()
-        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+        # ret, input_img = input_stream.read()
+        # hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
 
-        hsv_height, hsv_width, channels = hsv_img.shape
+        width = 640
+        height = 480
 
-        x_mid = hsv_width // 2
-        y_mid = hsv_height // 2
+        x_mid = width // 2
+        y_mid = height // 2
 
         FOV = 60
 
@@ -71,17 +69,17 @@ class ShooterCameraProcess(mp.Process):
             # frame_time, input_img = input_stream.grabFrame(img)
             ret, input_img = input_stream.read()
 
+            # Notify output of error and skip iteration
+            if not ret:
+                # output_stream.notifyError(input_stream.getError())
+                self.logger.exception("no frame")
+                continue
+
             input_img = cv2.undistort(input_img, Constants.camera_matrix, Constants.dist_coefs)
 
             # input_stream = cv2.flip(input_stream, 0)
 
             output_img = np.copy(input_img)
-
-            # Notify output of error and skip iteration
-            if not ret:
-                output_stream.notifyError(input_stream.getError())
-                self.logger.exception("no frame")
-                continue
 
             # Convert to HSV and threshold image
             hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
