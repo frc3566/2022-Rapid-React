@@ -4,6 +4,7 @@ import json
 import numpy as np
 import time
 import logging
+import math
 import os
 
 from cscore import CameraServer
@@ -69,6 +70,8 @@ class ShooterCameraProcess(mp.Process):
             # frame_time, input_img = input_stream.grabFrame(img)
             ret, input_img = input_stream.read()
 
+            input_img = cv2.undistort(input_img, Constants.camera_matrix, Constants.dist_coefs)
+
             # input_stream = cv2.flip(input_stream, 0)
 
             output_img = np.copy(input_img)
@@ -106,10 +109,23 @@ class ShooterCameraProcess(mp.Process):
                 center, size, angle = rect
                 center = [int(dim) for dim in center]  # Convert to int so we can draw
 
-                x_list.append((center[0] - width / 2) / (width / 2))
-                y_list.append((center[1] - height / 2) / (height / 2))
+                # x_list.append((center[0] - width / 2) / (width / 2))
+                # y_list.append((center[1] - height / 2) / (height / 2))
+
+                x_list.append(center[0])
+                y_list.append(center[1])
 
             cv2.circle(output_img, center=(x_mid, y_mid), radius=3, color=(0, 0, 255), thickness=-1)
+
+            x = x_mid
+            y = y_mid
+
+            #TODO loop through the list to find the correct target
+
+            x_angle = math.atan((center[0] - x_mid) / Constants.FOCAL_LENGTH_X)
+            y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_y) + Constants.CAMERA_MOUNT_ANGLE
+
+            distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
 
             processing_time = time.time() - start_time
             fps = 1 / processing_time
@@ -139,9 +155,15 @@ class ShooterCameraProcess(mp.Process):
 
             # update nt
             self.nt.putNumber("last_update_time", time.time());
-            self.nt.putNumberArray('target_x', x_list)
-            self.nt.putNumberArray('target_y', y_list)
-            self.nt.putNumber("angle", tarAngle)
+
+            self.nt.putNumber("processing_time", processing_time);
+            self.nt.putNumber("fps", fps)
+
+            self.nt.putNumber("x_angle", x_angle)
+            self.nt.putNumber("y_angle", y_angle)
+            self.nt.putNUmber("distance", distance)
+
+
 
     def run(self):
         try:
