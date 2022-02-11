@@ -16,48 +16,41 @@ public class IntakeCamera extends SubsystemBase {
     private NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private NetworkTable nt = inst.getTable("IntakeCamera");
 
-    private NetworkTableEntry lastUpdateTime_Entry = nt.getEntry("last_update_time");
+    private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
 
-    private NetworkTableEntry processingTime_Entry = nt.getEntry("processing_time");
-    private NetworkTableEntry fps_Entry = nt.getEntry("fps");
+    private NetworkTableEntry processingTime_entry = nt.getEntry("processing_time");
+    private NetworkTableEntry fps_entry = nt.getEntry("fps");
 
-    private NetworkTableEntry redBallDistance_Entry = nt.getEntry("red_ball_distance");
-    private NetworkTableEntry redBallAngle_Entry = nt.getEntry("red_ball_angle");
+    private NetworkTableEntry redBallDistance_entry = nt.getEntry("red_ball_distance");
+    private NetworkTableEntry redBallAngle_entry = nt.getEntry("red_ball_angle");
 
-    private NetworkTableEntry redBallXList_Entry = nt.getEntry("red_ball_x_list");
-    private NetworkTableEntry redBallYList_Entry = nt.getEntry("red_ball_y_list");
+    private NetworkTableEntry redBallXList_entry = nt.getEntry("red_ball_x_list");
+    private NetworkTableEntry redBallYList_entry = nt.getEntry("red_ball_y_list");
 
-    private NetworkTableEntry blueBallDistance_Entry = nt.getEntry("blue_ball_distance");
-    private NetworkTableEntry blueBallAngle_Entry = nt.getEntry("blue_ball_angle");
+    private NetworkTableEntry blueBallDistance_entry = nt.getEntry("blue_ball_distance");
+    private NetworkTableEntry blueBallAngle_entry = nt.getEntry("blue_ball_angle");
 
-    private NetworkTableEntry blueBallXList_Entry = nt.getEntry("blue_ball_x_list");
-    private NetworkTableEntry blueBallYList_Entry = nt.getEntry("blue_ball_y_list");
-
-    private boolean updated;
+    private NetworkTableEntry blueBallXList_entry = nt.getEntry("blue_ball_x_list");
+    private NetworkTableEntry blueBallYList_entry = nt.getEntry("blue_ball_y_list");
 
     public IntakeCamera() {
-
-    updated = false;
+      
     }
 
-public boolean isUpdated(){ 
-    return updated;
-}
-
 public double getLastUpdateTime(){
-  return lastUpdateTime_Entry.getDouble(0);
+  return lastUpdateTime_entry.getDouble(0);
 }
 
 public double getProcessingTime(){ 
-    return processingTime_Entry.getDouble(0);
+    return processingTime_entry.getDouble(0);
 }
 
 public double getTarDistance(){
   if(Constants.ballColor == ballColors.RED){
-    return redBallDistance_Entry.getDouble(0);
+    return redBallDistance_entry.getDouble(0);
 
   }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallDistance_Entry.getDouble(0);
+    return blueBallDistance_entry.getDouble(0);
     
   }
   return 0.0;
@@ -65,18 +58,18 @@ public double getTarDistance(){
 
 public double getTarAngle(){
   if(Constants.ballColor == ballColors.RED){
-    return redBallAngle_Entry.getDouble(0);
+    return redBallAngle_entry.getDouble(0);
 
   }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallAngle_Entry.getDouble(0);
+    return blueBallAngle_entry.getDouble(0);
 
   }
   return 0.0;
 }
 
 public double[][] getRedList(){
-  double[] xList = redBallXList_Entry.getDoubleArray(new double[0]);
-  double[] yList = redBallYList_Entry.getDoubleArray(new double[0]);
+  double[] xList = redBallXList_entry.getDoubleArray(new double[0]);
+  double[] yList = redBallYList_entry.getDoubleArray(new double[0]);
 
   double[][] ret = new double[xList.length][2];
 
@@ -89,8 +82,8 @@ public double[][] getRedList(){
 }
 
 public double[][] getBlueList(){
-  double[] xList = blueBallXList_Entry.getDoubleArray(new double[0]);
-  double[] yList = blueBallYList_Entry.getDoubleArray(new double[0]);
+  double[] xList = blueBallXList_entry.getDoubleArray(new double[0]);
+  double[] yList = blueBallYList_entry.getDoubleArray(new double[0]);
 
   double[][] ret = new double[xList.length][2];
 
@@ -102,6 +95,15 @@ public double[][] getBlueList(){
   return ret;
 }
 
+public boolean ballDetected(){
+  if(Constants.ballColor == ballColors.RED && getRedList().length != 0){
+    return true;
+  }else if(Constants.ballColor == ballColors.BLUE && getBlueList().length != 0){
+    return true;
+  }
+    return false;
+}
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -109,10 +111,6 @@ public double[][] getBlueList(){
     //TODO put on shuffle board
 
     
-  }
-
-  public void reset(){
-    updated = true;
   }
 
   @Override

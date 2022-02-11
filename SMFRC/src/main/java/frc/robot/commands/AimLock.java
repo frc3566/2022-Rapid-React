@@ -18,9 +18,11 @@ public class AimLock extends CommandBase {
   private DriveSubsystem drive;
   private ShooterCamera camera;
 
-  private PIDController pid = new PIDController(Constants.TURNING_GAINS.kP,
+  private PIDController angularPID = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
 
+   private PIDController distancePID = new PIDController(Constants.TURNING_GAINS.kP,
+   Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
   /**
    * Creates a new ExampleCommand.
    *

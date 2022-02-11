@@ -14,50 +14,50 @@ public class ShooterCamera extends SubsystemBase {
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private NetworkTable nt = inst.getTable("GoalCamera");
 
-  private NetworkTableEntry targetEntry = nt.getEntry("angle");
+  private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
 
-  private boolean updated;
+  private NetworkTableEntry processingTime_entry = nt.getEntry("processing_time");
+  private NetworkTableEntry fps_entry = nt.getEntry("fps");
 
-  private double prevTarX;
-  private double tarAngle;
+  private NetworkTableEntry goalDetected_entry = nt.getEntry("goal_detected");
+
+  private NetworkTableEntry xAngle_entry = nt.getEntry("x_angle");
+  private NetworkTableEntry yAngle_entry = nt.getEntry("y_angle");
+
+  private NetworkTableEntry distance_entry = nt.getEntry("distance");
 
   public ShooterCamera() {
 
-    updated = true;
   }
 
-  public double getTar(){
-    updated = false;
-    return tarAngle;
-}
+  public double getLastUpdateTime(){
+    return lastUpdateTime_entry.getDouble(0);
+  }
+  
+  public double getProcessingTime(){ 
+      return processingTime_entry.getDouble(0);
+  }
+  
+  public double getTarDistance(){
+    return distance_entry.getDouble(0);
+  }
 
-public boolean isUpdated(){ 
-    return updated;
-}
+  public double getTarAngle(){
+    return xAngle_entry.getDouble(0);
+  }
+
+  public boolean goalDetected(){
+    return goalDetected_entry.getBoolean(false);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
-    tarAngle = targetEntry.getDouble(0.0);
-    
     // System.out.println(tarAngle);
 
     // System.out.println(tarAngle);
     // System.out.println(updated);
-
-    
-    if(prevTarX != tarAngle){
-        updated = true;
-        // System.out.println(tarAngle);
-    }
-
-    prevTarX = tarAngle;
-    
-  }
-
-  public void reset(){
-    updated = true;
   }
 
   @Override
