@@ -1,6 +1,6 @@
 # 2022-Rapid-React
 
-St. Mark's School Team Gone Finin's code for 2022 season Rapid React. 
+St. Mark's School Team Gone Fishin's code for 2022 season Rapid React. 
 
 ## Syncing system time and allowing package install on rpi:
 
