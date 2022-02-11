@@ -115,9 +115,9 @@ if __name__ == '__main__':
                 NetworkTables.initialize()
 
         # get pose
-        localizationCamera_process_manager.checkin(localizationCamera_is_updated())
+        # localizationCamera_process_manager.checkin(localizationCamera_is_updated())
 
         # get CV
-        intakeCameraProcesManager.checkin(intakeCamera_is_updated())
+        # intakeCameraProcesManager.checkin(intakeCamera_is_updated())
 
         shooterCameraProcessManager.checkin(shooterCamera_is_updated())
