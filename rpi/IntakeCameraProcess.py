@@ -137,6 +137,8 @@ class IntakeCameraProcess(mp.Process):
 
         try:
             while True:
+                start_time = time.time()
+
                 frames = pipeline.wait_for_frames()
 
                 aligned_frames = align.process(frames)
@@ -277,9 +279,15 @@ class IntakeCameraProcess(mp.Process):
 
                 # show('color', color_img)
 
+                processing_time = time.time() - start_time
+                fps = 1 / processing_time
+
 
                 #update nt
                 self.nt.putNumber("last_update_time", time.time())
+
+                self.nt.putNumber("processing_time", processing_time)
+                self.nt.putNumber("fps", fps)
 
                 self.nt.putNumber("red_ball_distance", ball_dis[0])
                 self.nt.putNumber("red_ball_angle", ball_angle[0])

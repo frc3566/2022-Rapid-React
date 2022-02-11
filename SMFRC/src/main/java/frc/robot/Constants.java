@@ -15,6 +15,10 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static enum ballColors {RED, BLUE}
+
+    public static ballColors ballColor = ballColors.RED;
     
     public static final double L_PulsePerMeter = 21.4032;
     public static final double R_PulsePerMeter = 22.61056;
