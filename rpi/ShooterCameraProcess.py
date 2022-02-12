@@ -21,20 +21,25 @@ class ShooterCameraProcess(mp.Process):
         self.goal_detect = False
 
     def process_method(self):
-        with open('/boot/frc.json') as f:
-            config = json.load(f)
-        camera = config['cameras'][0]
-
-        width = camera['width']
-        height = camera['height']
+        # with open('/boot/frc.json') as f:
+        #     config = json.load(f)
+        # camera = config['cameras'][0]
+        #
+        # width = camera['width']
+        # height = camera['height']
 
         # CameraServer.getInstance().startAutomaticCapture()
 
         # input_stream = CameraServer.getInstance().getVideo()
         input_stream = cv2.VideoCapture(0)
 
-        output_stream = CameraServer.getInstance().putVideo('Processed', width, height)
-        binary_stream = CameraServer.getInstance().putVideo('Binary', width, height)
+        input_stream.set(cv2.CAP_PROP_AUTO_EXPOSURE, Constants.EXPOSURE_AUTO)
+        input_stream.set(cv2.CAP_PROP_EXPOSURE, Constants.EXPOSURE_ABS)
+        input_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.HEIGHT)
+        input_stream.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.WIDTH)
+
+        output_stream = CameraServer.getInstance().putVideo('Processed', Constants.WIDTH, Constants.HEIGHT)
+        binary_stream = CameraServer.getInstance().putVideo('Binary', Constants.WIDTH, Constants.HEIGHT)
 
         NetworkTables.startClientTeam(3566)
         logging.basicConfig(level=logging.DEBUG)
@@ -75,7 +80,12 @@ class ShooterCameraProcess(mp.Process):
                 self.logger.exception("no frame")
                 continue
 
-            input_img = cv2.undistort(input_img, Constants.camera_matrix, Constants.dist_coefs)
+            # print(input_img)
+
+            # input_img = np.array(input_img)
+            #
+            # input_img = cv2.undistort(src=input_img, cameraMatrix=Constants.CAMERA_MATRIX,
+            #                           distCoeffs=Constants.DIST_COEF)
 
             # input_stream = cv2.flip(input_stream, 0)
 
@@ -119,7 +129,7 @@ class ShooterCameraProcess(mp.Process):
                 goal_detected = True
 
             x_angle = math.atan((center[0] - x_mid) / Constants.FOCAL_LENGTH_X)
-            y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_y) + Constants.CAMERA_MOUNT_ANGLE
+            y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_Y) + Constants.CAMERA_MOUNT_ANGLE
 
             distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
 
@@ -144,10 +154,9 @@ class ShooterCameraProcess(mp.Process):
 
             self.nt.putNumber("x_angle", x_angle)
             self.nt.putNumber("y_angle", y_angle)
-            self.nt.putNUmber("distance", distance)
+            self.nt.putNumber("distance", distance)
 
-            self.nt.flush()
-
+            NetworkTables.flush()
 
 
     def run(self):

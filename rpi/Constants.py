@@ -15,8 +15,17 @@ class Constants:
         # DISTORTION_COEF = np.array([0.1226279, -0.43199166, 0.00196861,
         #                             -0.00344178, -1.21531281])
 
-        FOCAL_LENGTH_X = CAMERA_MATRIX[0, 0]
-        FOCAL_LENGTH_Y = CAMERA_MATRIX[1, 1]
+        CAMERA_MATRIX = np.array(
+                [[1963.32664, 0., 871.03963],
+                 [0., 1, 976.75769, 580.232988],
+                 [0., 0., 1.]]
+        )
+
+        DIST_COEF = np.array([0.247965266, -12.7875847, -0.00291252742,
+                              0.0030271429, 192.291259])
+
+        FOCAL_LENGTH_X = CAMERA_MATRIX[0][0]
+        FOCAL_LENGTH_Y = CAMERA_MATRIX[1][1]
 
         #TODO measure these
         CAMERA_MOUNT_ANGLE = 30
@@ -32,15 +41,6 @@ class Constants:
         # distortion
         # coefficients: [2.47965266e-01 - 1.27875847e+01 - 2.91252742e-03  3.02714290e-03
         #                1.92291259e+02]
-
-        CAMERA_MATRIX = np.array(
-            [[1963.32664, 0., 871.03963],
-             [0., 1,976.75769, 580.232988],
-             [0., 0., 1.]]
-        )
-
-        DISTORTION_COEF = np.array([0.247965266, -12.7875847, -0.00291252742,
-                                    0.0030271429, 192.291259])
 
         H_MIN = 57
         H_MAX = 84
@@ -60,7 +60,7 @@ class Constants:
                               [-0.0635, 0.178, 0.6755]]) #top right
 
         MIN_TARGET_AREA = 180
-        MAX_TARGET2RECT_RATIO = 0.25
+        MIN_TARGET2RECT_RATIO = 0.25
         MAX_TARGET_DISTANCE = 10
         MIN_TARGET_DISTANCE = 2
         EXTREME_VECTOR = np.array([[-2.5, 1], [-2.5, -1], [2.5, -1], [2.5, 1]])

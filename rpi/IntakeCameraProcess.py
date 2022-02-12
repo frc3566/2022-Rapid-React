@@ -303,7 +303,7 @@ class IntakeCameraProcess(mp.Process):
 
                 output_stream.putFrame(color_img)
 
-                self.nt.flush()
+                NetworkTables.flush()
 
         finally:
             print('stop')
