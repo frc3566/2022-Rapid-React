@@ -28,26 +28,28 @@ class ShooterCameraProcess(mp.Process):
         width = camera['width']
         height = camera['height']
 
-        # CameraServer.getInstance().startAutomaticCapture()
+        CameraServer.getInstance().startAutomaticCapture()
 
-        # input_stream = CameraServer.getInstance().getVideo()
-        input_stream = cv2.VideoCapture(0)
+        input_stream = CameraServer.getInstance().getVideo()
 
         output_stream = CameraServer.getInstance().putVideo('Processed', width, height)
         binary_stream = CameraServer.getInstance().putVideo('Binary', width, height)
 
         NetworkTables.startClientTeam(3566)
+        # NetworkTables.initialize(server='10.35.66.2')
+
         logging.basicConfig(level=logging.DEBUG)
 
-        # NetworkTables.initialize(server='10.35.66.2')
+        # Allocating new images is very expensive, always try to preallocate
+        img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
 
         # Wait for NetworkTables to start
         time.sleep(0.5)
 
         # preallocate, get shape
-        # frame_time, input_img = input_stream.grabFrame(img)
-        # ret, input_img = input_stream.read()
-        # hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+        frame_time, input_img = input_stream.grabFrame(img)
+        ret, input_img = input_stream.read()
+        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
 
         width = 640
         height = 480
@@ -55,24 +57,18 @@ class ShooterCameraProcess(mp.Process):
         x_mid = width // 2
         y_mid = height // 2
 
-        FOV = 60
-
         while True:
-            # if (NetworkTables.isConnected() == False):
-            #     NetworkTables.initialize(server='10.35.66.2')
 
             start_time = time.time()
 
             hsv_min = (57, 100, 24)
             hsv_max = (84, 255, 255)
 
-            # frame_time, input_img = input_stream.grabFrame(img)
-            ret, input_img = input_stream.read()
+            frame_time, input_img = input_stream.grabFrame(img)
 
             # Notify output of error and skip iteration
-            if not ret:
-                # output_stream.notifyError(input_stream.getError())
-                self.logger.exception("no frame")
+            if not input_img:
+                self.logger.error("no frame")
                 continue
 
             input_img = cv2.undistort(input_img, Constants.camera_matrix, Constants.dist_coefs)
@@ -132,12 +128,10 @@ class ShooterCameraProcess(mp.Process):
 
             binary_stream.putFrame(binary_img)
 
-
-
             # update nt
-            self.nt.putNumber("last_update_time", time.time());
+            self.nt.putNumber("last_update_time", time.time())
 
-            self.nt.putNumber("processing_time", processing_time);
+            self.nt.putNumber("processing_time", processing_time)
             self.nt.putNumber("fps", fps)
 
             self.nt.putBoolean("goal_detected", goal_detected)
@@ -147,8 +141,6 @@ class ShooterCameraProcess(mp.Process):
             self.nt.putNUmber("distance", distance)
 
             self.nt.flush()
-
-
 
     def run(self):
         try:
