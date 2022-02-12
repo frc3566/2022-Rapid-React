@@ -23,6 +23,8 @@ public class AimLock extends CommandBase {
 
    private PIDController distancePID = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
+
+   private double prevUpdateTime = 0;
   /**
    * Creates a new ExampleCommand.
    *
@@ -35,14 +37,13 @@ public class AimLock extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    pid.setTolerance(2, 5);
+    angularPID.setTolerance(2, 5);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    camera.reset();
-    pid.reset();
+    angularPID.reset();
   }
 
   double tar;
@@ -51,10 +52,13 @@ public class AimLock extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(camera.isUpdated()){
+    if(prevUpdateTime != camera.getLastUpdateTime()){
 
-      double setPoint = drive.getHeading() + camera.getTar();
-      double power = MathUtil.clamp(pid.calculate(drive.getHeading(), setPoint),-0.3,0.3);
+      double setPoint = drive.getHeading() + camera.getTarAngle();
+
+      double angularFeedForward = Constants.Drive_ks * Math.signum(setPoint);
+
+      double power = MathUtil.clamp(angularPID.calculate(drive.getHeading(), setPoint),-0.3,0.3);
 
       drive.setPower(-power, power);
       // System.out.println("update turning");

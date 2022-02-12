@@ -26,6 +26,8 @@ public class ShooterCamera extends SubsystemBase {
 
   private NetworkTableEntry distance_entry = nt.getEntry("distance");
 
+  private double prevUpdateTime = 0;
+
   public ShooterCamera() {
 
   }

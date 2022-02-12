@@ -38,7 +38,6 @@ if Constants.noRoboRIO:
 localizationCameraTable = NetworkTables.getTable("localizationCamera");
 localizationCamera_last_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
 
-
 def localizationCamera_is_updated():
     global localizationCamera_last_update_time
     global localizationCameraTable
