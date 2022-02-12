@@ -50,7 +50,7 @@ public final class Constants {
     public static final double Shooter_kv = 0.0021445;
     public static final double Shooter_ka = 0.0001474133333;
 
-    public static final Gains SHOOTER_GAINS = new Gains(0.0004,0,0.0001,0,0,12); // prevP 0.00041032
+    public static final Gains SHOOTER_GAINS = new Gains(0.0004,0,0.0009,0,0,12); // prevP 0.00041032
     // public static final Gains SHOOTER_GAINS = new Gains(1,0,0,0,0,12);
 
 
