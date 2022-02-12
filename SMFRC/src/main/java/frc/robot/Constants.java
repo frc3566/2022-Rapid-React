@@ -43,6 +43,7 @@ public final class Constants {
 
     //turning control
     public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
+    public static final double kMaxSpeed_TURN = 200; //degree per second
 
     // shooter subsystem
     public static final double Shooter_ks = 0.004588166667;

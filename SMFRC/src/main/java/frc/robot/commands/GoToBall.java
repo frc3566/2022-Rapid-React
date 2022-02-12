@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ShooterCamera;
+import frc.robot.subsystems.IntakeCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,11 +14,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class AimLock extends CommandBase {
+public class GoToBall extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   private DriveSubsystem drive;
-  private ShooterCamera camera;
+  private IntakeCamera camera;
 
   private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
@@ -30,9 +30,9 @@ public class AimLock extends CommandBase {
    * @param driveSubsystem DriveSubsystem
    * @param goalCamera GoalCamera
    */
-  public AimLock(DriveSubsystem driveSubsystem, ShooterCamera goalCamera) {
+  public GoToBall(DriveSubsystem driveSubsystem, IntakeCamera intakeCamera) {
     drive = driveSubsystem;
-    camera = goalCamera;
+    camera = intakeCamera;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 

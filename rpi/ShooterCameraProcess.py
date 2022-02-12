@@ -150,6 +150,8 @@ class ShooterCameraProcess(mp.Process):
             self.nt.putNumber("y_angle", y_angle)
             self.nt.putNumber("distance", distance)
 
+            NetworkTables.flush()
+
     def run(self):
         try:
             self.process_method()
