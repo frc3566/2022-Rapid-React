@@ -31,14 +31,14 @@ public class RobotContainer {
   private TimerSubsystem timer = new TimerSubsystem();
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
-  private ShooterSubsystem shooter = new ShooterSubsystem();
+  // private ShooterSubsystem shooter = new ShooterSubsystem();
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(JS, drive);
   private RunTrajectory runTrajectory = new RunTrajectory(null, drive); //TODO test trajectory following
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
-  private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
+  // private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -65,10 +65,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // return null;
-    return new InstantCommand(shooter::setRPM, shooter);
+    // return new InstantCommand(shooter::setRPM, shooter);
+    return aimLock;
   }
 
-  public Command getDisabledCommand(){
-    return disabledCommand;
-  }
+  // public Command getDisabledCommand(){
+    // return disabledCommand;
+  // }
 }

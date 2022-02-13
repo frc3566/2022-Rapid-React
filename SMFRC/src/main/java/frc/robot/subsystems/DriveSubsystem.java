@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.security.Principal;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -29,10 +31,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class DriveSubsystem extends SubsystemBase {
   
   private CANSparkMax left1;
-  private WPI_TalonSRX left2, left3;
+  private CANSparkMax left2, left3;
+  // private WPI_TalonSRX left2, left3;
 
   private CANSparkMax right1;
-  private WPI_TalonSRX right2, right3;
+  private CANSparkMax right2, right3;
+  // private WPI_TalonSRX right2, right3;
 
   private RelativeEncoder leftEncoder, rightEncoder;
 
@@ -55,34 +59,58 @@ public class DriveSubsystem extends SubsystemBase {
   private DriveControlState driveControlState = DriveControlState.POSITION_CONTROL;
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  private NetworkTable nt = inst.getTable("DriveSubsystem");
+  private NetworkTable nt = inst.getTable("LiveWindow/DriveSubsystem");
   private NetworkTableEntry leftEncoderEntry = nt.getEntry("left_encoder");
   private NetworkTableEntry rightEncoderEntry = nt.getEntry("right_encoder");
   private NetworkTableEntry headingEntry = nt.getEntry("heading");
 
   public DriveSubsystem() {
 
-    left1 = new CANSparkMax(12, MotorType.kBrushless);
+    // dummy
+    // left1 = new CANSparkMax(12, MotorType.kBrushless);
+    // setSpark(left1, false);
+    // leftController = left1.getPIDController();
+    // setControler(leftController);
+
+    // left2 = new WPI_TalonSRX(3);
+    // setTalon(left2, false);
+
+    // left3 = new WPI_TalonSRX(4);
+    // setTalon(left3, false);
+
+    // right1 = new CANSparkMax(11, MotorType.kBrushless);
+    // setSpark(right1, true);
+    // rightController = right1.getPIDController();
+    // setControler(rightController);
+
+    // right2 = new WPI_TalonSRX(1);
+    // setTalon(right2, false);
+
+    // right3 = new WPI_TalonSRX(2);
+    // setTalon(right3, true);
+
+    // good girl
+    left1 = new CANSparkMax(1, MotorType.kBrushless);
     setSpark(left1, false);
     leftController = left1.getPIDController();
     setControler(leftController);
 
-    left2 = new WPI_TalonSRX(3);
-    setTalon(left2, false);
+    left2 = new CANSparkMax(2, MotorType.kBrushless);
+    left2.follow(left1);
 
-    left3 = new WPI_TalonSRX(4);
-    setTalon(left3, false);
+    left3 = new CANSparkMax(3, MotorType.kBrushless);
+    left3.follow(left1);
 
-    right1 = new CANSparkMax(11, MotorType.kBrushless);
-    setSpark(right1, true);
-    rightController = right1.getPIDController();
-    setControler(rightController);
+    right1 = new CANSparkMax(4, MotorType.kBrushless);
+    setSpark(left1, false);
+    leftController = left1.getPIDController();
+    setControler(leftController);
 
-    right2 = new WPI_TalonSRX(1);
-    setTalon(right2, false);
+    right2 = new CANSparkMax(5, MotorType.kBrushless);
+    right2.follow(right1);
 
-    right3 = new WPI_TalonSRX(2);
-    setTalon(right3, true);
+    right3 = new CANSparkMax(6, MotorType.kBrushless);
+    right3.follow(right1);
 
     rightEncoder = right1.getEncoder();
     rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
@@ -92,12 +120,12 @@ public class DriveSubsystem extends SubsystemBase {
     rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
     rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
 
-    gyro = new PigeonIMU(right2);
+    // gyro = new PigeonIMU(right2);
 
-    resetGyro();
-    getHeading();
+    // resetGyro();
+    // getHeading();
 
-    odometry = new DifferentialDriveOdometry(this.getRotation2d());
+    // odometry = new DifferentialDriveOdometry(this.getRotation2d());
 
   }
 
@@ -155,12 +183,17 @@ public class DriveSubsystem extends SubsystemBase {
     IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
     left1.setIdleMode(sparkMode);
     right1.setIdleMode(sparkMode);
+
+    left2.setIdleMode(sparkMode);
+    right2.setIdleMode(sparkMode);
+    left3.setIdleMode(sparkMode);
+    right3.setIdleMode(sparkMode);
     
-    NeutralMode talonMode = isBrake? NeutralMode.Brake : NeutralMode.Coast;
-    right2.setNeutralMode(talonMode);
-    right3.setNeutralMode(talonMode);
-    left2.setNeutralMode(talonMode);
-    left3.setNeutralMode(talonMode);
+  //   NeutralMode talonMode = isBrake? NeutralMode.Brake : NeutralMode.Coast;
+  //   right2.setNeutralMode(talonMode);
+  //   right3.setNeutralMode(talonMode);
+  //   left2.setNeutralMode(talonMode);
+  //   left3.setNeutralMode(talonMode);
   }
 
   public double getLeftEncoderDistance(){
@@ -254,11 +287,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftEncoderEntry.setDouble(getLeftEncoderDistance());
     rightEncoderEntry.setDouble(getRightEncoderDistance());
-    headingEntry.setDouble(getHeading());
+    // headingEntry.setDouble(getHeading());
 
-    odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
-     this.getRightEncoderDistance());
-    
+    // odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
+    //  this.getRightEncoderDistance());
+
+    System.out.println("left RPM: " + leftEncoder.getVelocity());
+    System.out.println("right RPM: " + rightEncoder.getVelocity());
   }
 
   @Override

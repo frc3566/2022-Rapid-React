@@ -1,15 +1,13 @@
 import multiprocessing as mp
 import cv2
-import json
 import numpy as np
 import time
 import logging
 import math
-import os
 
-from cscore import CameraServer
 from networktables import NetworkTables
 from Constants import Constants
+from cscore import CameraServer
 
 
 class ShooterCameraProcess(mp.Process):
@@ -17,43 +15,31 @@ class ShooterCameraProcess(mp.Process):
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.nt = NetworkTables.getTable('ShooterCamera')
+        self.nt = NetworkTables.getTable('LiveWindow/ShooterCamera')
         self.goal_detect = False
 
     def process_method(self):
-        # with open('/boot/frc.json') as f:
-        #     config = json.load(f)
-        # camera = config['cameras'][0]
-        #
-        # width = camera['width']
-        # height = camera['height']
 
-        CameraServer.getInstance().startAutomaticCapture()
+        width = 640
+        height = 480
+
+        # CameraServer.getInstance().startAutomaticCapture()
 
         input_stream = CameraServer.getInstance().getVideo()
-
-        input_stream.set(cv2.CAP_PROP_AUTO_EXPOSURE, Constants.EXPOSURE_AUTO)
-        input_stream.set(cv2.CAP_PROP_EXPOSURE, Constants.EXPOSURE_ABS)
-        input_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.HEIGHT)
-        input_stream.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.WIDTH)
 
         output_stream = CameraServer.getInstance().putVideo('Processed', Constants.WIDTH, Constants.HEIGHT)
         binary_stream = CameraServer.getInstance().putVideo('Binary', Constants.WIDTH, Constants.HEIGHT)
 
-        NetworkTables.startClientTeam(3566)
-        # NetworkTables.initialize(server='10.35.66.2')
-
         logging.basicConfig(level=logging.DEBUG)
 
         # Allocating new images is very expensive, always try to preallocate
-        img = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
+        img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
 
         # Wait for NetworkTables to start
         time.sleep(0.5)
 
         # preallocate, get shape
         frame_time, input_img = input_stream.grabFrame(img)
-        ret, input_img = input_stream.read()
         hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
 
         width = 640
@@ -62,6 +48,7 @@ class ShooterCameraProcess(mp.Process):
         x_mid = width // 2
         y_mid = height // 2
 
+        # loop forever
         while True:
 
             start_time = time.time()
@@ -72,7 +59,7 @@ class ShooterCameraProcess(mp.Process):
             frame_time, input_img = input_stream.grabFrame(img)
 
             # Notify output of error and skip iteration
-            if not input_img:
+            if input_img.size == 0:
                 self.logger.error("no frame")
                 continue
 
@@ -158,3 +145,47 @@ class ShooterCameraProcess(mp.Process):
         except Exception:
             self.logger.exception("exception uncaught in process_method, "
                                   "wait for root process to restart this")
+
+
+#   JSON format:
+#   {
+#       "team": <team number>,
+#       "ntmode": <"client" or "server", "client" if unspecified>
+#       "cameras": [
+#           {
+#               "name": <camera name>
+#               "path": <path, e.g. "/dev/video0">
+#               "pixel format": <"MJPEG", "YUYV", etc>   // optional
+#               "width": <video mode width>              // optional
+#               "height": <video mode height>            // optional
+#               "fps": <video mode fps>                  // optional
+#               "brightness": <percentage brightness>    // optional
+#               "white balance": <"auto", "hold", value> // optional
+#               "exposure": <"auto", "hold", value>      // optional
+#               "properties": [                          // optional
+#                   {
+#                       "name": <property name>
+#                       "value": <property value>
+#                   }
+#               ],
+#               "stream": {                              // optional
+#                   "properties": [
+#                       {
+#                           "name": <stream property name>
+#                           "value": <stream property value>
+#                       }
+#                   ]
+#               }
+#           }
+#       ]
+#       "switched cameras": [
+#           {
+#               "name": <virtual camera name>
+#               "key": <network table key used for selection>
+#               // if NT value is a string, it's treated as a name
+#               // if NT value is a double, it's treated as an integer index
+#           }
+#       ]
+#   }
+
+

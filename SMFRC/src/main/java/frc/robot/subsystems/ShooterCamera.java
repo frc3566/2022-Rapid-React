@@ -12,7 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class ShooterCamera extends SubsystemBase {
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  private NetworkTable nt = inst.getTable("GoalCamera");
+  private NetworkTable nt = inst.getTable("LiveWindow/GoalCamera");
 
   private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
 
@@ -33,19 +33,19 @@ public class ShooterCamera extends SubsystemBase {
   }
 
   public double getLastUpdateTime(){
-    return lastUpdateTime_entry.getDouble(0);
+    return lastUpdateTime_entry.getDouble(0.0);
   }
   
   public double getProcessingTime(){ 
-      return processingTime_entry.getDouble(0);
+      return processingTime_entry.getDouble(0.0);
   }
   
   public double getTarDistance(){
-    return distance_entry.getDouble(0);
+    return distance_entry.getDouble(0.0);
   }
 
   public double getTarAngle(){
-    return xAngle_entry.getDouble(0);
+    return xAngle_entry.getDouble(0.0);
   }
 
   public boolean goalDetected(){

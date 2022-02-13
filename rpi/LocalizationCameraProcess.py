@@ -11,7 +11,7 @@ class LocalizationCameraProcess(mp.Process):
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.nt = NetworkTables.getTable('LocalizationCamera')
+        self.nt = NetworkTables.getTable('LiveWindow/LocalizationCamera')
 
     def process_method(self):
         pipe = rs.pipeline()

@@ -62,7 +62,7 @@ class IntakeCameraProcess(mp.Process):
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.nt = NetworkTables.getTable('IntakeCamera')
+        self.nt = NetworkTables.getTable('LiveWindow/IntakeCamera')
 
 
     def get_intrinsics(self, profile):

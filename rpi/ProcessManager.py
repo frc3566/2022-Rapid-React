@@ -6,7 +6,8 @@ import logging
 class ProcessManager:
     def __init__(self, new_process_fn,
                  disconnect_duration=Constants.DISCONNECT_DURATION,
-                 restart_duration=Constants.RESTART_DURATION):
+                 restart_duration=Constants.RESTART_DURATION,
+                 name="FRC3566_Process"):
         """
         This class is in charge of restarting a process once it fails for a
         certain duration, the update method should be called regularly
@@ -19,6 +20,7 @@ class ProcessManager:
 
         self.process = self.new_process_fn()
         self.process.daemon = True
+        self.process.name = name
         self.process.start()
 
         self.logger = logging.getLogger(type(self.process).__name__ + 'Manager')
@@ -62,3 +64,6 @@ class ProcessManager:
         self.process.daemon = True
         self.process.start()
         self.last_connect_time = time.time()
+
+    def end_process(self):
+        self.process.terminate

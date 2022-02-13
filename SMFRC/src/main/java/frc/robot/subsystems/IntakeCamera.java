@@ -38,19 +38,19 @@ public class IntakeCamera extends SubsystemBase {
     }
 
 public double getLastUpdateTime(){
-  return lastUpdateTime_entry.getDouble(0);
+  return lastUpdateTime_entry.getDouble(0.0);
 }
 
 public double getProcessingTime(){ 
-    return processingTime_entry.getDouble(0);
+    return processingTime_entry.getDouble(0.0);
 }
 
 public double getTarDistance(){
   if(Constants.ballColor == ballColors.RED){
-    return redBallDistance_entry.getDouble(0);
+    return redBallDistance_entry.getDouble(0.0);
 
   }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallDistance_entry.getDouble(0);
+    return blueBallDistance_entry.getDouble(0.0);
     
   }
   return 0.0;
@@ -58,10 +58,10 @@ public double getTarDistance(){
 
 public double getTarAngle(){
   if(Constants.ballColor == ballColors.RED){
-    return redBallAngle_entry.getDouble(0);
+    return redBallAngle_entry.getDouble(0.0);
 
   }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallAngle_entry.getDouble(0);
+    return blueBallAngle_entry.getDouble(0.0);
 
   }
   return 0.0;

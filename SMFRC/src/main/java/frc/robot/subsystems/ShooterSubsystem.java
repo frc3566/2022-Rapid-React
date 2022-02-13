@@ -29,8 +29,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
      
     private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private NetworkTable nt = inst.getTable("ShooterSubsystem");
-    private NetworkTableEntry RPMEntry = nt.getEntry("heading");
+    private NetworkTable nt = inst.getTable("LiveWindow/ShooterSubsystem");
+    private NetworkTableEntry RPMEntry = nt.getEntry("RPM");
 
     public ShooterSubsystem() {
 

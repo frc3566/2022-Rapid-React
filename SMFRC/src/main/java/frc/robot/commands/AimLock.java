@@ -23,7 +23,8 @@ public class AimLock extends CommandBase {
   private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
 
-   private double prevUpdateTime = 0;
+  private double prevUpdateTime = 0;
+  private double setpoint;
   /**
    * Creates a new ExampleCommand.
    *
@@ -37,6 +38,8 @@ public class AimLock extends CommandBase {
     addRequirements(drive);
 
     pidController.setTolerance(2, 5);
+
+    setpoint= camera.getTarAngle();
   }
 
   // Called when the command is initially scheduled.
@@ -44,8 +47,6 @@ public class AimLock extends CommandBase {
   public void initialize() {
     pidController.reset();
   }
-
-  double setpoint = camera.getTarAngle();
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
