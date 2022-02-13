@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimerSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -21,14 +21,14 @@ public class AutoInit extends CommandBase {
    *
    * @param 
    */
-  ClimerSubsystem climer;
+  ClimberSubsystem climer;
   DriveSubsystem drive;
   IntakeSubsystem intake;
   ShooterSubsystem shooter;
 
   boolean finished = false;
 
-  public AutoInit(ClimerSubsystem climerSubsystem, DriveSubsystem driveSubsystem, 
+  public AutoInit(ClimberSubsystem climerSubsystem, DriveSubsystem driveSubsystem, 
   IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
 
     climer = climerSubsystem;

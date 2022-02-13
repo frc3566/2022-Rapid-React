@@ -11,8 +11,8 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.commands.RunTrajectory;
-import frc.robot.subsystems.ClimerSubsystem;
+import frc.robot.commands.AutoTrajectory;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
@@ -37,10 +37,10 @@ public class RobotContainer {
   private ShooterCamera shooterCamera = new ShooterCamera();
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ShooterSubsystem shooter = new ShooterSubsystem();
-  private ClimerSubsystem climer = new ClimerSubsystem();
+  private ClimberSubsystem climer = new ClimberSubsystem();
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(JS, drive);
-  private RunTrajectory runTrajectory = new RunTrajectory(null, drive); //TODO test trajectory following
+  private AutoTrajectory runTrajectory = new AutoTrajectory(null, drive); //TODO test trajectory following
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 

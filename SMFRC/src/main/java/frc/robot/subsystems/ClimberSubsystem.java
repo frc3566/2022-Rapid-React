@@ -14,7 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ClimerSubsystem extends SubsystemBase {
+public class ClimberSubsystem extends SubsystemBase {
 
   private CANSparkMax left = new CANSparkMax(30, MotorType.kBrushless);
   private CANSparkMax right = new CANSparkMax(31, MotorType.kBrushless);
@@ -25,7 +25,7 @@ public class ClimerSubsystem extends SubsystemBase {
 
   private boolean isExtended;
   
-  public ClimerSubsystem() {
+  public ClimberSubsystem() {
     left.setInverted(false);
     left.setClosedLoopRampRate(0.3);
     left.setIdleMode(IdleMode.kBrake);
