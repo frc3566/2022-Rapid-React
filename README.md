@@ -14,7 +14,7 @@ St. Mark's School Team Gone Fishin's code for 2022 season Rapid React.
 
 ## Dependencies:
 
-1. [OpenCV 4.2.0](https://github.com/JetsonHacksNano/buildOpenCV)
+1. [OpenCV](https://github.com/JetsonHacksNano/buildOpenCV)
 2. [Intel Realsense SDK (pyrealsense2)](https://github.com/JetsonHacksNano/installLibrealsense) [rpi installation](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_raspbian.md)
 
 4. [pynetworktables](https://robotpy.readthedocs.io/en/stable/install/index.html)
