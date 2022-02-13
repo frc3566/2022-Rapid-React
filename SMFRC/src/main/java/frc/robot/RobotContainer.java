@@ -8,15 +8,19 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AimLock;
+import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.RunTrajectory;
+import frc.robot.subsystems.ClimerSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TimerSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +35,9 @@ public class RobotContainer {
   private TimerSubsystem timer = new TimerSubsystem();
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
-  // private ShooterSubsystem shooter = new ShooterSubsystem();
+  private IntakeSubsystem intake = new IntakeSubsystem();
+  private ShooterSubsystem shooter = new ShooterSubsystem();
+  private ClimerSubsystem climer = new ClimerSubsystem();
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(JS, drive);
   private RunTrajectory runTrajectory = new RunTrajectory(null, drive); //TODO test trajectory following
@@ -39,6 +45,8 @@ public class RobotContainer {
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
   // private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
+
+  private AutoInit autoInit = new AutoInit(climer, drive, intake, shooter);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

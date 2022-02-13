@@ -89,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
     // right3 = new WPI_TalonSRX(2);
     // setTalon(right3, true);
 
-    // good girl
+    // good boy
     left1 = new CANSparkMax(1, MotorType.kBrushless);
     setSpark(left1, false);
     leftController = left1.getPIDController();

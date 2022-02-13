@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class RunTrajectory extends CommandBase {
+public class AutoTrajectory extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   
   private final DriveSubsystem drive;
@@ -56,7 +56,7 @@ RamseteController controller = new RamseteController();
    * 
    */
 
-  public RunTrajectory(Trajectory trajectory, DriveSubsystem driveSubsystem) {
+  public AutoTrajectory(Trajectory trajectory, DriveSubsystem driveSubsystem) {
 
     drive = driveSubsystem;
     this.trajectory = trajectory;

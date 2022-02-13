@@ -28,6 +28,10 @@ public class ShooterCamera extends SubsystemBase {
 
   private double prevUpdateTime = 0;
 
+  private enum LastSeen {LEFT, RIGHT};
+
+  public LastSeen lastSeen = LastSeen.LEFT;
+
   public ShooterCamera() {
 
   }
@@ -55,6 +59,15 @@ public class ShooterCamera extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  double tarAngle = getTarAngle();
+    if(goalDetected()){
+      if(tarAngle < 0){
+        lastSeen = LastSeen.LEFT;
+      }else{
+        lastSeen = LastSeen.RIGHT;
+      }
+    }
+
 
     // System.out.println(tarAngle);
 
