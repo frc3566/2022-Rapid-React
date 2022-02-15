@@ -4,20 +4,24 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class Wait extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
+  double tarTime;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Wait() {
+  public Wait(double time) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements();
+    tarTime = Timer.getFPGATimestamp() + time;
   }
 
   // Called when the command is initially scheduled.
@@ -30,11 +34,16 @@ public class Wait extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(Timer.getFPGATimestamp() >= tarTime){
+      return true;
+    }else{
+      return false;
+    }
   }
 }

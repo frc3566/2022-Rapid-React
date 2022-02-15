@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -13,14 +14,23 @@ public class Move extends CommandBase {
 
   DriveSubsystem drive;
 
+  double left, right;
+
+  double waitTar;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Move(Double LeftMPS, Double RightMPS, Double time, DriveSubsystem driveSubsystem) {
+  public Move(Double leftMPS, Double rightMPS, Double time, DriveSubsystem driveSubsystem) {
     
     drive = driveSubsystem;
+
+    left = leftMPS;
+    right = rightMPS;
+
+    waitTar = Timer.getFPGATimestamp() + time;
     
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
@@ -28,7 +38,9 @@ public class Move extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    drive.setVelocity(left, right);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -41,6 +53,9 @@ public class Move extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(Timer.getFPGATimestamp() >= waitTar){
+      return true;
+    }
     return false;
   }
 }

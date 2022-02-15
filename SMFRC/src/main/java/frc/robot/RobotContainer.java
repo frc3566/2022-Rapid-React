@@ -17,7 +17,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.TimerSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -32,7 +31,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private Joystick JS = new Joystick(0);
 
-  private TimerSubsystem timer = new TimerSubsystem();
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
   private IntakeSubsystem intake = new IntakeSubsystem();
