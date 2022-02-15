@@ -25,34 +25,12 @@ if Constants.noRoboRIO:
     NetworkTables.initialize()
 
 # create process managers
-localizationCameraTable = NetworkTables.getTable("localizationCamera");
-localizationCamera_last_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
-
-def localizationCamera_is_updated():
-    global localizationCamera_last_update_time
-    global localizationCameraTable
-
-    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
-
-    if localizationCamera_last_update_time == current_update_time:
-        return False
-    elif localizationCamera_last_update_time < current_update_time:
-        localizationCamera_last_update_time = current_update_time
-        return True
-    else:
-        logging.error("Localization Camera Time Error")
-        return False
-
-
-intakeCameraTable = NetworkTables.getTable("IntakeCamera");
-intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
-
 
 def intakeCamera_is_updated():
     global intakeCamera_last_update_time
     global intakeCameraTable
 
-    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
+    current_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
 
     if intakeCamera_last_update_time == current_update_time:
         return False
@@ -72,7 +50,7 @@ def shooterCamera_is_updated():
     global shooterCamera_last_update_time
     global shooterCameraTable
 
-    current_update_time = localizationCameraTable.getNumber("last_update_time", 0.0)
+    current_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
 
     if shooterCamera_last_update_time == current_update_time:
         return False

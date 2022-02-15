@@ -151,6 +151,8 @@ class IntakeCameraProcess(mp.Process):
         try:
             while True:
 
+                ball_detected = False
+
                 if not NetworkTables.isConnected:
                     print("restarting network table in intake process")
                     NetworkTables.startClientTeam(3566)
@@ -266,6 +268,8 @@ class IntakeCameraProcess(mp.Process):
                         ball_dis = dis_2d
                         ball_angle = angle
                         best_score = score
+
+                        ball_detected = True
                         # print(ball_dis, -ball_angle, sep=" ")
 
                     cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
@@ -293,6 +297,8 @@ class IntakeCameraProcess(mp.Process):
 
                 self.nt.putNumber("ball_distance", ball_dis)
                 self.nt.putNumber("ball_angle", ball_angle)
+
+                self.nt.putBoolean("ball_detected", ball_detected)
 
                 NetworkTables.flush()
 

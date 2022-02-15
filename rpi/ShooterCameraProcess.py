@@ -230,6 +230,8 @@ class ShooterCameraProcess(mp.Process):
         x_mid = width // 2
         y_mid = height // 2
 
+        goal_detected = False
+
         # loop forever
         while True:
             if not NetworkTables.isConnected:

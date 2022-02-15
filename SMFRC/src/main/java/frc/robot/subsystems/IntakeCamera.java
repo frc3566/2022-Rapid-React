@@ -24,6 +24,8 @@ public class IntakeCamera extends SubsystemBase {
     private NetworkTableEntry ballDistance_entry = nt.getEntry("ball_distance");
     private NetworkTableEntry ballAngle_entry = nt.getEntry("ball_angle");
 
+    private NetworkTableEntry ballDetected_entry = nt.getEntry("ball_detected");
+
     public IntakeCamera() {
       
     }
@@ -42,9 +44,10 @@ public double getTarDistance(){
 
 public double getTarAngle(){
   return ballAngle_entry.getDouble(0.0);
+}
 
 public boolean ballDetected(){
-  
+  return ballDetected_entry.getBoolean(false);
 }
 
   @Override
