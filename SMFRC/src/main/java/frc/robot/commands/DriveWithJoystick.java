@@ -57,10 +57,10 @@ public class DriveWithJoystick extends CommandBase {
       false
     );
 
-    // drive.setPower(signal);
+    drive.setPower(signal);
 
     // drive.setPower(0.5,0.5);
-    System.out.println(signal);
+    // System.out.println(signal);
   }
 
   // Called once the command ends or is interrupted.

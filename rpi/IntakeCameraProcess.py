@@ -64,8 +64,8 @@ class IntakeCameraProcess(mp.Process):
         self.logger = logging.getLogger(__name__)
         self.nt = NetworkTables.getTable('LiveWindow/IntakeCamera')
 
-        self.cs = CameraServer.getInstance()
-        self.cs.enableLogging()
+        # self.cs = CameraServer.getInstance()
+        # self.cs.enableLogging()
 
 
     def get_intrinsics(self, profile):
@@ -102,7 +102,7 @@ class IntakeCameraProcess(mp.Process):
 
     def process_method(self):
 
-        outputStream = self.cs.putVideo("intake_camera", 640, 480)
+        # outputStream = self.cs.putVideo("intake_camera", 640, 480)
 
         pipeline = rs.pipeline()
         config = rs.config()
@@ -306,7 +306,7 @@ class IntakeCameraProcess(mp.Process):
 
                 self.nt.putBoolean("ball_detected", ball_detected)
 
-                outputStream.putFrame(color_img)
+                # outputStream.putFrame(color_img)
 
                 NetworkTables.flush()
 

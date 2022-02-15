@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-  private CANSparkMax left = new CANSparkMax(30, MotorType.kBrushless);
-  private CANSparkMax right = new CANSparkMax(31, MotorType.kBrushless);
+  // private CANSparkMax left = new CANSparkMax(30, MotorType.kBrushless);
+  // private CANSparkMax right = new CANSparkMax(31, MotorType.kBrushless);
 
   private RelativeEncoder leftEncoder, rightEncoder;
 
@@ -26,29 +26,29 @@ public class ClimberSubsystem extends SubsystemBase {
   private boolean isExtended;
   
   public ClimberSubsystem() {
-    left.setInverted(false);
-    left.setClosedLoopRampRate(0.3);
-    left.setIdleMode(IdleMode.kBrake);
+    // left.setInverted(false);
+    // left.setClosedLoopRampRate(0.3);
+    // left.setIdleMode(IdleMode.kBrake);
 
-    right.setInverted(false);
-    right.setClosedLoopRampRate(0.3);
-    right.setIdleMode(IdleMode.kBrake);
+    // right.setInverted(false);
+    // right.setClosedLoopRampRate(0.3);
+    // right.setIdleMode(IdleMode.kBrake);
 
-    leftEncoder = left.getEncoder();
-    leftEncoder.setVelocityConversionFactor(1);
+    // leftEncoder = left.getEncoder();
+    // leftEncoder.setVelocityConversionFactor(1);
 
-    rightEncoder = right.getEncoder();
-    rightEncoder.setVelocityConversionFactor(1);
+    // rightEncoder = right.getEncoder();
+    // rightEncoder.setVelocityConversionFactor(1);
 
-    leftPID = left.getPIDController();
-    leftPID.setP(0.3);
-    leftPID.setI(0);
-    leftPID.setD(0.01);
+    // leftPID = left.getPIDController();
+    // leftPID.setP(0.3);
+    // leftPID.setI(0);
+    // leftPID.setD(0.01);
 
-    rightPID = left.getPIDController();
-    rightPID.setP(0.3);
-    rightPID.setI(0);
-    rightPID.setD(0.01);
+    // rightPID = left.getPIDController();
+    // rightPID.setP(0.3);
+    // rightPID.setI(0);
+    // rightPID.setD(0.01);
 
     isExtended = false;
   }
@@ -59,8 +59,8 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     //TODO measure degree turn needed
-    double leftTar = leftEncoder.getPosition() + 100;
-    double rightTar = leftEncoder.getPosition()  + 100;
+    double leftTar = leftEncoder.getPosition() + 140;
+    double rightTar = leftEncoder.getPosition()  + 140;
 
     leftPID.setReference(leftTar, ControlType.kPosition);
     rightPID.setReference(rightTar, ControlType.kPosition);
@@ -73,11 +73,11 @@ public class ClimberSubsystem extends SubsystemBase {
       return;
     }
 
-    double leftTar = leftEncoder.getPosition() - 100;
-    double rightTar = leftEncoder.getPosition() - 100;
+    double leftTar = leftEncoder.getPosition() - 140;
+    double rightTar = leftEncoder.getPosition() - 140;
 
-    leftPID.setReference(leftTar, ControlType.kPosition);
-    rightPID.setReference(rightTar, ControlType.kPosition);
+    // leftPID.setReference(leftTar, ControlType.kPosition);
+    // rightPID.setReference(rightTar, ControlType.kPosition);
 
     isExtended = false;
   }

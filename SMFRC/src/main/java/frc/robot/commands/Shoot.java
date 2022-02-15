@@ -9,7 +9,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/** An example command that uses an example subsystem. */
 public class Shoot extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 

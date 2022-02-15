@@ -28,7 +28,7 @@ public class ShooterCamera extends SubsystemBase {
 
   private double prevUpdateTime = 0;
 
-  private enum LastSeen {LEFT, RIGHT};
+  public enum LastSeen {LEFT, RIGHT};
 
   public LastSeen lastSeen = LastSeen.LEFT;
 

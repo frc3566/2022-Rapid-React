@@ -11,6 +11,8 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
+import frc.robot.commands.Intake;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.AutoTrajectory;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -42,6 +44,10 @@ public class RobotContainer {
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
+  private Shoot shoot = new Shoot(0, intake, shooter);
+
+  private Intake intake_command = new Intake(intake, shooter);
+
   // private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
 
   private AutoInit autoInit = new AutoInit(climer, drive, intake, shooter);
@@ -52,6 +58,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     drive.setDefaultCommand(driveWithJoystick);
+    intake.setDefaultCommand(intake_command);
   }
 
   /**
@@ -70,12 +77,16 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return null;
-    // return new InstantCommand(shooter::setRPM, shooter);
-    return aimLock;
+    return intake_command;
   }
 
   // public Command getDisabledCommand(){
     // return disabledCommand;
   // }
+
+    public Command getTestCommand(){
+      return  null;
+      // return new InstantCommand(shooter::setRPM, shooter);
+      // return aimLock;
+    }
 }

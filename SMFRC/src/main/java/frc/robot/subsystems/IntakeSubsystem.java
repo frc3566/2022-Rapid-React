@@ -20,11 +20,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
 
-  Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
+  // Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
 
-  Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  // private CANSparkMax indexer = new CANSparkMax(12, MotorType.kBrushless);
 
-  private CANSparkMax indexer = new CANSparkMax(13, MotorType.kBrushless);
+  // Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
   private RelativeEncoder indexerEncoder;
 
@@ -34,43 +34,43 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
-    intake.setInverted(false);
+    intake.setInverted(true);
     intake.setClosedLoopRampRate(0.3);
     intake.setIdleMode(IdleMode.kCoast);
 
-    indexer.setInverted(false);
-    indexer.setClosedLoopRampRate(0.3);
-    indexer.setIdleMode(IdleMode.kCoast);
+    // indexer.setInverted(false);
+    // indexer.setClosedLoopRampRate(0.3);
+    // indexer.setIdleMode(IdleMode.kCoast);
 
-    indexerEncoder = indexer.getEncoder();
-    indexerEncoder.setPositionConversionFactor(1);
-    indexerEncoder.setVelocityConversionFactor(1);
+    // indexerEncoder = indexer.getEncoder();
+    // indexerEncoder.setPositionConversionFactor(1);
+    // indexerEncoder.setVelocityConversionFactor(1);
 
-    indexerPID = indexer.getPIDController();
-    indexerPID.setP(0.3);
-    indexerPID.setD(0.01);
+    // indexerPID = indexer.getPIDController();
+    // indexerPID.setP(0.3);
+    // indexerPID.setD(0.01);
 
     ballCnt = 1;
   }
 
   public void enableCompressor(){
-    compressor.enableDigital();
+    // compressor.enableDigital();
   }
 
   public void disableCompressor(){
-    compressor.disable();
+    // compressor.disable();
   }
 
   public void extendIntake(){
-    solenoid.set(true);
+    // solenoid.set(true);
   }
 
   public void contractIntake(){
-    solenoid.set(false);
+    // solenoid.set(false);
   }
 
   public void startIntake(){
-      intake.set(0.3);
+    intake.set(0.3);
   }
 
   public void stopIntake(){
@@ -78,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void startIndexer(){
-    intake.set(0.3);
+    intake.set(1);
   }
 
   public void stopIndexer(){
@@ -105,8 +105,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    boolean pressureSwitch = compressor.getPressureSwitchValue();
-    double current = compressor.getCurrent();
+    // boolean pressureSwitch = compressor.getPressureSwitchValue();
+    // double current = compressor.getCurrent();
 
   }
 

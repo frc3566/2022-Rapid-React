@@ -35,19 +35,19 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
 
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
-        shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
+        // shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
 
         shooterMaster.setInverted(false);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
-        shooterSlave.follow(shooterMaster,true);
+        // shooterSlave.follow(shooterMaster,true);
 
         masterEncoder = shooterMaster.getEncoder();
         masterEncoder.setVelocityConversionFactor(1);
 
-        slaveEncoder = shooterSlave.getEncoder();
-        slaveEncoder.setVelocityConversionFactor(1);
+        // slaveEncoder = shooterSlave.getEncoder();
+        // slaveEncoder.setVelocityConversionFactor(1);
 
         masterPIDController = shooterMaster.getPIDController();
         masterPIDController.setP(Constants.SHOOTER_GAINS.kP);

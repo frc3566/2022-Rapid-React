@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterCamera;
+import frc.robot.subsystems.ShooterCamera.LastSeen;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -33,7 +34,13 @@ public class FindGoal extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if(camera.lastSeen == LastSeen.LEFT){
+      drive.setVelocity(-0.3, 0.3);
+    }else{
+      drive.setVelocity(0.3, -0.3);
+    }
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -46,6 +53,6 @@ public class FindGoal extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return camera.goalDetected();
   }
 }
