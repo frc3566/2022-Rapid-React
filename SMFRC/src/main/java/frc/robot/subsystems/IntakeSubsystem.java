@@ -84,8 +84,16 @@ public class IntakeSubsystem extends SubsystemBase {
   public void stopIndexer(){
     intake.set(0);
   }
+  
+  public void startEject(){
+    intake.set(-0.3);
+  }
 
+  public void stopEject(){
+    intake.set(0);
+  }
 
+  
   public void shiftIndexer(){
     //TODO measure degree turn needed
     double tarPos = 50 + indexerEncoder.getPosition();
