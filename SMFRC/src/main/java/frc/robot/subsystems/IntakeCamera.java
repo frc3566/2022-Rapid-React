@@ -44,12 +44,7 @@ public double getTarAngle(){
   return ballAngle_entry.getDouble(0.0);
 
 public boolean ballDetected(){
-  if(Constants.ballColor == ballColors.RED && getRedList().length != 0){
-    return true;
-  }else if(Constants.ballColor == ballColors.BLUE && getBlueList().length != 0){
-    return true;
-  }
-    return false;
+  
 }
 
   @Override

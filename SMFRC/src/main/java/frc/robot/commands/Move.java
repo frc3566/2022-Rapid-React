@@ -18,7 +18,7 @@ public class Move extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Move(Double LeftMPS, Double RightMPS, DriveSubsystem driveSubsystem) {
+  public Move(Double LeftMPS, Double RightMPS, Double time, DriveSubsystem driveSubsystem) {
     
     drive = driveSubsystem;
     
