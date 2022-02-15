@@ -21,17 +21,8 @@ public class IntakeCamera extends SubsystemBase {
     private NetworkTableEntry processingTime_entry = nt.getEntry("processing_time");
     private NetworkTableEntry fps_entry = nt.getEntry("fps");
 
-    private NetworkTableEntry redBallDistance_entry = nt.getEntry("red_ball_distance");
-    private NetworkTableEntry redBallAngle_entry = nt.getEntry("red_ball_angle");
-
-    private NetworkTableEntry redBallXList_entry = nt.getEntry("red_ball_x_list");
-    private NetworkTableEntry redBallYList_entry = nt.getEntry("red_ball_y_list");
-
-    private NetworkTableEntry blueBallDistance_entry = nt.getEntry("blue_ball_distance");
-    private NetworkTableEntry blueBallAngle_entry = nt.getEntry("blue_ball_angle");
-
-    private NetworkTableEntry blueBallXList_entry = nt.getEntry("blue_ball_x_list");
-    private NetworkTableEntry blueBallYList_entry = nt.getEntry("blue_ball_y_list");
+    private NetworkTableEntry ballDistance_entry = nt.getEntry("ball_distance");
+    private NetworkTableEntry ballAngle_entry = nt.getEntry("ball_angle");
 
     public IntakeCamera() {
       
@@ -42,58 +33,15 @@ public double getLastUpdateTime(){
 }
 
 public double getProcessingTime(){ 
-    return processingTime_entry.getDouble(0.0);
+  return processingTime_entry.getDouble(0.0);
 }
 
 public double getTarDistance(){
-  if(Constants.ballColor == ballColors.RED){
-    return redBallDistance_entry.getDouble(0.0);
-
-  }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallDistance_entry.getDouble(0.0);
-    
-  }
-  return 0.0;
+  return ballDistance_entry.getDouble(0.0);
 }
 
 public double getTarAngle(){
-  if(Constants.ballColor == ballColors.RED){
-    return redBallAngle_entry.getDouble(0.0);
-
-  }else if(Constants.ballColor == ballColors.BLUE){
-    return blueBallAngle_entry.getDouble(0.0);
-
-  }
-  return 0.0;
-}
-
-public double[][] getRedList(){
-  double[] xList = redBallXList_entry.getDoubleArray(new double[0]);
-  double[] yList = redBallYList_entry.getDoubleArray(new double[0]);
-
-  double[][] ret = new double[xList.length][2];
-
-  for(int i=0; i<xList.length; i++){
-    ret[i][0] = xList[1];
-    ret[i][1] = yList[1];
-  }
-
-  return ret;
-}
-
-public double[][] getBlueList(){
-  double[] xList = blueBallXList_entry.getDoubleArray(new double[0]);
-  double[] yList = blueBallYList_entry.getDoubleArray(new double[0]);
-
-  double[][] ret = new double[xList.length][2];
-
-  for(int i=0; i<xList.length; i++){
-    ret[i][0] = xList[1];
-    ret[i][1] = yList[1];
-  }
-
-  return ret;
-}
+  return ballAngle_entry.getDouble(0.0);
 
 public boolean ballDetected(){
   if(Constants.ballColor == ballColors.RED && getRedList().length != 0){
@@ -107,9 +55,6 @@ public boolean ballDetected(){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    //TODO put on shuffle board
-
     
   }
 

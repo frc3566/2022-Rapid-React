@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
 
-  Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 12);
+  Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
   private CANSparkMax indexer = new CANSparkMax(13, MotorType.kBrushless);
 

@@ -4,21 +4,29 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class Intake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+  IntakeSubsystem intake;
+  ShooterSubsystem shooter;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
+  public Intake(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
+    
+    intake = intakeSubsystem;
+    shooter = shooterSubsystem;
+    
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements();
+    addRequirements(intake, shooter);
   }
 
   // Called when the command is initially scheduled.

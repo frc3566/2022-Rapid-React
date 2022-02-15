@@ -4,21 +4,31 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterCamera;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class FindGoal extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+  DriveSubsystem drive;
+
+  ShooterCamera camera;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
+  public FindGoal(DriveSubsystem driveSubsystem, ShooterCamera shooterCamera) {
+    
+    drive = driveSubsystem;
+
+    camera = shooterCamera;
+    
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements();
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.

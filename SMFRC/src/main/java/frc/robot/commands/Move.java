@@ -4,21 +4,26 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class Move extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+
+  DriveSubsystem drive;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
+  public Move(Double LeftMPS, Double RightMPS, DriveSubsystem driveSubsystem) {
+    
+    drive = driveSubsystem;
+    
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements();
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.

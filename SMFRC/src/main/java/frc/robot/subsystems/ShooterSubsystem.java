@@ -94,8 +94,9 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-        System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
-        System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
+    
+        // System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
+        // System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
 
         RPMEntry.setDouble(getRPM());
     }

@@ -60,8 +60,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private NetworkTable nt = inst.getTable("LiveWindow/DriveSubsystem");
-  private NetworkTableEntry leftEncoderEntry = nt.getEntry("left_encoder");
-  private NetworkTableEntry rightEncoderEntry = nt.getEntry("right_encoder");
+  private NetworkTableEntry leftDistanceEntry = nt.getEntry("left_encoder");
+  private NetworkTableEntry rightDistanceEntry = nt.getEntry("right_encoder");
+  private NetworkTableEntry leftRPMEntry = nt.getEntry("left_RPM");
+  private NetworkTableEntry rightRPMEntry = nt.getEntry("right_RPM");
   private NetworkTableEntry headingEntry = nt.getEntry("heading");
 
   public DriveSubsystem() {
@@ -285,15 +287,17 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    leftEncoderEntry.setDouble(getLeftEncoderDistance());
-    rightEncoderEntry.setDouble(getRightEncoderDistance());
+    leftDistanceEntry.setDouble(getLeftEncoderDistance());
+    rightDistanceEntry.setDouble(getRightEncoderDistance());
+    leftRPMEntry.setDouble(leftEncoder.getVelocity());
+    rightRPMEntry.setDouble(rightEncoder.getVelocity());
     // headingEntry.setDouble(getHeading());
 
     // odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
     //  this.getRightEncoderDistance());
 
-    System.out.println("left RPM: " + leftEncoder.getVelocity());
-    System.out.println("right RPM: " + rightEncoder.getVelocity());
+    // System.out.println("left RPM: " + leftEncoder.getVelocity());
+    // System.out.println("right RPM: " + rightEncoder.getVelocity());
   }
 
   @Override
