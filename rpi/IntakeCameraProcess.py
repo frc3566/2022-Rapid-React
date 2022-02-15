@@ -13,6 +13,7 @@ from statistics import mean
 from util.showImage import show
 from networktables import NetworkTables
 from Constants import *
+from cscore import CameraServer
 
 align_to = rs.stream.color
 align = rs.align(align_to)
@@ -63,6 +64,9 @@ class IntakeCameraProcess(mp.Process):
         self.logger = logging.getLogger(__name__)
         self.nt = NetworkTables.getTable('LiveWindow/IntakeCamera')
 
+        self.cs = CameraServer.getInstance()
+        self.cs.enableLogging()
+
 
     def get_intrinsics(self, profile):
         intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
@@ -97,6 +101,8 @@ class IntakeCameraProcess(mp.Process):
         return mean(dis_list)
 
     def process_method(self):
+
+        outputStream = self.cs.putVideo("Name", 320, 240)
 
         pipeline = rs.pipeline()
         config = rs.config()
@@ -299,6 +305,8 @@ class IntakeCameraProcess(mp.Process):
                 self.nt.putNumber("ball_angle", ball_angle)
 
                 self.nt.putBoolean("ball_detected", ball_detected)
+
+                outputStream.putFrame("intake_camera", color_img)
 
                 NetworkTables.flush()
 

@@ -184,10 +184,6 @@ def start_camera_server():
     for config in cameraConfigs:
         cameras.append(startCamera(config))
 
-    # start switched cameras
-    for config in switchedCameraConfigs:
-        startSwitchedCamera(config)
-
 
 class ShooterCameraProcess(mp.Process):
 
@@ -196,11 +192,9 @@ class ShooterCameraProcess(mp.Process):
         self.logger = logging.getLogger(__name__)
         self.nt = NetworkTables.getTable('LiveWindow/ShooterCamera')
         self.goal_detect = False
+        start_camera_server()
 
     def process_method(self):
-
-        if not CameraServer.getInstance().is_alive():
-            start_camera_server()
 
         width = 640
         height = 480
@@ -307,11 +301,6 @@ class ShooterCameraProcess(mp.Process):
             processing_time = time.time() - start_time
             fps = 1 / processing_time
             cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255))
-            # output_stream.putFrame(output_img)
-
-            output_stream.putFrame(output_img)
-
-            binary_stream.putFrame(binary_img)
 
             # update nt
             self.nt.putNumber("last_update_time", time.time())
@@ -324,6 +313,9 @@ class ShooterCameraProcess(mp.Process):
             self.nt.putNumber("x_angle", x_angle)
             self.nt.putNumber("y_angle", y_angle)
             self.nt.putNumber("distance", distance)
+
+            output_stream.putFrame(output_img)
+            binary_stream.putFrame(binary_img)
 
             NetworkTables.flush()
 
