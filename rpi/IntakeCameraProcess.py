@@ -102,7 +102,7 @@ class IntakeCameraProcess(mp.Process):
 
     def process_method(self):
 
-        outputStream = self.cs.putVideo("Name", 320, 240)
+        outputStream = self.cs.putVideo("intake_camera", 640, 480)
 
         pipeline = rs.pipeline()
         config = rs.config()
@@ -306,7 +306,7 @@ class IntakeCameraProcess(mp.Process):
 
                 self.nt.putBoolean("ball_detected", ball_detected)
 
-                outputStream.putFrame("intake_camera", color_img)
+                outputStream.putFrame(color_img)
 
                 NetworkTables.flush()
 
