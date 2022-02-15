@@ -199,7 +199,7 @@ class ShooterCameraProcess(mp.Process):
 
     def process_method(self):
 
-        if not CameraServer.is_alive:
+        if not CameraServer.getInstance().is_alive():
             start_camera_server()
 
         width = 640

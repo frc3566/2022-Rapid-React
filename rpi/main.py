@@ -26,6 +26,9 @@ if Constants.noRoboRIO:
 
 # create process managers
 
+intakeCameraTable = NetworkTables.getTable("LiveWindow/IntakeCamera");
+intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
+
 def intakeCamera_is_updated():
     global intakeCamera_last_update_time
     global intakeCameraTable
@@ -42,7 +45,7 @@ def intakeCamera_is_updated():
         return False
 
 
-shooterCameraTable = NetworkTables.getTable("ShooterCamera");
+shooterCameraTable = NetworkTables.getTable("LiveWindow/ShooterCamera");
 shooterCamera_last_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
 
 
@@ -65,17 +68,11 @@ def shooterCamera_is_updated():
 
 if __name__ == '__main__':
 
-    localizationCameraProcessManager = ProcessManager(lambda: LocalizationCameraProcess(), name="localizationCamera_process")
-
-    time.sleep(4) # must have t265 launch first to work
-
     intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(), name="intake_camera_proces")
 
     shooterCameraProcessManager = ProcessManager(lambda: ShooterCameraProcess(), name="shooter_camera_process")
 
     def cleanup():
-        localizationCameraProcessManager.end_process()
-
         intakeCameraProcesManager.end_process()
 
         shooterCameraProcessManager.end_process()
@@ -91,9 +88,6 @@ if __name__ == '__main__':
             print("connection lost, restarting network table")
             NetworkTables.startClientTeam(3566)
             NetworkTables.startDSClient()
-
-        # get pose
-        localizationCameraProcessManager.checkin(localizationCamera_is_updated())
 
         # get CV
         intakeCameraProcesManager.checkin(intakeCamera_is_updated())

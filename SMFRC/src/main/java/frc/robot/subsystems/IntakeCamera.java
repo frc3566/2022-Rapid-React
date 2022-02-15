@@ -14,7 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class IntakeCamera extends SubsystemBase {
 
     private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private NetworkTable nt = inst.getTable("IntakeCamera");
+    private NetworkTable nt = inst.getTable("LiveWindow/IntakeCamera");
 
     private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
 
