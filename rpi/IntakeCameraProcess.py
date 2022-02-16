@@ -7,7 +7,6 @@ import cv2
 import random
 import multiprocessing as mp
 import logging
-
 from util.SphereFitting import *
 from statistics import mean
 from util.showImage import show
@@ -54,14 +53,17 @@ HEIGHT = 17 * 0.0254
 
 class IntakeCameraProcess(mp.Process):
 
-    def __init__(self):
+    def __init__(self, nt_queue, frame_in_queue, frame_out_queue):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.nt = NetworkTables.getTable('LiveWindow/IntakeCamera')
+
+        self.nt_queue = nt_queue
+
+        self.frame_in_queue = frame_in_queue
+        self.frame_out_queue = frame_out_queue
 
         # self.cs = CameraServer.getInstance()
         # self.cs.enableLogging()
-
 
     def get_intrinsics(self, profile):
         intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
@@ -76,7 +78,6 @@ class IntakeCameraProcess(mp.Process):
     def calculate_plane_distance(self, points, plane):
         return (np.dot(points, plane[:3]) + plane[3]) / np.sqrt(
             plane[0] ** 2 + plane[1] ** 2 + plane[2] ** 2)
-
 
     def circle_sample(self, image_3d, x, y, r):
         adjusted_r = int(1 / m.sqrt(2) * r * 0.8)
@@ -139,7 +140,7 @@ class IntakeCameraProcess(mp.Process):
             #     print('set default')
             #     depth_sensor.set_option(rs.option.visual_preset, i)
 
-        if(Constants.ballColor == BallColor.RED):
+        if Constants.ballColor == BallColor.RED:
             hMin = red_hMin
             sMin = red_sMin
             vMin = red_vMin
@@ -294,21 +295,32 @@ class IntakeCameraProcess(mp.Process):
                 processing_time = time.time() - start_time
                 fps = 1 / processing_time
 
-
-                #update nt
-                self.nt.putNumber("last_update_time", time.time())
-
-                self.nt.putNumber("processing_time", processing_time)
-                self.nt.putNumber("fps", fps)
-
-                self.nt.putNumber("ball_distance", ball_dis)
-                self.nt.putNumber("ball_angle", ball_angle)
-
-                self.nt.putBoolean("ball_detected", ball_detected)
+                # update nt
+                # self.nt.putNumber("last_update_time", time.time())
+                #
+                # self.nt.putNumber("processing_time", processing_time)
+                # self.nt.putNumber("fps", fps)
+                #
+                # self.nt.putNumber("ball_distance", ball_dis)
+                # self.nt.putNumber("ball_angle", ball_angle)
+                #
+                # self.nt.putBoolean("ball_detected", ball_detected)
 
                 # outputStream.putFrame(color_img)
 
-                NetworkTables.flush()
+                # NetworkTables.flush()
+
+                self.nt_queue.put_nowait(("last_update_time", time.time()))
+
+                self.nt_queue.put_nowait(("processing_time", processing_time))
+                self.nt_queue.put_nowait(("fps", fps))
+
+                self.nt_queue.put_nowait(("ball_distance", ball_dis))
+                self.nt_queue.put_nowait(("ball_angle", ball_angle))
+
+                self.nt_queue.put_nowait(("ball_detected", ball_detected))
+
+                self.frame_out_queue.put_nowait(color_img)
 
         finally:
             print('stop')

@@ -77,9 +77,16 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.set(power);
   }
   
-  public void shiftIndexer(){
+  public void shiftIndexer(boolean shiftUp){
     //TODO measure degree turn needed
-    double tarPos = 50 + indexerEncoder.getPosition();
+    double tarPos;
+
+    if(shiftUp){
+      tarPos = indexerEncoder.getPosition() + 50;
+    }else{
+      tarPos = indexerEncoder.getPosition() - 50;
+    }
+
     indexerPID.setReference(tarPos, ControlType.kPosition);
   }
 

@@ -1,32 +1,20 @@
 import atexit
-import logging
 import logging.config
+import cv2
+import numpy as np
 import time
-import numbers
-import sys
+import logging
+import math
 import json
-import multiprocessing as mp
-from networktables import NetworkTables, NetworkTablesInstance
+import sys
 from IntakeCameraProcess import IntakeCameraProcess
-from ShooterCameraProcess import ShooterCameraProcess
-from Constants import Constants
 from ProcessManager import ProcessManager
-from queue import Full, Empty
+from networktables import NetworkTables, NetworkTablesInstance
+from Constants import Constants
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
-
-print(sys.version)
-
-ntinst = NetworkTablesInstance
-print("Setting up NetworkTables")
-NetworkTables.startClientTeam(3566)
-NetworkTables.startDSClient()
-
-
-logging.getLogger().setLevel(logging.DEBUG)
 
 
 configFile = "/boot/frc.json"
-
 
 class CameraConfig:
     pass
@@ -198,20 +186,10 @@ def start_camera_server():
     for config in cameraConfigs:
         cameras.append(startCamera(config))
 
-# sharing data with mp queue
-shooter_frame_in_queue = mp.Queue(10)
-intake_frame_in_queue = mp.Queue(10)
 
-shooter_frame_out_queue = mp.Queue(1)
-intake_frame_out_queue = mp.Queue(1)
-
-shooter_nt_queue = mp.Queue(100)
-intake_nt_queue = mp.Queue(100)
+logging.getLogger().setLevel(logging.DEBUG)
 
 # create process managers
-
-intakeCameraTable = NetworkTables.getTable("LiveWindow/IntakeCamera");
-intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
 
 def intakeCamera_is_updated():
     global intakeCamera_last_update_time
@@ -229,109 +207,160 @@ def intakeCamera_is_updated():
         return False
 
 
-shooterCameraTable = NetworkTables.getTable("LiveWindow/ShooterCamera");
-shooterCamera_last_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
-
-
-def shooterCamera_is_updated():
-    global shooterCamera_last_update_time
-    global shooterCameraTable
-
-    current_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
-
-    if shooterCamera_last_update_time == current_update_time:
-        return False
-    elif shooterCamera_last_update_time < current_update_time:
-        shooterCamera_last_update_time = current_update_time
-        return True
-    else:
-        logging.error("Intake Camera Time Error")
-        return False
-
-# processes
-
 if __name__ == '__main__':
+    print(sys.version)
 
-    intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(), intake_nt_queue,
-                                               intake_frame_in_queue, intake_frame_out_queue,
-                                               name="intake_camera_proces")
+    ntinst = NetworkTablesInstance
+    print("Setting up NetworkTables")
+    NetworkTables.startClientTeam(3566)
+    NetworkTables.startDSClient()
 
-    shooterCameraProcessManager = ProcessManager(lambda: ShooterCameraProcess(), shooter_nt_queue,
-                                                 shooter_frame_in_queue, shooter_frame_out_queue,
-                                                 name="shooter_camera_process")
+    intakeCameraTable = NetworkTables.getTable("LiveWindow/IntakeCamera");
+    intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
+
+    shooterCameraTable = NetworkTables.getTable("LiveWindow/ShooterCamera");
+    shooterCamera_last_update_time = shooterCameraTable.getNumber("last_update_time", 0.0)
+
+    start_camera_server()
+
+    intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(), name="intake_camera_proces")
 
     def cleanup():
         intakeCameraProcesManager.end_process()
-
-        shooterCameraProcessManager.end_process()
 
         logging.info("cleaned up processes")
 
     atexit.register(cleanup)
 
-    intake_out_stream = CameraServer.getInstance().putVideo('shooter', Constants.WIDTH, Constants.HEIGHT)
+    if not NetworkTables.isConnected:
+        print("connection lost, restarting network table")
+        NetworkTables.startClientTeam(3566)
+        NetworkTables.startDSClient()
 
-    shooter_in_stream = CameraServer.getInstance().getVideo()
-    shooter_out_stream = CameraServer.getInstance().putVideo('intake', Constants.WIDTH, Constants.HEIGHT)
+    # get CV
+    intakeCameraProcesManager.checkin(intakeCamera_is_updated())
 
+    width = 640
+    height = 480
+
+    # CameraServer.getInstance().startAutomaticCapture()
+
+    input_stream = CameraServer.getInstance().getVideo()
+
+    output_stream = CameraServer.getInstance().putVideo('Processed', Constants.WIDTH, Constants.HEIGHT)
+    binary_stream = CameraServer.getInstance().putVideo('Binary', Constants.WIDTH, Constants.HEIGHT)
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    # Allocating new images is very expensive, always try to preallocate
+    img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
+
+    # Wait for NetworkTables to start
+    time.sleep(0.5)
+
+    # preallocate, get shape
+    frame_time, input_img = input_stream.grabFrame(img)
+    hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+
+    width = 640
+    height = 480
+
+    x_mid = width // 2
+    y_mid = height // 2
+
+    goal_detected = False
 
     # main loop
     while True:
-
         if not NetworkTables.isConnected:
-            print("connection lost, restarting network table")
+            print("restarting network table in shooter process")
             NetworkTables.startClientTeam(3566)
             NetworkTables.startDSClient()
 
-        if not intake_frame_in_queue.empty():
-            intake_frame_in_queue.get_nowait()
+        start_time = time.time()
 
-        frame_time, img = shooter_in_stream.grabFrame(img)
-        intake_frame_in_queue.put_nowait((frame_time, img))
+        hsv_min = (57, 100, 24)
+        hsv_max = (84, 255, 255)
+
+        frame_time, input_img = input_stream.grabFrame(img)
+
+        # Notify output of error and skip iteration
+        if input_img.size == 0:
+            logging.error("no frame")
+            continue
+
+        # print(input_img)
+
+        # input_img = np.array(input_img)
+        #
+        # input_img = cv2.undistort(src=input_img, cameraMatrix=Constants.CAMERA_MATRIX,
+        #                           distCoeffs=Constants.DIST_COEF)
+
+        # input_stream = cv2.flip(input_stream, 0)
+
+        output_img = np.copy(input_img)
+
+        # Convert to HSV and threshold image
+        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+        binary_img = cv2.inRange(hsv_img, hsv_min, hsv_max)
+
+        _, contour_list, _ = cv2.findContours(binary_img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
+
+        x_list = []
+        y_list = []
+
+        for contour in contour_list:
+            # Ignore small contours that could be because of noise/bad thresholding
+            area = cv2.contourArea(contour)
+            if area < 15:
+                continue
+
+            x, y, w, h = cv2.boundingRect(contour)
+            if area / w / h < Constants.MIN_TARGET2RECT_RATIO:
+               continue
+
+            cv2.drawContours(output_img, contour, -1, color=(255, 255, 255), thickness=-1)
+
+            rect = cv2.minAreaRect(contour)
+            center, size, angle = rect
+            center = [int(dim) for dim in center]  # Convert to int so we can draw
+
+            x_list.append(center[0])
+            y_list.append(center[1])
+
+        x = x_mid
+        y = y_mid
+
+        if(len(x_list)==0 or len(y_list)==0):
+            goal_detected = False
+            continue
+        else:
+            goal_detected = True
+
+        x_angle = math.atan((center[0] - x_mid) / Constants.FOCAL_LENGTH_X)
+        y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_Y) + Constants.CAMERA_MOUNT_ANGLE
+
+        distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
+
+        processing_time = time.time() - start_time
+        fps = 1 / processing_time
+        cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255))
 
         # update nt
-        try:
-            while True:
-                key, value = intake_nt_queue.get_nowait()
-                if isinstance(value, numbers.Number):
-                    intakeCameraTable.putNumber(key, value)
-                elif type(value) == bool:
-                    intakeCameraTable.putBoolean(key, value)
+        shooterCameraTable.putNumber("last_update_time", time.time())
 
-        except Empty:
-            pass
+        shooterCameraTable.putNumber("processing_time", processing_time)
+        shooterCameraTable.putNumber("fps", fps)
 
-        try:
-            while True:
-                key, value = shooter_nt_queue.get_nowait()
-                if isinstance(value, numbers.Number):
-                    shooterCameraTable.putNumber(key, value)
-                elif type(value) == bool:
-                    shooterCameraTable.putBoolean(key, value)
+        shooterCameraTable.putBoolean("goal_detected", goal_detected)
 
-        except Empty:
-            pass
+        shooterCameraTable.putNumber("x_angle", x_angle)
+        shooterCameraTable.putNumber("y_angle", y_angle)
+        shooterCameraTable.putNumber("distance", distance)
+
+        output_stream.putFrame(output_img)
+        binary_stream.putFrame(binary_img)
 
         NetworkTables.flush()
 
-        # update camera server
-
-        try:
-            while True:
-                frame = intake_frame_out_queue.get_nowait()
-                intake_out_stream.putFrame(frame)
-        except Empty:
-            pass
-
-        try:
-            while True:
-                frame = shooter_frame_out_queue.get_nowait()
-                shooter_out_stream.putFrame(frame)
-        except Empty:
-            pass
-
-        # get CV
-        intakeCameraProcesManager.checkin(intakeCamera_is_updated())
-
-        # shooterCameraProcessManager.checkin(shooterCamera_is_updated())
 

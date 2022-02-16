@@ -4,7 +4,7 @@ import logging
 
 
 class ProcessManager:
-    def __init__(self, new_process_fn,
+    def __init__(self, new_process_fn, nt_queue, frame_in_queue, frame_out_queue,
                  disconnect_duration=Constants.DISCONNECT_DURATION,
                  restart_duration=Constants.RESTART_DURATION,
                  name="FRC3566_Process"):
@@ -18,7 +18,7 @@ class ProcessManager:
         self.disconnect_duration = disconnect_duration
         self.restart_duration = restart_duration
 
-        self.process = self.new_process_fn()
+        self.process = self.new_process_fn(self.nt_queue, self.frame_in_queue, self.frame_out_queque)
         self.process.daemon = True
         self.process.name = name
         self.process.start()
@@ -31,6 +31,9 @@ class ProcessManager:
         self.is_connected = False
         self.last_update_time = time.time()
 
+        self.nt_queue = nt_queue
+        self.frame_in_queue = frame_in_queue
+        self.frame_out_queue = frame_out_queue
 
     def checkin(self, isUpdated):
         if isUpdated:
@@ -60,7 +63,7 @@ class ProcessManager:
 
     def restart_process(self):
         self.process.terminate()
-        self.process = self.new_process_fn()
+        self.process = self.new_process_fn(self.nt_queue, self.frame_in_queue, self.frame_out_queque)
         self.process.daemon = True
         self.process.start()
         self.last_connect_time = time.time()

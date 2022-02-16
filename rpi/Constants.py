@@ -83,6 +83,3 @@ class Constants:
     DEBUG = True
     MA_MOMENTUM = 0.9
     UPDATE_PERIOD = 3  # sec
-
-    # sets the nt to server when testing without roboRIO
-    noRoboRIO = True
