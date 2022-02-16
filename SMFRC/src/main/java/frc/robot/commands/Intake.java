@@ -33,8 +33,8 @@ public class Intake extends CommandBase {
   @Override
   public void initialize() {
     intake.extendIntake();
-    intake.startIntake();
-    intake.startIndexer();
+    intake.setIntake(1);
+    intake.setIndexer(1);
     shooter.setRPM(-100);
   }
 

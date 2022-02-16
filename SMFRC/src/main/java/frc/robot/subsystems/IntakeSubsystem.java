@@ -69,30 +69,13 @@ public class IntakeSubsystem extends SubsystemBase {
     // solenoid.set(false);
   }
 
-  public void startIntake(){
-    intake.set(0.3);
+  public void setIntake(double power){
+    intake.set(power);
   }
 
-  public void stopIntake(){
-    intake.set(0);
+  public void setIndexer(double power){
+    intake.set(power);
   }
-
-  public void startIndexer(){
-    intake.set(1);
-  }
-
-  public void stopIndexer(){
-    intake.set(0);
-  }
-  
-  public void startEject(){
-    intake.set(-0.3);
-  }
-
-  public void stopEject(){
-    intake.set(0);
-  }
-
   
   public void shiftIndexer(){
     //TODO measure degree turn needed

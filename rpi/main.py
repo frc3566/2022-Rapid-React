@@ -92,5 +92,5 @@ if __name__ == '__main__':
         # get CV
         intakeCameraProcesManager.checkin(intakeCamera_is_updated())
 
-        shooterCameraProcessManager.checkin(shooterCamera_is_updated())
+        # shooterCameraProcessManager.checkin(shooterCamera_is_updated())
 

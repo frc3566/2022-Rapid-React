@@ -13,12 +13,7 @@ from statistics import mean
 from util.showImage import show
 from networktables import NetworkTables
 from Constants import *
-from cscore import CameraServer
-
-align_to = rs.stream.color
-align = rs.align(align_to)
-
-hole_filler = rs.hole_filling_filter()
+# from cscore import CameraServer
 
 MIN_DIS = 0.25
 MAX_DIS = 9
@@ -111,6 +106,11 @@ class IntakeCameraProcess(mp.Process):
 
         config.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
         config.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
+
+        align_to = rs.stream.color
+        align = rs.align(align_to)
+
+        hole_filler = rs.hole_filling_filter()
 
         profile = pipeline.start(config)
         depth_sensor = profile.get_device().first_depth_sensor()
@@ -261,7 +261,7 @@ class IntakeCameraProcess(mp.Process):
                         # print("skip")
                         continue
 
-                    # print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
+                    print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
 
                     pt_3d = center_x, center_y, center_z
 

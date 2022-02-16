@@ -62,7 +62,7 @@ boolean isFinished;
     if(Math.abs(shooter.getRPM() - tarRPM) <= 400 && Timer.getFPGATimestamp() >= shooterWaitTar){
       shooterReady = true;
       indexerWaitTar = Timer.getFPGATimestamp() + 1.5;
-      intake.startIndexer();
+      intake.setIndexer(1);
       
       if(Timer.getFPGATimestamp() >= indexerWaitTar){
         isFinished = true;
@@ -74,7 +74,7 @@ boolean isFinished;
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.stopIndexer();
+    intake.setIndexer(0);
   }
 
   // Returns true when the command should end.
