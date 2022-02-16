@@ -21,12 +21,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.SPI;
+
 import frc.robot.Constants;
 import frc.robot.util.DriveSignal;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import com.kauailabs.navx.frc.AHRS;
 
 public class DriveSubsystem extends SubsystemBase {
   
@@ -44,7 +48,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   private SparkMaxPIDController leftController, rightController;
 
-  private PigeonIMU gyro;
+  // private PigeonIMU gyro;
+  private AHRS gyro;
 
   private double gyroZero;
 
@@ -105,8 +110,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     right1 = new CANSparkMax(4, MotorType.kBrushless);
     setSpark(left1, false);
-    leftController = left1.getPIDController();
-    setControler(leftController);
+    rightController = right1.getPIDController();
+    setControler(rightController);
 
     right2 = new CANSparkMax(5, MotorType.kBrushless);
     right2.follow(right1);
@@ -119,15 +124,16 @@ public class DriveSubsystem extends SubsystemBase {
     rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
 
     leftEncoder = left1.getEncoder();
-    rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
-    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
+    leftEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
+    leftEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
 
     // gyro = new PigeonIMU(right2);
+    gyro = new AHRS(SPI.Port.kMXP);
 
-    // resetGyro();
-    // getHeading();
+    resetGyro();
+    getHeading();
 
-    // odometry = new DifferentialDriveOdometry(this.getRotation2d());
+    odometry = new DifferentialDriveOdometry(this.getRotation2d());
 
   }
 
@@ -149,6 +155,10 @@ public class DriveSubsystem extends SubsystemBase {
       System.out.println("enter voltage control mode");
     }
     setPower(signal.getLeft(),signal.getRight());
+  }
+
+  public void setVoltage(double left, double right){
+    setPower(left, right);
   }
 
   //we will not need this if we have all spark motors
@@ -199,11 +209,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getLeftEncoderDistance(){
-    return leftEncoder.getPosition() - rightEncoderZero;
+    return leftEncoder.getPosition() - leftEncoderZero;
   }
 
   public double getRightEncoderDistance(){
-    return rightEncoder.getPosition() - leftEncoderZero;
+    return rightEncoder.getPosition() - rightEncoderZero;
   }
 
   public double getAvgEncoderDistance(){
@@ -230,6 +240,7 @@ public class DriveSubsystem extends SubsystemBase {
       0, 
       Constants.Drive_ks * Math.signum(leftMPS) + Constants.Drive_kv * leftMPS
     );
+
     rightController.setReference(
       rightMPS,
       ControlType.kVelocity, 
@@ -245,18 +256,22 @@ public class DriveSubsystem extends SubsystemBase {
   //gyro
   public double getHeading(){
     double[] xyz_deg = new double[3];
-    gyro.getAccumGyro(xyz_deg);
+    // gyro.getAccumGyro(xyz_deg);
 
-    double currGyro = xyz_deg[2] - gyroZero;
+    // double currGyro = xyz_deg[2] - gyroZero;
+
+    double currGyro = gyro.getAngle() - gyroZero;
 
     return currGyro;
   }
 
   public double getRurnRate(){
     double[] xyz_dps = new double[3];
-    gyro.getRawGyro(xyz_dps);
+    // gyro.getRawGyro(xyz_dps);
 
-    return xyz_dps[2];
+    // return xyz_dps[2];
+
+    return gyro.getRate();
   }
 
   public Rotation2d getRotation2d(){
@@ -265,9 +280,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double resetGyro(){
     double [] xyz_deg = new double[3];
-    gyro.getAccumGyro(xyz_deg);
+    // gyro.getAccumGyro(xyz_deg);
 
-    gyroZero = xyz_deg[2];
+    // gyroZero = xyz_deg[2];
+
+    gyroZero = gyro.getAngle();
 
     return gyroZero;
   }
@@ -295,13 +312,15 @@ public class DriveSubsystem extends SubsystemBase {
     rightDistanceEntry.setDouble(getRightEncoderDistance());
     leftRPMEntry.setDouble(leftEncoder.getVelocity());
     rightRPMEntry.setDouble(rightEncoder.getVelocity());
-    // headingEntry.setDouble(getHeading());
+    headingEntry.setDouble(getHeading());
 
-    // odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
-    //  this.getRightEncoderDistance());
+    odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
+     this.getRightEncoderDistance());
 
     // System.out.println("left RPM: " + leftEncoder.getVelocity());
     // System.out.println("right RPM: " + rightEncoder.getVelocity());
+    // System.out.println("right RPM: " + rightEncoder.getVelocity())
+    // System.out.println("heading: " + getHeading());
   }
 
   @Override

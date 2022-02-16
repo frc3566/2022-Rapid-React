@@ -6,12 +6,19 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
+
+import java.util.List;
+
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -61,6 +68,17 @@ RamseteController controller = new RamseteController();
     drive = driveSubsystem;
     this.trajectory = trajectory;
 
+    this.trajectory = 
+    TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)),
+        // Pass config
+        config);
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
@@ -69,6 +87,9 @@ RamseteController controller = new RamseteController();
   @Override
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
+    drive.resetEncoders();
+    drive.resetGyro();
+    drive.resetOdometry(new Pose2d());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -83,7 +104,12 @@ RamseteController controller = new RamseteController();
     double left = wheelSpeeds.leftMetersPerSecond;
     double right = wheelSpeeds.rightMetersPerSecond;
 
-    drive.setVelocity(left, right);
+    System.out.println("left: " + left);
+    System.out.println("right: " + right);
+    System.out.println(drive.getPose());
+    System.out.println(goal);
+
+    drive.setVoltage(left, right);
   }
 
   // Called once the command ends or is interrupted.

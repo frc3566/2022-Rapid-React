@@ -22,6 +22,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private Joystick JS = new Joystick(0);
+  public Joystick JS = new Joystick(0);
 
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
@@ -48,9 +49,11 @@ public class RobotContainer {
 
   private Intake intake_command = new Intake(intake, shooter);
 
-  // private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
+  private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
 
   private AutoInit autoInit = new AutoInit(climer, drive, intake, shooter);
+
+  private AutoTrajectory trajectory = new AutoTrajectory(null, drive);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -77,7 +80,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
   }
 
   /**
@@ -86,12 +88,42 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return intake_command;
+    return trajectory;
   }
 
-  // public Command getDisabledCommand(){
-    // return disabledCommand;
-  // }
+  /* button mapping:
+    thrustmaster:
+      stick:
+        trigger:1
+        front:
+          3   4
+            2
+      base:
+        left:
+          5 6 7
+          10 9  8
+        right:
+          13 12 11
+          14 15 16
+    
+    logitech:
+      stick:
+        trigger: 1
+        left: 2
+        front:
+          5     6
+            3 4
+      base:
+        7 8
+        9 10
+        11 12
+
+
+
+  */
+  public Command getDisabledCommand(){
+    return disabledCommand;
+  }
 
     public Command getTestCommand(){
       return  null;

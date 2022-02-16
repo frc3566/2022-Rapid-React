@@ -81,11 +81,11 @@ public class DriveWithJoystick extends CommandBase {
   }
 
   public double getForwardThrottle() {
-    return JS.getRawAxis(1) * -1;
+    return JS.getRawAxis(0) * -1;
   }
 
   public double getRotationThrottle() {
-    return JS.getRawAxis(0);
+    return JS.getRawAxis(1);
   }
 
   public double getSlider() {
