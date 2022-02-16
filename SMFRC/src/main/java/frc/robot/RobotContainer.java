@@ -61,6 +61,15 @@ public class RobotContainer {
     intake.setDefaultCommand(intake_command);
   }
 
+  // TODO commands on buttons
+  // autoshoot
+  // shoot
+  // start/stop intake
+  // extend/contract intake
+  // 
+
+  // TODO button place to number mapping
+
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link

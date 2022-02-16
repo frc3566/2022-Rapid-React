@@ -53,12 +53,16 @@ public class ClimberSubsystem extends SubsystemBase {
     isExtended = false;
   }
 
+  public void setPower(Double power){
+    // left.set(power);
+    // right.set(power);
+  }
+
   public void extend(){
     if(isExtended){
       return;
     }
 
-    //TODO measure degree turn needed
     double leftTar = leftEncoder.getPosition() + 140;
     double rightTar = leftEncoder.getPosition()  + 140;
 
