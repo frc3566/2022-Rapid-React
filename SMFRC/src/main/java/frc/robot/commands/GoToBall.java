@@ -7,6 +7,7 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeCamera;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -20,8 +21,11 @@ public class GoToBall extends CommandBase {
   private DriveSubsystem drive;
   private IntakeCamera camera;
 
-  private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
+  private PIDController angularPIDController = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
+
+   private PIDController linearPIDController = new PIDController(Constants.DRIVETRAIN_DISTANCE_GAINS.kP,
+   Constants.DRIVETRAIN_DISTANCE_GAINS.kI, Constants.DRIVETRAIN_DISTANCE_GAINS.kD);
 
    private double prevUpdateTime = 0;
   /**
@@ -36,43 +40,54 @@ public class GoToBall extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    pidController.setTolerance(2, 5);
+    angularPIDController.setTolerance(2, 5);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pidController.reset();
+    angularPIDController.reset();
+    linearPIDController.reset();
+    drive.resetEncoders();
   }
 
-  double setpoint = camera.getTarAngle();
+  double angularSetpoint = camera.getTarAngle();
+  double linearSetpoint = camera.getTarDistance();
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if(prevUpdateTime != camera.getLastUpdateTime()){
-      setpoint = drive.getHeading() + camera.getTarAngle();
+      angularSetpoint = drive.getHeading() + camera.getTarAngle();
+      linearSetpoint = drive.getAvgEncoderDistance() + camera.getTarDistance();
       // System.out.println("update turning");
     }
 
-    double tarAngle = setpoint - drive.getHeading();
+    // ChassisSpeeds adjustedSpeeds = new ChassisSpeeds(0, 0, v_angular);
 
-    double t = tarAngle/Constants.kMaxSpeed_TURN;
+    // DifferentialDriveWheelSpeeds wheelSpeeds = Constants.kDriveKinematics.toWheelSpeeds(adjustedSpeeds);
 
-    double v_angular = tarAngle / t;
+    double leftFF = Constants.Drive_ks;
+    double rightFF = Constants.Drive_ks; 
 
-    ChassisSpeeds adjustedSpeeds = new ChassisSpeeds(0, 0, v_angular);
+    double angularPID = angularPIDController.calculate(drive.getHeading(), angularSetpoint);
+    
+    double linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
 
-    DifferentialDriveWheelSpeeds wheelSpeeds = Constants.kDriveKinematics.toWheelSpeeds(adjustedSpeeds);
+    double left = linearPID - angularPID;
+    double right = linearPID + angularPID;
 
-    double leftFF = wheelSpeeds.leftMetersPerSecond;
-    double rightFF = wheelSpeeds.rightMetersPerSecond; 
+    if(Math.abs(left) > Constants.kMaxSpeed_Drive){
+      left = Constants.kMaxSpeed_Drive;
+      right = right * Constants.kMaxSpeed_Drive / left;
+    }
 
-    double pid = pidController.calculate(drive.getHeading(), setpoint);
+    if(Math.abs(right) > Constants.kMaxSpeed_Drive){
+      right = Constants.kMaxSpeed_Drive;
+      left = left * Constants.kMaxSpeed_Drive / right;
+    }
 
-    MathUtil.clamp(pid, 0, Constants.kMaxSpeed_Drive);
-
-    drive.setVelocity(leftFF - pid, rightFF + pid);
+    drive.setVelocity(leftFF * Math.signum(left) + left, rightFF * Math.signum(rightFF) + right);
   }
 
   // Called once the command ends or is interrupted.
@@ -82,9 +97,10 @@ public class GoToBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if(Math.abs(camera.getTarAngle()) <= 5){
-    //   return true;
-    // }
+    if(camera.getTarDistance() <= 0.7 && Math.abs(camera.getTarAngle()) <= 20){
+      return true;
+    }
+
     return false;
   }
 }

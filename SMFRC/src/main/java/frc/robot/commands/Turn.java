@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ShooterCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,7 +18,6 @@ public class Turn extends CommandBase {
   private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
    Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
 
-  private double prevUpdateTime = 0;
   private double setpoint;
   private double tarAngle;
   /**

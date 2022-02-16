@@ -33,6 +33,14 @@ public final class Constants {
     public static final double kTrackwidthMeters = 0.7112 / 0.93;
     public static final DifferentialDriveKinematics kDriveKinematics = 
     new DifferentialDriveKinematics(kTrackwidthMeters);
+
+    //drivetrain gains
+    public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
+        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
+    
+    public static final Gains DRIVETRAIN_DISTANCE_GAINS = new Gains(
+        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
+
 //TODO sysid
     public static final double Drive_ks = 0.101;
     public static final double Drive_kv = 2.44;
@@ -43,7 +51,6 @@ public final class Constants {
 
     //turning control
     public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
-    public static final double kMaxSpeed_TURN = 200; //degree per second
 
     // shooter subsystem
     public static final double Shooter_ks = 0.004588166667;
@@ -58,10 +65,6 @@ public final class Constants {
     public static final double[][] shooterData = 
     {{0,0},{0,0},{0,0},{0,0},{0,0},
     {0,0},{0,0},{0,0},{0,0},{0,0}};
-
-    //motorcontroller gains
-    public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
-        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
 
     public static class Gains {
         public final double kP;

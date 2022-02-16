@@ -9,6 +9,14 @@ public class AutoCommand extends SequentialCommandGroup {
 
     public AutoCommand(AutoInit autoInit, AutoTrajectory autoTrajectory) {
         super();
+
+        // init
+        // trajectroy
+        // intake
+        // turn to goal
+        // aim lock
+        // anchor | shoot
+
         this.addCommands(autoInit);
 
         this.addCommands(autoTrajectory);

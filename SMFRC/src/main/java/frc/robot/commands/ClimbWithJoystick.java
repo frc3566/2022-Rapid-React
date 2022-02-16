@@ -4,52 +4,39 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ShooterCamera;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ClimberSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class Anchor extends CommandBase {
+public class ClimbWithJoystick extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
-  private DriveSubsystem drive;
-  private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
-   Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
+  private ClimberSubsystem climber;
 
-   double setpoint;
-
-
+  private Joystick JS;
   /**
    * Creates a new ExampleCommand.
    *
    * @param driveSubsystem DriveSubsystem
    */
-  public Anchor(DriveSubsystem driveSubsystem) {
-    drive = driveSubsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(drive);
+  public ClimbWithJoystick(Joystick joystick, ClimberSubsystem climberSubsystem) {
+    climber = climberSubsystem;
 
-    pidController.setTolerance(2, 5);
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(climber);
+
+    JS = joystick;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    pidController.reset();
-    setpoint = drive.getHeading();
-    drive.setBrake(true);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    double pid = pidController.calculate(drive.getHeading(), setpoint);
-
-    drive.setVelocity(- pid, pid);
+    
   }
 
   // Called once the command ends or is interrupted.
