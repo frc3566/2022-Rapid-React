@@ -25,7 +25,7 @@ public final class Constants {
 
 //TODO meaure these
     public static final double GEAR_RATIO = 11.0 / 50.0 * 24.0 / 50.0; // MotorCnt / WheelCnt;
-    public static final double WHEEL_DIAMETER =  6.28 * 0.0254 * Math.PI;
+    public static final double WHEEL_DIAMETER =  6.28 * 0.0254 * Math.PI; // d(inch) * inch2meter * pi
     public static final double ENCODER_UNITpMETER = (1 / GEAR_RATIO) / WHEEL_DIAMETER;
     public static final double RPMpMPS = ENCODER_UNITpMETER * 60.0;
 
@@ -63,8 +63,8 @@ public final class Constants {
 
     //ten points in the frommat (meter, RPM) that are used to interpolate RPM for certain distance
     public static final double[][] shooterData = 
-    {{0,0},{0,0},{0,0},{0,0},{0,0},
-    {0,0},{0,0},{0,0},{0,0},{0,0}};
+    {{4.8768,4300},{5.7912,4600},{6.4008,4700},{7.0104,4900},{7.62,5090},{8.2296,7000}};
+    // ,{0,0},{0,0},{0,0},{0,0}};
 
     public static class Gains {
         public final double kP;
