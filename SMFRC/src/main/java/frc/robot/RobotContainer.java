@@ -71,13 +71,6 @@ public class RobotContainer {
     climer.setDefaultCommand(new InstantCommand(() -> climer.setPower(0), climer));
   }
 
-  // TODO commands on buttons
-  // autoshoot
-  // shoot
-  // start/stop intake
-  // extend/contract intake
-  // 
-
   // TODO button place to number mapping
 
   /**
@@ -120,9 +113,9 @@ public class RobotContainer {
 
     //climer up/down (hold)
     JoystickButton j1_b13 = new JoystickButton(js1, 13);
-    j1_b13.whenPressed(new InstantCommand(() -> climer.setPower(1), climer), true);
+    j1_b13.whenHeld(new InstantCommand(() -> climer.setPower(1), climer), true);
     JoystickButton j1_b14 = new JoystickButton(js1, 14);
-    j1_b14.whenPressed(new InstantCommand(() -> climer.setPower(-1), climer), true);
+    j1_b14.whenHeld(new InstantCommand(() -> climer.setPower(-1), climer), true);
 
     JoystickButton j1_b12 = new JoystickButton(js1, 12);
     JoystickButton j1_b15 = new JoystickButton(js1, 15);
@@ -132,6 +125,19 @@ public class RobotContainer {
 
     //Joystick 2
 
+    POVButton j2_p0 = new POVButton(js2, 0);
+    j2_p0.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j2_p315 = new POVButton(js2, 315);
+    j2_p315.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j2_p45 = new POVButton(js2, 45);
+    j2_p45.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+
+    POVButton j2_p225 = new POVButton(js2, 225);
+    j2_p225.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j2_p135 = new POVButton(js2, 135);
+    j2_p135.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j2_p180 = new POVButton(js2, 180);
+    j2_p180.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
 
 
   }
@@ -162,6 +168,13 @@ public class RobotContainer {
         7 8
         9 10
         11 12
+
+    POV buttons:
+          0
+      315   45
+    270       90
+      225   135
+         180
   */
 
   /**
