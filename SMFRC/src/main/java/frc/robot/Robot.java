@@ -91,10 +91,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    for(int i=1; i<20; i++){
-      JoystickButton button = new JoystickButton(m_robotContainer.JS, i);
-      if(button.get()) System.out.println(i);
-    }
+    // for(int i=1; i<20; i++){
+    //   JoystickButton button = new JoystickButton(m_robotContainer.JS, i);
+    //   if(button.get()) System.out.println(i);
+    // }
   }
 
   @Override

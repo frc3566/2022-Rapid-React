@@ -9,7 +9,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class Intake extends CommandBase {
+public class ExtendIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   IntakeSubsystem intake;
@@ -20,7 +20,7 @@ public class Intake extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Intake(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
+  public ExtendIntake(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
     
     intake = intakeSubsystem;
     shooter = shooterSubsystem;
@@ -34,8 +34,6 @@ public class Intake extends CommandBase {
   public void initialize() {
     intake.extendIntake();
     intake.setIntake(1);
-    intake.setIndexer(1);
-    shooter.setRPM(-100);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,6 +47,6 @@ public class Intake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
