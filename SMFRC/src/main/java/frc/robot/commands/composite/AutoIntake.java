@@ -10,9 +10,9 @@ public class AutoIntake extends SequentialCommandGroup {
     public AutoIntake(AutoInit autoInit, AutoTrajectory autoTrajectory) {
         super();
 
-        //deploy intake
-        //go to ball
-        //move over ball
+        // deploy intake
+        // go to ball
+        // move over ball
         this.addCommands(autoInit);
 
         this.addCommands(autoTrajectory);

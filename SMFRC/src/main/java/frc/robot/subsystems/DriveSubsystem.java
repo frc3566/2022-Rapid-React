@@ -4,11 +4,8 @@
 
 package frc.robot.subsystems;
 
-import java.security.Principal;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -48,7 +45,6 @@ public class DriveSubsystem extends SubsystemBase {
   
   private SparkMaxPIDController leftController, rightController;
 
-  // private PigeonIMU gyro;
   private AHRS gyro;
 
   private double gyroZero;
@@ -127,7 +123,6 @@ public class DriveSubsystem extends SubsystemBase {
     leftEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
     leftEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
 
-    // gyro = new PigeonIMU(right2);
     gyro = new AHRS(SPI.Port.kMXP);
 
     resetGyro();
