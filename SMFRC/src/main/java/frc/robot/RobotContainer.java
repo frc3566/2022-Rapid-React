@@ -11,11 +11,13 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.commands.Intake;
+import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.composite.AutoShoot;
 import frc.robot.commands.AutoTrajectory;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,22 +35,25 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public Joystick JS = new Joystick(0);
+  public Joystick js1 = new Joystick(0);
+  public Joystick js2 = new Joystick(1);
 
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
   private IntakeSubsystem intake = new IntakeSubsystem();
+  private IndexerSubsystem indexer = new IndexerSubsystem();
   private ShooterSubsystem shooter = new ShooterSubsystem();
   private ClimberSubsystem climer = new ClimberSubsystem();
 
-  private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(JS, drive);
+
+  private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(js1, drive);
   private AutoTrajectory runTrajectory = new AutoTrajectory(null, drive); //TODO test trajectory following
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
-  private Shoot shoot = new Shoot(0, intake, shooter);
+  private Shoot shoot = new Shoot(0, intake, indexer, shooter);
 
-  private Intake intake_command = new Intake(intake, shooter);
+  private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
 
   private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
 
@@ -61,7 +67,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     drive.setDefaultCommand(driveWithJoystick);
-    intake.setDefaultCommand(intake_command);
+    indexer.setDefaultCommand(new InstantCommand(() -> indexer.setIndexer(0), indexer));
+    climer.setDefaultCommand(new InstantCommand(() -> climer.setPower(0), climer));
   }
 
   // TODO commands on buttons
@@ -80,18 +87,56 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    //Joystick 1
+    //audo shoot
+    JoystickButton j1_b1 = new JoystickButton(js1, 1);
+    j1_b1.whenPressed(autoShoot, true);
+
+    // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
+    // JoystickButton j1_b3 = new JoystickButton(js1, 3); //ramming in driveWithJoystick
+
+    //manual shoot (hold)
+    JoystickButton j1_b4 = new JoystickButton(js1, 4);
+    j1_b4.whileHeld(shoot, true);
+
+    //indexer up/down (hold)
+    JoystickButton j1_b5 = new JoystickButton(js1, 5);
+    j1_b5.whenPressed(new InstantCommand(() -> indexer.setIndexer(1), indexer), true);
+    JoystickButton j1_b10 = new JoystickButton(js1, 10);
+    j1_b10.whenPressed(new InstantCommand(() -> indexer.setIndexer(-1), indexer), true);
+
+    //intake extend/contract
+    JoystickButton j1_b6 = new JoystickButton(js1, 6);
+    j1_b6.whenPressed(new InstantCommand(() -> intake.extendIntake(), intake), true);
+    JoystickButton j1_b9 = new JoystickButton(js1, 9);
+    j1_b9.whenPressed(new InstantCommand(() -> intake.contractIntake(), intake), true);
+
+    //intake in/out
+    JoystickButton j1_b7 = new JoystickButton(js1, 7);
+    j1_b7.whenPressed(new InstantCommand(() -> intake.setIntake(1), intake), true);
+    JoystickButton j1_b8 = new JoystickButton(js1, 8);
+    j1_b8.whenPressed(new InstantCommand(() -> intake.setIntake(-1), intake), true);
+
+    //climer up/down (hold)
+    JoystickButton j1_b13 = new JoystickButton(js1, 13);
+    j1_b13.whenPressed(new InstantCommand(() -> climer.setPower(1), climer), true);
+    JoystickButton j1_b14 = new JoystickButton(js1, 14);
+    j1_b14.whenPressed(new InstantCommand(() -> climer.setPower(-1), climer), true);
+
+    JoystickButton j1_b12 = new JoystickButton(js1, 12);
+    JoystickButton j1_b15 = new JoystickButton(js1, 15);
+
+    JoystickButton j1_b11 = new JoystickButton(js1, 11);
+    JoystickButton j1_b16 = new JoystickButton(js1, 16);
+
+    //Joystick 2
+
+
+
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return trajectory;
-  }
-
-  /* button mapping:
+    /* button mapping:
     thrustmaster:
       stick:
         trigger:1
@@ -101,7 +146,7 @@ public class RobotContainer {
       base:
         left:
           5 6 7
-          10 9  8
+          10 9 8
         right:
           13 12 11
           14 15 16
@@ -117,10 +162,17 @@ public class RobotContainer {
         7 8
         9 10
         11 12
-
-
-
   */
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return trajectory;
+  }
+
   public Command getDisabledCommand(){
     return disabledCommand;
   }

@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -13,6 +14,7 @@ public class Shoot extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
 IntakeSubsystem intake;
+IndexerSubsystem indexer;
 ShooterSubsystem shooter;
 
 double distance;
@@ -32,10 +34,11 @@ boolean isFinished;
    * @param shooterSubsystem
    */
 
-  public Shoot(double tarDistance, IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
+  public Shoot(double tarDistance, IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
 
     intake = intakeSubsystem;
     shooter = shooterSubsystem;
+    indexer = indexerSubsystem;
     
     distance = tarDistance;
     tarRPM = shooter.distanceToRPM(distance);
@@ -62,7 +65,7 @@ boolean isFinished;
     if(Math.abs(shooter.getRPM() - tarRPM) <= 400 && Timer.getFPGATimestamp() >= shooterWaitTar){
       shooterReady = true;
       indexerWaitTar = Timer.getFPGATimestamp() + 1.5;
-      intake.setIndexer(1);
+      indexer.setIndexer(1);
       
       if(Timer.getFPGATimestamp() >= indexerWaitTar){
         isFinished = true;
@@ -74,7 +77,7 @@ boolean isFinished;
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setIndexer(0);
+    indexer.setIndexer(0);
   }
 
   // Returns true when the command should end.

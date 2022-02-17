@@ -16,63 +16,55 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class IntakeSubsystem extends SubsystemBase {
-
-  private CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
-
-  // Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
+public class IndexerSubsystem extends SubsystemBase {
 
   // private CANSparkMax indexer = new CANSparkMax(12, MotorType.kBrushless);
 
-  // Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  private RelativeEncoder indexerEncoder;
+
+  private SparkMaxPIDController indexerPID;
 
   private int ballCnt;
 
 
-  public IntakeSubsystem() {
-    intake.setInverted(true);
-    intake.setClosedLoopRampRate(0.3);
-    intake.setIdleMode(IdleMode.kCoast);
+  public IndexerSubsystem() {
+    // indexer.setInverted(false);
+    // indexer.setClosedLoopRampRate(0.3);
+    // indexer.setIdleMode(IdleMode.kCoast);
+
+    // indexerEncoder = indexer.getEncoder();
+    // indexerEncoder.setPositionConversionFactor(1);
+    // indexerEncoder.setVelocityConversionFactor(1);
+
+    // indexerPID = indexer.getPIDController();
+    // indexerPID.setP(0.3);
+    // indexerPID.setD(0.01);
 
     ballCnt = 1;
   }
 
-  public void enableCompressor(){
-    // compressor.enableDigital();
+  public void setIndexer(double power){
+    // indexer.set(power);
+  }
+  
+  public void shiftIndexer(boolean shiftUp){
+    //TODO measure degree turn needed
+    double tarPos;
+
+    if(shiftUp){
+      tarPos = indexerEncoder.getPosition() + 50;
+    }else{
+      tarPos = indexerEncoder.getPosition() - 50;
+    }
+
+    indexerPID.setReference(tarPos, ControlType.kPosition);
   }
 
-  public void disableCompressor(){
-    // compressor.disable();
-  }
-
-  public void extendIntake(){
-    // solenoid.set(true);
-  }
-
-  public void contractIntake(){
-    // solenoid.set(false);
-  }
-
-  public void setIntake(double power){
-    intake.set(power);
-  }
-
-  public void setBallCount(int cnt){
-    ballCnt = cnt;
-  }
-
-  public int getBallCount(){
-    return ballCnt;
-  }
 
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    // boolean pressureSwitch = compressor.getPressureSwitchValue();
-    // double current = compressor.getCurrent();
-
   }
 
   @Override

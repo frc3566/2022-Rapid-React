@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -9,26 +10,27 @@ public class Eject extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   IntakeSubsystem intake;
-  ShooterSubsystem shooter;
+  IndexerSubsystem indexer;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Eject(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem) {
+  public Eject(IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
     
     intake = intakeSubsystem;
-    shooter = shooterSubsystem;
+    indexer = indexerSubsystem;
     
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intake, shooter);
+    addRequirements(intake, indexer);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.setIntake(-1);;;
+    intake.setIntake(-1);
+    indexer.setIndexer(-1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,7 +40,8 @@ public class Eject extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setIntake(0);
+    intake.setIntake(1);
+    indexer.setIndexer(0);
   }
   
   // Returns true when the command should end.

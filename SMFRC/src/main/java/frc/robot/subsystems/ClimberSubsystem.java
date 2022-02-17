@@ -53,7 +53,7 @@ public class ClimberSubsystem extends SubsystemBase {
     isExtended = false;
   }
 
-  public void setPower(Double power){
+  public void setPower(double power){
     // left.set(power);
     // right.set(power);
   }

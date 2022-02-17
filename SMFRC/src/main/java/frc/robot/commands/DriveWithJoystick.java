@@ -70,7 +70,7 @@ public class DriveWithJoystick extends CommandBase {
    // drivetrain
 
   public boolean isOverride() {
-    return JS.getRawButton(11);
+    return JS.getRawButton(2);
   }
   public boolean isReversed() {
     return getSlider() < 0.5;
