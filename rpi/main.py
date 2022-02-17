@@ -6,6 +6,7 @@ import numbers
 import sys
 import json
 import multiprocessing as mp
+import numpy as np
 from networktables import NetworkTables, NetworkTablesInstance
 from IntakeCameraProcess import IntakeCameraProcess
 from ShooterCameraProcess import ShooterCameraProcess
@@ -252,12 +253,19 @@ def shooterCamera_is_updated():
 
 if __name__ == '__main__':
 
-    intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(), intake_nt_queue,
-                                               intake_frame_in_queue, intake_frame_out_queue,
+    start_camera_server()
+
+    intake_out_stream = CameraServer.getInstance().putVideo('shooter', Constants.WIDTH, Constants.HEIGHT)
+
+    shooter_in_stream = CameraServer.getInstance().getVideo()
+    shooter_out_stream = CameraServer.getInstance().putVideo('intake', Constants.WIDTH, Constants.HEIGHT)
+
+    intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(intake_nt_queue,
+                                               intake_frame_in_queue, intake_frame_out_queue),
                                                name="intake_camera_proces")
 
-    shooterCameraProcessManager = ProcessManager(lambda: ShooterCameraProcess(), shooter_nt_queue,
-                                                 shooter_frame_in_queue, shooter_frame_out_queue,
+    shooterCameraProcessManager = ProcessManager(lambda: ShooterCameraProcess(shooter_nt_queue,
+                                                 shooter_frame_in_queue, shooter_frame_out_queue),
                                                  name="shooter_camera_process")
 
     def cleanup():
@@ -269,12 +277,6 @@ if __name__ == '__main__':
 
     atexit.register(cleanup)
 
-    intake_out_stream = CameraServer.getInstance().putVideo('shooter', Constants.WIDTH, Constants.HEIGHT)
-
-    shooter_in_stream = CameraServer.getInstance().getVideo()
-    shooter_out_stream = CameraServer.getInstance().putVideo('intake', Constants.WIDTH, Constants.HEIGHT)
-
-
     # main loop
     while True:
 
@@ -285,6 +287,8 @@ if __name__ == '__main__':
 
         if not intake_frame_in_queue.empty():
             intake_frame_in_queue.get_nowait()
+
+        img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 
         frame_time, img = shooter_in_stream.grabFrame(img)
         intake_frame_in_queue.put_nowait((frame_time, img))
@@ -328,10 +332,10 @@ if __name__ == '__main__':
                 frame = shooter_frame_out_queue.get_nowait()
                 shooter_out_stream.putFrame(frame)
         except Empty:
-            pass
+            shooter_out_stream.putFrame(img)
 
         # get CV
         intakeCameraProcesManager.checkin(intakeCamera_is_updated())
 
-        # shooterCameraProcessManager.checkin(shooterCamera_is_updated())
+        shooterCameraProcessManager.checkin(shooterCamera_is_updated())
 

@@ -23,10 +23,8 @@ class ShooterCameraProcess(mp.Process):
         width = 640
         height = 480
 
-        logging.basicConfig(level=logging.DEBUG)
-
         # Allocating new images is very expensive, always try to preallocate
-        img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
+        input_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
 
         # Wait for NetworkTables to start
         time.sleep(0.5)
@@ -35,6 +33,7 @@ class ShooterCameraProcess(mp.Process):
         try:
             frame_time, input_img = self.frame_in_queue.get_nowait()
         except Empty:
+            self.logger.error("no frame")
             pass
 
         hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
