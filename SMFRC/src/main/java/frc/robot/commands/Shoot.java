@@ -78,6 +78,7 @@ boolean isFinished;
   @Override
   public void end(boolean interrupted) {
     indexer.setIndexer(0);
+    shooter.setRPM(0);
   }
 
   // Returns true when the command should end.

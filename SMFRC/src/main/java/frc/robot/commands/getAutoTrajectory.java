@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import frc.robot.Constants;
@@ -19,14 +15,14 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-/** An example command that uses an example subsystem. */
-public class AutoTrajectory extends RamseteCommand {
+public class getAutoTrajectory{
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
 // Create a voltage constraint to ensure we don't accelerate too fast
-private DifferentialDriveVoltageConstraint autoVoltageConstraint =
+private static DifferentialDriveVoltageConstraint autoVoltageConstraint =
     new DifferentialDriveVoltageConstraint(
         new SimpleMotorFeedforward(
             Constants.Drive_ks,
@@ -36,7 +32,7 @@ private DifferentialDriveVoltageConstraint autoVoltageConstraint =
         10);
 
 // Create config for trajectory
-private TrajectoryConfig config =
+private static TrajectoryConfig config =
     new TrajectoryConfig(
             Constants.kMaxSpeed_Drive,
             Constants.kMaxAcceleration_Drive)
@@ -45,7 +41,7 @@ private TrajectoryConfig config =
         // Apply the voltage constraint
         .addConstraint(autoVoltageConstraint);
 
-private Trajectory trajectory = 
+private static Trajectory trajectory = 
 TrajectoryGenerator.generateTrajectory(
     // Start at the origin facing the +X direction
     new Pose2d(0, 0, new Rotation2d(0)),
@@ -57,7 +53,7 @@ TrajectoryGenerator.generateTrajectory(
     config);
     
 
-RamseteController controller;
+static RamseteController controller;
 
   /**
    * Creates a new ExampleCommand.
@@ -67,8 +63,8 @@ RamseteController controller;
    * 
    */
 
-  public AutoTrajectory(Trajectory trajectory, DriveSubsystem driveSubsystem) {
-    super(
+  public static RamseteCommand getTrajectory(DriveSubsystem driveSubsystem) {
+    return new RamseteCommand(
       trajectory,
       driveSubsystem::getPose,
       new RamseteController(2.0, 0.7),

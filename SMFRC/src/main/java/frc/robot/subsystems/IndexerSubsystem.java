@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IndexerSubsystem extends SubsystemBase {
 
-  // private CANSparkMax indexer = new CANSparkMax(12, MotorType.kBrushless);
+  private CANSparkMax indexer = new CANSparkMax(12, MotorType.kBrushless);
 
   private RelativeEncoder indexerEncoder;
 
@@ -31,23 +31,23 @@ public class IndexerSubsystem extends SubsystemBase {
 
 
   public IndexerSubsystem() {
-    // indexer.setInverted(false);
-    // indexer.setClosedLoopRampRate(0.3);
-    // indexer.setIdleMode(IdleMode.kCoast);
+    indexer.setInverted(true);
+    indexer.setClosedLoopRampRate(0.3);
+    indexer.setIdleMode(IdleMode.kCoast);
 
-    // indexerEncoder = indexer.getEncoder();
-    // indexerEncoder.setPositionConversionFactor(1);
-    // indexerEncoder.setVelocityConversionFactor(1);
+    indexerEncoder = indexer.getEncoder();
+    indexerEncoder.setPositionConversionFactor(1);
+    indexerEncoder.setVelocityConversionFactor(1);
 
-    // indexerPID = indexer.getPIDController();
-    // indexerPID.setP(0.3);
-    // indexerPID.setD(0.01);
+    indexerPID = indexer.getPIDController();
+    indexerPID.setP(0.3);
+    indexerPID.setD(0.01);
 
     ballCnt = 1;
   }
 
   public void setIndexer(double power){
-    // indexer.set(power);
+    indexer.set(power);
   }
   
   public void shiftIndexer(boolean shiftUp){

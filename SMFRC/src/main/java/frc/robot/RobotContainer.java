@@ -11,10 +11,9 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.commands.ExtendIntake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.composite.AutoShoot;
-import frc.robot.commands.AutoTrajectory;
+import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -23,6 +22,8 @@ import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -43,23 +44,22 @@ public class RobotContainer {
   private IntakeSubsystem intake = new IntakeSubsystem();
   private IndexerSubsystem indexer = new IndexerSubsystem();
   private ShooterSubsystem shooter = new ShooterSubsystem();
-  private ClimberSubsystem climer = new ClimberSubsystem();
+  private ClimberSubsystem climber = new ClimberSubsystem();
 
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(js1, drive);
-  private AutoTrajectory runTrajectory = new AutoTrajectory(null, drive); //TODO test trajectory following
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
-  private Shoot shoot = new Shoot(0, intake, indexer, shooter);
+  private Shoot shoot = new Shoot(5, intake, indexer, shooter);
 
   private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
 
   private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
 
-  private AutoInit autoInit = new AutoInit(climer, drive, intake, shooter);
+  private AutoInit autoInit = new AutoInit(climber, drive, intake, shooter);
 
-  private AutoTrajectory trajectory = new AutoTrajectory(null, drive);
+  private RamseteCommand trajectory = getAutoTrajectory.getTrajectory(drive);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,8 +67,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     drive.setDefaultCommand(driveWithJoystick);
-    indexer.setDefaultCommand(new InstantCommand(() -> indexer.setIndexer(0), indexer));
-    climer.setDefaultCommand(new InstantCommand(() -> climer.setPower(0), climer));
+    indexer.setDefaultCommand(new RunCommand(() -> indexer.setIndexer(0), indexer));
+    climber.setDefaultCommand(new RunCommand(() -> climber.setPower(0), climber));
   }
 
   // TODO button place to number mapping
@@ -84,7 +84,7 @@ public class RobotContainer {
     //Joystick 1
     //audo shoot
     JoystickButton j1_b1 = new JoystickButton(js1, 1);
-    j1_b1.whenPressed(autoShoot, true);
+    // j1_b1.whenPressed(autoShoot, true);
 
     // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
     // JoystickButton j1_b3 = new JoystickButton(js1, 3); //ramming in driveWithJoystick
@@ -95,9 +95,9 @@ public class RobotContainer {
 
     //indexer up/down (hold)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
-    j1_b5.whenPressed(new InstantCommand(() -> indexer.setIndexer(1), indexer), true);
+    j1_b5.whenPressed(new InstantCommand(() -> indexer.setIndexer(0.7), indexer), true);
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
-    j1_b10.whenPressed(new InstantCommand(() -> indexer.setIndexer(-1), indexer), true);
+    j1_b10.whenPressed(new InstantCommand(() -> indexer.setIndexer(-0.7), indexer), true);
 
     //intake extend/contract
     JoystickButton j1_b6 = new JoystickButton(js1, 6);
@@ -107,15 +107,15 @@ public class RobotContainer {
 
     //intake in/out
     JoystickButton j1_b7 = new JoystickButton(js1, 7);
-    j1_b7.whenPressed(new InstantCommand(() -> intake.setIntake(1), intake), true);
+    j1_b7.toggleWhenPressed(new RunCommand(() -> intake.setIntake(0.7), intake), true);
     JoystickButton j1_b8 = new JoystickButton(js1, 8);
-    j1_b8.whenPressed(new InstantCommand(() -> intake.setIntake(-1), intake), true);
+    j1_b8.toggleWhenPressed(new RunCommand(() -> intake.setIntake(-0.7), intake), true);
 
     //climer up/down (hold)
     JoystickButton j1_b13 = new JoystickButton(js1, 13);
-    j1_b13.whenHeld(new InstantCommand(() -> climer.setPower(1), climer), true);
+    j1_b13.whenHeld(new RunCommand(() -> climber.setPower(0.7), climber), true);
     JoystickButton j1_b14 = new JoystickButton(js1, 14);
-    j1_b14.whenHeld(new InstantCommand(() -> climer.setPower(-1), climer), true);
+    j1_b14.whenHeld(new RunCommand(() -> climber.setPower(-0.7), climber), true);
 
     JoystickButton j1_b12 = new JoystickButton(js1, 12);
     JoystickButton j1_b15 = new JoystickButton(js1, 15);
@@ -125,19 +125,19 @@ public class RobotContainer {
 
     //Joystick 2
 
-    POVButton j2_p0 = new POVButton(js2, 0);
-    j2_p0.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
-    POVButton j2_p315 = new POVButton(js2, 315);
-    j2_p315.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
-    POVButton j2_p45 = new POVButton(js2, 45);
-    j2_p45.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j1_p0 = new POVButton(js1, 0);
+    j1_p0.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
+    POVButton j1_p315 = new POVButton(js1, 315);
+    j1_p315.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
+    POVButton j1_p45 = new POVButton(js1, 45);
+    j1_p45.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
 
-    POVButton j2_p225 = new POVButton(js2, 225);
-    j2_p225.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
-    POVButton j2_p135 = new POVButton(js2, 135);
-    j2_p135.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
-    POVButton j2_p180 = new POVButton(js2, 180);
-    j2_p180.whenHeld(new InstantCommand(() -> climer.setPower(-1), indexer), false);
+    POVButton j1_p225 = new POVButton(js1, 225);
+    j1_p225.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
+    POVButton j1_p135 = new POVButton(js1, 135);
+    j1_p135.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
+    POVButton j1_p180 = new POVButton(js1, 180);
+    j1_p180.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), false);
 
 
   }
@@ -183,7 +183,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return trajectory;
+    // return trajectory;
+    return null;
   }
 
   public Command getDisabledCommand(){

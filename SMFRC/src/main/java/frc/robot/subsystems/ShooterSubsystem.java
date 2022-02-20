@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
         // shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
 
-        shooterMaster.setInverted(false);
+        shooterMaster.setInverted(true);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
@@ -65,9 +65,6 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void setRPM(){
-        setRPM(6000);
-    }
     public void setRPM(double RPM){
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
