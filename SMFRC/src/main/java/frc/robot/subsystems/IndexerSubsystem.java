@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +24,8 @@ public class IndexerSubsystem extends SubsystemBase {
   private RelativeEncoder indexerEncoder;
 
   private SparkMaxPIDController indexerPID;
+
+  DigitalInput IRsensor = new DigitalInput(0);
 
   private int ballCnt;
 
@@ -60,6 +63,9 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerPID.setReference(tarPos, ControlType.kPosition);
   }
 
+  public boolean getIR(){
+    return IRsensor.get();
+  }
 
 
   @Override

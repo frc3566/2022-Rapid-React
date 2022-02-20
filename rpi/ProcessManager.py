@@ -31,15 +31,13 @@ class ProcessManager:
         self.is_connected = False
         self.last_update_time = time.time()
 
-
     def checkin(self, isUpdated):
         if isUpdated:
             try:
                 rate = 1 / (time.time() - self.last_connect_time)
             except ZeroDivisionError:
                 rate = float("inf")
-            self.update_rate = self.update_rate * Constants.MA_MOMENTUM + \
-                               rate * (1 - Constants.MA_MOMENTUM)
+            self.update_rate = self.update_rate * Constants.MA_MOMENTUM + rate * (1 - Constants.MA_MOMENTUM)
             self.last_connect_time = time.time()
             self.is_connected = True
         elif not Constants.DEBUG: # no killing when debug
@@ -64,6 +62,7 @@ class ProcessManager:
         self.process.daemon = True
         self.process.start()
         self.last_connect_time = time.time()
+        # print("starting process")
 
     def end_process(self):
         self.process.terminate

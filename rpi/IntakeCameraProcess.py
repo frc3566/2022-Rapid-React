@@ -12,19 +12,20 @@ from statistics import mean
 from util.showImage import show
 from networktables import NetworkTables
 from Constants import *
-# from cscore import CameraServer
+from multiprocessing import Queue
+from queue import Full, Empty
 
 MIN_DIS = 0.25
 MAX_DIS = 9
 
 DEPTH_H = 480
 DEPTH_W = 640
-FPS = 30
+
 
 DIS_RADIUS_PRODUCT_MIN = 40
 DIS_RADIUS_PRODUCT_MAX = 100
 
-MIN_CONTOUR_SIZE = 50
+MIN_CONTOUR_SIZE = 50 # reduced resolution
 
 # hMin = 0
 # hMax = 255
@@ -98,15 +99,13 @@ class IntakeCameraProcess(mp.Process):
 
     def process_method(self):
 
-        # outputStream = self.cs.putVideo("intake_camera", 640, 480)
-
         pipeline = rs.pipeline()
         config = rs.config()
 
-        # config.enable_device('f1230148')
+        config.enable_device('f1230148')
 
-        config.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, FPS)
-        config.enable_stream(rs.stream.color, DEPTH_W, DEPTH_H, rs.format.bgr8, FPS)
+        config.enable_stream(rs.stream.depth, 320, 240, rs.format.z16, 30)
+        config.enable_stream(rs.stream.color, 640, 360, rs.format.bgr8, 6)
 
         align_to = rs.stream.color
         align = rs.align(align_to)
@@ -310,15 +309,22 @@ class IntakeCameraProcess(mp.Process):
 
                 # NetworkTables.flush()
 
-                self.nt_queue.put_nowait(("last_update_time", time.time()))
 
-                self.nt_queue.put_nowait(("processing_time", processing_time))
-                self.nt_queue.put_nowait(("fps", fps))
+                try:
+                    self.nt_queue.put_nowait(("last_update_time", time.time()))
 
-                self.nt_queue.put_nowait(("ball_distance", ball_dis))
-                self.nt_queue.put_nowait(("ball_angle", ball_angle))
+                    self.nt_queue.put_nowait(("processing_time", processing_time))
+                    self.nt_queue.put_nowait(("fps", fps))
 
-                self.nt_queue.put_nowait(("ball_detected", ball_detected))
+                    self.nt_queue.put_nowait(("ball_distance", ball_dis))
+                    self.nt_queue.put_nowait(("ball_angle", ball_angle))
+
+                    self.nt_queue.put_nowait(("ball_detected", ball_detected))
+                except Full:
+                    logging.error("intake nt full")
+
+                if self.frame_out_queue.full():
+                    self.frame_out_queue.get_nowait()
 
                 self.frame_out_queue.put_nowait(color_img)
 

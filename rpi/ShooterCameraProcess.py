@@ -5,6 +5,7 @@ import time
 import logging
 import math
 from Constants import Constants
+from multiprocessing import Queue
 from queue import Full, Empty
 
 
@@ -13,7 +14,7 @@ class ShooterCameraProcess(mp.Process):
     def __init__(self, nt_queue, frame_in_queue, frame_out_queue):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.goal_detect = False
+        self.goal_detected = False
         self.nt_queue = nt_queue
         self.frame_in_queue = frame_in_queue
         self.frame_out_queue = frame_out_queue
@@ -30,11 +31,12 @@ class ShooterCameraProcess(mp.Process):
         time.sleep(0.5)
 
         # preallocate, get shape
-        try:
-            frame_time, input_img = self.frame_in_queue.get_nowait()
-        except Empty:
-            self.logger.error("no frame")
-            pass
+        # try:
+        #     frame_time, input_img = self.frame_in_queue.get_nowait()
+        # except Empty:
+        #     # self.logger.error("no frame")
+        #     pass
+        # self.logger.debug("yes frame")
 
         hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
 
@@ -58,8 +60,10 @@ class ShooterCameraProcess(mp.Process):
             try:
                 frame_time, input_img = self.frame_in_queue.get_nowait()
             except Empty:
-                self.logger.error("no frame")
+                # self.logger.error("no frame")
                 continue
+
+            # print("yes frame")
 
             # print(input_img)
 
@@ -116,7 +120,7 @@ class ShooterCameraProcess(mp.Process):
 
             processing_time = time.time() - start_time
             fps = 1 / processing_time
-            cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255))
+            # cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255))
 
             # update nt
             # self.nt.putNumber("last_update_time", time.time())
@@ -133,18 +137,28 @@ class ShooterCameraProcess(mp.Process):
             # output_stream.putFrame(output_img)
             # binary_stream.putFrame(binary_img)
 
-            self.nt_queue.put_nowait(("last_update_time", time.time()))
+            try:
+                self.nt_queue.put_nowait(("last_update_time", time.time()))
 
-            self.nt_queue.put_nowait(("processing_time", processing_time))
-            self.nt_queue.put_nowait(("fps", fps))
+                self.nt_queue.put_nowait(("processing_time", processing_time))
+                self.nt_queue.put_nowait(("fps", fps))
 
-            self.nt_queue.put_nowait(("goal_detected", goal_detected))
+                self.nt_queue.put_nowait(("goal_detected", goal_detected))
 
-            self.nt_queue.put_nowait(("x_angle", x_angle))
-            self.nt_queue.put_nowait(("y_angle", y_angle))
-            self.nt_queue.put_nowait(("distance", distance))
+                self.nt_queue.put_nowait(("x_angle", x_angle))
+                self.nt_queue.put_nowait(("y_angle", y_angle))
+                self.nt_queue.put_nowait(("distance", distance))
 
-            self.frame_out_queue.put_nowait(output_img)
+                # print(goal_detected, x_angle, y_angle, distance)
+            except Full:
+                logging.error("shooter nt full")
+                pass
+
+            try:
+                self.frame_out_queue.put_nowait(output_img)
+            except Full:
+                pass
+
 
     def run(self):
         try:
