@@ -94,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // good boy
     left1 = new CANSparkMax(1, MotorType.kBrushless);
-    setSpark(left1, true);
+    left1.setInverted(true);;
     leftController = left1.getPIDController();
     setControler(leftController);
 
@@ -105,7 +105,7 @@ public class DriveSubsystem extends SubsystemBase {
     left3.follow(left1);
 
     right1 = new CANSparkMax(4, MotorType.kBrushless);
-    setSpark(left1, false);
+    right1.setInverted(false);
     rightController = right1.getPIDController();
     setControler(rightController);
 
@@ -165,12 +165,6 @@ public class DriveSubsystem extends SubsystemBase {
     double rightPwm = right1.get();
     left2.set(rightPwm);
     left2.set(rightPwm);
-  }
-
-  private void setSpark(CANSparkMax spark, boolean inverted) {
-    spark.restoreFactoryDefaults();
-    // spark.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    spark.setInverted(inverted);
   }
 
   private void setTalon(WPI_TalonSRX talon, boolean inverted){

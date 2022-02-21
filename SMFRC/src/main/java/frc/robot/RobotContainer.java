@@ -11,7 +11,7 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.composite.AutoShoot;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -51,11 +52,11 @@ public class RobotContainer {
 
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
-  private Shoot shoot = new Shoot(5, intake, indexer, shooter);
+  private ShootCommand shoot = new ShootCommand(5, indexer, shooter);
 
   private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
 
-  private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter);
+  private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter, indexer);
 
   private AutoInit autoInit = new AutoInit(climber, drive, intake, shooter);
 
@@ -89,33 +90,33 @@ public class RobotContainer {
     // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
     // JoystickButton j1_b3 = new JoystickButton(js1, 3); //ramming in driveWithJoystick
 
-    //manual shoot (hold)
+    //manual shoot (press)
     JoystickButton j1_b4 = new JoystickButton(js1, 4);
-    j1_b4.whileHeld(shoot, true);
+    j1_b4.whenPressed(shoot, false);
 
     //indexer up/down (hold)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
-    j1_b5.whenPressed(new InstantCommand(() -> indexer.setIndexer(0.7), indexer), true);
+    j1_b5.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0), indexer), true);
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
-    j1_b10.whenPressed(new InstantCommand(() -> indexer.setIndexer(-0.7), indexer), true);
+    j1_b10.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0), indexer), true);
 
     //intake extend/contract
     JoystickButton j1_b6 = new JoystickButton(js1, 6);
-    j1_b6.whenPressed(new InstantCommand(() -> intake.extendIntake(), intake), true);
+    j1_b6.whenPressed(new RunCommand(() -> intake.extendIntake(), intake), true);
     JoystickButton j1_b9 = new JoystickButton(js1, 9);
-    j1_b9.whenPressed(new InstantCommand(() -> intake.contractIntake(), intake), true);
+    j1_b9.whenPressed(new RunCommand(() -> intake.contractIntake(), intake), true);
 
     //intake in/out
     JoystickButton j1_b7 = new JoystickButton(js1, 7);
-    j1_b7.toggleWhenPressed(new RunCommand(() -> intake.setIntake(0.7), intake), true);
+    j1_b7.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0), intake), true);
     JoystickButton j1_b8 = new JoystickButton(js1, 8);
-    j1_b8.toggleWhenPressed(new RunCommand(() -> intake.setIntake(-0.7), intake), true);
+    j1_b8.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(-0), intake), true);
 
     //climer up/down (hold)
     JoystickButton j1_b13 = new JoystickButton(js1, 13);
-    j1_b13.whenHeld(new RunCommand(() -> climber.setPower(0.7), climber), true);
+    j1_b13.whenHeld(new StartEndCommand(() -> climber.setPower(0.7), () -> climber.setPower(0), climber), true);
     JoystickButton j1_b14 = new JoystickButton(js1, 14);
-    j1_b14.whenHeld(new RunCommand(() -> climber.setPower(-0.7), climber), true);
+    j1_b14.whenHeld(new StartEndCommand(() -> climber.setPower(-0.7), () -> climber.setPower(0), climber), true);
 
     JoystickButton j1_b12 = new JoystickButton(js1, 12);
     JoystickButton j1_b15 = new JoystickButton(js1, 15);
@@ -183,8 +184,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return trajectory;
-    return null;
+    return trajectory;
+    // return null;
   }
 
   public Command getDisabledCommand(){

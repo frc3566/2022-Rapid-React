@@ -2,12 +2,12 @@ import numpy as np
 from enum import Enum
 
 
-class BallColor(Enum):
+class BallColors(Enum):
     BLUE = True
     RED = False
 
 class Constants:
-    ballColor = BallColor.RED
+    ballColor = BallColors.RED
 
     # microsoft cam
     EXPOSURE_AUTO = 1  # 1 off 3 on

@@ -25,13 +25,14 @@ public class IndexerSubsystem extends SubsystemBase {
 
   private SparkMaxPIDController indexerPID;
 
-  DigitalInput IRsensor = new DigitalInput(0);
+  DigitalInput entranceIR = new DigitalInput(0);
+  DigitalInput lowIR = new DigitalInput(1);
+  DigitalInput highIR = new DigitalInput(2);
 
   private int ballCnt;
 
-
   public IndexerSubsystem() {
-    indexer.setInverted(true);
+    indexer.setInverted(false);
     indexer.setClosedLoopRampRate(0.3);
     indexer.setIdleMode(IdleMode.kCoast);
 
@@ -43,34 +44,45 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerPID.setP(0.3);
     indexerPID.setD(0.01);
 
-    ballCnt = 1;
+    ballCnt = 2;
   }
 
   public void setIndexer(double power){
     indexer.set(power);
   }
-  
-  public void shiftIndexer(boolean shiftUp){
-    //TODO measure degree turn needed
-    double tarPos;
 
-    if(shiftUp){
-      tarPos = indexerEncoder.getPosition() + 50;
-    }else{
-      tarPos = indexerEncoder.getPosition() - 50;
-    }
-
-    indexerPID.setReference(tarPos, ControlType.kPosition);
+  public boolean getEntranceIR(){
+    return !entranceIR.get();
   }
 
-  public boolean getIR(){
-    return IRsensor.get();
+  public boolean getLowIR(){
+    return !lowIR.get();
   }
 
+  public boolean getHighIR(){
+    return !highIR.get();
+  }
+
+  public int getBallCount(){
+    return ballCnt;
+  }
+
+  public void setBallCount(int cnt){
+    ballCnt = cnt;
+    return;
+  }
+
+  public void disabled(){
+    indexer.set(0);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    System.out.println("Entrance: " + entranceIR.get());
+    System.out.println("Low: " + lowIR.get());
+    System.out.println("High: " + highIR.get());
   }
 
   @Override

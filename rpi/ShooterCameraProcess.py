@@ -53,7 +53,7 @@ class ShooterCameraProcess(mp.Process):
 
             start_time = time.time()
 
-            hsv_min = (57, 100, 24)
+            hsv_min = (57, 50, 20)
             hsv_max = (84, 255, 255)
 
             # Notify output of error and skip iteration
@@ -80,7 +80,7 @@ class ShooterCameraProcess(mp.Process):
             hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
             binary_img = cv2.inRange(hsv_img, hsv_min, hsv_max)
 
-            _, contour_list, _ = cv2.findContours(binary_img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
+            contour_list, _ = cv2.findContours(binary_img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
 
             x_list = []
             y_list = []
@@ -155,7 +155,8 @@ class ShooterCameraProcess(mp.Process):
                 pass
 
             try:
-                self.frame_out_queue.put_nowait(output_img)
+                # self.frame_out_queue.put_nowait(output_img)
+                self.frame_out_queue.put_nowait(binary_img)
             except Full:
                 pass
 

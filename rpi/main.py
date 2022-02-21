@@ -84,10 +84,10 @@ if __name__ == '__main__':
         path="/dev/v4l/by-id/usb-Microsoft_Microsoft®_LifeCam_HD-3000-video-index0"
         )
 
-    intake_out_stream = CameraServer.getInstance().putVideo('shooter_processed', Constants.WIDTH, Constants.HEIGHT)
+    intake_out_stream = CameraServer.getInstance().putVideo('intake', Constants.WIDTH, Constants.HEIGHT)
 
     shooter_in_stream = CameraServer.getInstance().getVideo()
-    shooter_out_stream = CameraServer.getInstance().putVideo('intake', Constants.WIDTH, Constants.HEIGHT)
+    shooter_out_stream = CameraServer.getInstance().putVideo('shooter_processed', Constants.WIDTH, Constants.HEIGHT)
 
     intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(intake_nt_queue,
                                                intake_frame_in_queue, intake_frame_out_queue),
@@ -126,7 +126,7 @@ if __name__ == '__main__':
             try:
                 shooter_frame_in_queue.put_nowait((frame_time, img))
             except Full:
-                print("shooter frame in full")
+                # print("shooter frame in full")
                 pass
 
         # print(img)
@@ -159,6 +159,8 @@ if __name__ == '__main__':
 
         # update camera server
 
+        frame = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
+
         try:
             while True:
                 frame = intake_frame_out_queue.get_nowait()
@@ -171,7 +173,7 @@ if __name__ == '__main__':
                 frame = shooter_frame_out_queue.get_nowait()
                 shooter_out_stream.putFrame(frame)
         except Empty:
-            shooter_out_stream.putFrame(img)
+            pass
 
         # get CV
         intakeCameraProcesManager.checkin(intakeCamera_is_updated())

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -20,8 +21,9 @@ public class DisabledCommand extends CommandBase {
 
    DriveSubsystem drive;
    ShooterSubsystem shooter;
+   IndexerSubsystem indexer;
 
-  public DisabledCommand(DriveSubsystem driveSubsystem, ShooterSubsystem shooter) {
+  public DisabledCommand(DriveSubsystem driveSubsystem, ShooterSubsystem shooter, IndexerSubsystem indexer) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem, shooter);
 
@@ -34,6 +36,7 @@ public class DisabledCommand extends CommandBase {
   public void initialize() {
     drive.disabled();
     shooter.disabled();
+    indexer.disabled();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

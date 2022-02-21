@@ -104,7 +104,7 @@ class IntakeCameraProcess(mp.Process):
         config.enable_device('f1230148')
 
         config.enable_stream(rs.stream.depth, 320, 240, rs.format.z16, 30)
-        config.enable_stream(rs.stream.color, 640, 360, rs.format.bgr8, 6)
+        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 15)
 
         align_to = rs.stream.color
         align = rs.align(align_to)
@@ -182,6 +182,8 @@ class IntakeCameraProcess(mp.Process):
                 depth_image = np.asanyarray(depth_frame.get_data())
                 depth_image = depth_image * DEPTH_UNIT
 
+                print(color_img)
+
                 hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
 
                 color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
@@ -207,12 +209,15 @@ class IntakeCameraProcess(mp.Process):
                 # print(valid_mask)
 
                 # print(valid_mask.shape)
-                show("valid_mask", valid_mask.astype(np.uint8) * 255)
+                # show("valid_mask", valid_mask.astype(np.uint8) * 255)
 
                 ball_dis = (1e9, 1e9)
                 ball_angle = (0, 0)
 
-                colors = ((200, 0, 0), (0, 0, 200))
+                if Constants.ballColor == Constants.ballColors.RED:
+                    color = (200, 0, 0)
+                else:
+                    color = (0, 0, 200)
 
                 best_score = 1e9
 
