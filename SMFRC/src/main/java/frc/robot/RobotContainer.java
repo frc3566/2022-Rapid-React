@@ -56,7 +56,7 @@ public class RobotContainer {
 
   private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
 
-  private DisabledCommand disabledCommand = new DisabledCommand(drive, shooter, indexer);
+  private DisabledCommand disabledCommand = new DisabledCommand(drive, intake, indexer, shooter);
 
   private AutoInit autoInit = new AutoInit(climber, drive, intake, shooter);
 
@@ -94,23 +94,25 @@ public class RobotContainer {
     JoystickButton j1_b4 = new JoystickButton(js1, 4);
     j1_b4.whenPressed(shoot, false);
 
-    //indexer up/down (hold)
+    //cancel all (press)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
-    j1_b5.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0), indexer), true);
+    j1_b5.whenPressed(disabledCommand, true);
+
+    //intake extend/contract (toggle)
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
-    j1_b10.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0), indexer), true);
+    j1_b10.toggleWhenPressed(new StartEndCommand(() -> intake.extendIntake(), () -> intake.contractIntake(), intake), true);
 
-    //intake extend/contract
+    //intake in/out (toggle)
     JoystickButton j1_b6 = new JoystickButton(js1, 6);
-    j1_b6.whenPressed(new RunCommand(() -> intake.extendIntake(), intake), true);
+    j1_b6.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0), intake), true);
     JoystickButton j1_b9 = new JoystickButton(js1, 9);
-    j1_b9.whenPressed(new RunCommand(() -> intake.contractIntake(), intake), true);
+    j1_b9.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(-0), intake), true);
 
-    //intake in/out
+    //indexer up/down (hold)
     JoystickButton j1_b7 = new JoystickButton(js1, 7);
-    j1_b7.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0), intake), true);
+    j1_b7.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0), indexer), true);
     JoystickButton j1_b8 = new JoystickButton(js1, 8);
-    j1_b8.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(-0), intake), true);
+    j1_b8.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0), indexer), true);
 
     //climer up/down (hold)
     JoystickButton j1_b13 = new JoystickButton(js1, 13);

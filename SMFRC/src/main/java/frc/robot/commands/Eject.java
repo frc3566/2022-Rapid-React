@@ -29,6 +29,7 @@ public class Eject extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    intake.extendIntake();
     intake.setIntake(-1);
     indexer.setIndexer(-1);
   }
@@ -40,7 +41,7 @@ public class Eject extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setIntake(1);
+    intake.setIntake(0);
     indexer.setIndexer(0);
   }
   

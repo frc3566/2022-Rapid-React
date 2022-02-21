@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -20,23 +21,31 @@ public class DisabledCommand extends CommandBase {
    */
 
    DriveSubsystem drive;
-   ShooterSubsystem shooter;
+   IntakeSubsystem intake;
    IndexerSubsystem indexer;
+   ShooterSubsystem shooter;
 
-  public DisabledCommand(DriveSubsystem driveSubsystem, ShooterSubsystem shooter, IndexerSubsystem indexer) {
+   boolean isFinished = false;
+
+  public DisabledCommand(DriveSubsystem driveSubsystem, IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSubsystem, shooter);
-
     drive = driveSubsystem;
-    this.shooter = shooter;
+    intake = intakeSubsystem;
+    indexer = indexerSubsystem;
+    shooter = shooterSubsystem;
+
+    addRequirements(drive, intake, indexer, shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     drive.disabled();
+    intake.disabled();
     shooter.disabled();
     indexer.disabled();
+
+    isFinished = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,6 +59,6 @@ public class DisabledCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isFinished;
   }
 }

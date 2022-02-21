@@ -65,6 +65,10 @@ public class IntakeSubsystem extends SubsystemBase {
     return ballCnt;
   }
 
+  public void disabled(){
+    intake.set(0);
+  }
+
 
   @Override
   public void periodic() {
