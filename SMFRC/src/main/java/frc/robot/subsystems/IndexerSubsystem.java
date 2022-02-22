@@ -80,9 +80,9 @@ public class IndexerSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    System.out.println("Entrance: " + entranceIR.get());
-    System.out.println("Low: " + lowIR.get());
-    System.out.println("High: " + highIR.get());
+    // System.out.println("Entrance: " + entranceIR.get());
+    // System.out.println("Low: " + lowIR.get());
+    // System.out.println("High: " + highIR.get());
   }
 
   @Override

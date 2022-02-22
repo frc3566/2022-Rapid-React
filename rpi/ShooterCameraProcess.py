@@ -43,9 +43,6 @@ class ShooterCameraProcess(mp.Process):
         width = 640
         height = 480
 
-        x_mid = width // 2
-        y_mid = height // 2
-
         goal_detected = False
 
         # loop forever
@@ -53,8 +50,8 @@ class ShooterCameraProcess(mp.Process):
 
             start_time = time.time()
 
-            hsv_min = (57, 50, 20)
-            hsv_max = (84, 255, 255)
+            hsv_min = (70, 200, 100)
+            hsv_max = (100, 255, 255)
 
             # Notify output of error and skip iteration
             try:
@@ -80,6 +77,8 @@ class ShooterCameraProcess(mp.Process):
             hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
             binary_img = cv2.inRange(hsv_img, hsv_min, hsv_max)
 
+            # print("center pixel: ", hsv_img[60, 80, 0], hsv_img[60, 80, 1], hsv_img[60, 80, 2], sep=" ")
+
             contour_list, _ = cv2.findContours(binary_img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
 
             x_list = []
@@ -88,7 +87,7 @@ class ShooterCameraProcess(mp.Process):
             for contour in contour_list:
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
-                if area < 15:
+                if area < 2:
                     continue
 
                 x, y, w, h = cv2.boundingRect(contour)
@@ -104,8 +103,8 @@ class ShooterCameraProcess(mp.Process):
                 x_list.append(center[0])
                 y_list.append(center[1])
 
-            x = x_mid
-            y = y_mid
+            x_mid = 80
+            y_mid = 60
 
             if len(x_list) == 0 or len(y_list) == 0:
                 goal_detected = False
@@ -149,7 +148,8 @@ class ShooterCameraProcess(mp.Process):
                 self.nt_queue.put_nowait(("y_angle", y_angle))
                 self.nt_queue.put_nowait(("distance", distance))
 
-                # print(goal_detected, x_angle, y_angle, distance)
+                print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
+                # print(x_list, y_list, sep=" ")
             except Full:
                 logging.error("shooter nt full")
                 pass

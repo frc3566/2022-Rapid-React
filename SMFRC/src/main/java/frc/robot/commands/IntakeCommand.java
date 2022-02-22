@@ -23,10 +23,10 @@ public class IntakeCommand extends CommandBase {
    IntakeSubsystem intake;
    IndexerSubsystem indexer;
 
-  public IntakeCommand(IntakeSubsystem intakesSubsystem, IndexerSubsystem indexerSubsystem) {
+  public IntakeCommand(IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
 
-    intakesSubsystem = intake;
-    indexerSubsystem = indexer;
+    intake = intakeSubsystem;
+    indexer = indexerSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake, indexer);

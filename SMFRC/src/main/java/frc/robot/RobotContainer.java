@@ -11,6 +11,8 @@ import frc.robot.commands.AimLock;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
+import frc.robot.commands.Eject;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.composite.AutoShoot;
 import frc.robot.commands.getAutoTrajectory;
@@ -50,9 +52,13 @@ public class RobotContainer {
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(js1, drive);
 
+  private IntakeCommand intakeCommand = new IntakeCommand(intake, indexer);
+
   private AimLock aimLock = new AimLock(drive, shooterCamera);
 
   private ShootCommand shoot = new ShootCommand(5, indexer, shooter);
+
+  private Eject eject = new Eject(intake, indexer);
 
   private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
 
@@ -88,11 +94,14 @@ public class RobotContainer {
     // j1_b1.whenPressed(autoShoot, true);
 
     // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
-    // JoystickButton j1_b3 = new JoystickButton(js1, 3); //ramming in driveWithJoystick
+
+    // intake (press)
+    JoystickButton j1_b3 = new JoystickButton(js1, 3);
+    j1_b3.whenPressed(intakeCommand);
 
     //manual shoot (press)
     JoystickButton j1_b4 = new JoystickButton(js1, 4);
-    j1_b4.whenPressed(shoot, false);
+    j1_b4.whenPressed(shoot, true);
 
     //cancel all (press)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
@@ -102,11 +111,13 @@ public class RobotContainer {
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
     j1_b10.toggleWhenPressed(new StartEndCommand(() -> intake.extendIntake(), () -> intake.contractIntake(), intake), true);
 
-    //intake in/out (toggle)
+    //intake in/stop (toggle)
     JoystickButton j1_b6 = new JoystickButton(js1, 6);
     j1_b6.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0), intake), true);
+    
+    //eject (hold)
     JoystickButton j1_b9 = new JoystickButton(js1, 9);
-    j1_b9.toggleWhenPressed(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(-0), intake), true);
+    j1_b9.whenHeld(eject, true);
 
     //indexer up/down (hold)
     JoystickButton j1_b7 = new JoystickButton(js1, 7);
@@ -186,7 +197,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return trajectory;
+    return aimLock;
+    // return trajectory;
     // return null;
   }
 

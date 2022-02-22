@@ -11,7 +11,7 @@ from util.SphereFitting import *
 from statistics import mean
 from util.showImage import show
 from networktables import NetworkTables
-from Constants import *
+from Constants import Constants
 from multiprocessing import Queue
 from queue import Full, Empty
 
@@ -138,20 +138,24 @@ class IntakeCameraProcess(mp.Process):
             #     print('set default')
             #     depth_sensor.set_option(rs.option.visual_preset, i)
 
-        if Constants.ballColor == BallColor.RED:
+        if Constants.isRed:
             hMin = red_hMin
             sMin = red_sMin
             vMin = red_vMin
-            hMax = red_sMax
+            hMax = red_hMax
             sMax = red_sMax
             vMax = red_vMax
+            color = (0, 0, 200)
+            print("Playing as RED")
         else:
             hMin = blue_hMin
             sMin = blue_sMin
             vMin = blue_vMin
-            hMax = blue_sMax
+            hMax = blue_hMax
             sMax = blue_sMax
             vMax = blue_vMax
+            color = (200, 0, 0)
+            print("Playing as BLUE")
 
         try:
             while True:
@@ -182,7 +186,7 @@ class IntakeCameraProcess(mp.Process):
                 depth_image = np.asanyarray(depth_frame.get_data())
                 depth_image = depth_image * DEPTH_UNIT
 
-                print(color_img)
+                # print(color_img)
 
                 hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
 
@@ -214,11 +218,6 @@ class IntakeCameraProcess(mp.Process):
                 ball_dis = (1e9, 1e9)
                 ball_angle = (0, 0)
 
-                if Constants.ballColor == Constants.ballColors.RED:
-                    color = (200, 0, 0)
-                else:
-                    color = (0, 0, 200)
-
                 best_score = 1e9
 
                 color_masked = np.logical_or(valid_mask, unknown_mask).astype(np.uint8) * color_thresh_img
@@ -241,7 +240,7 @@ class IntakeCameraProcess(mp.Process):
                         continue
 
                     if not DIS_RADIUS_PRODUCT_MIN < dis * r < DIS_RADIUS_PRODUCT_MAX:
-                        print(f"raidus distance ratio skip {dis * r:.3f}")
+                        # print(f"raidus distance ratio skip {dis * r:.3f}")
                         continue
 
                     x_2d, y_2d, r = int(x_2d), int(y_2d), int(r)
@@ -265,7 +264,7 @@ class IntakeCameraProcess(mp.Process):
                         # print("skip")
                         continue
 
-                    print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
+                    # print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
 
                     pt_3d = center_x, center_y, center_z
 
@@ -283,7 +282,7 @@ class IntakeCameraProcess(mp.Process):
                         # print(ball_dis, -ball_angle, sep=" ")
 
                     cv2.drawContours(color_img, contours, index, (200, 0, 200), 2)
-                    cv2.circle(color_img, (x_2d, y_2d), r, colors, 2)
+                    cv2.circle(color_img, (x_2d, y_2d), r, color, 2)
 
                     # print(f"dis * r: {dis * r}")
                     # print(f"pi * r^2: {np.pi * (r ** 2)}")
@@ -324,6 +323,9 @@ class IntakeCameraProcess(mp.Process):
                     self.nt_queue.put_nowait(("ball_angle", ball_angle))
 
                     self.nt_queue.put_nowait(("ball_detected", ball_detected))
+
+                    # print("intake camera: ", ball_dis, ball_angle, sep=" ")
+
                 except Full:
                     logging.error("intake nt full")
 

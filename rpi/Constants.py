@@ -1,13 +1,9 @@
 import numpy as np
-from enum import Enum
 
-
-class BallColors(Enum):
-    BLUE = True
-    RED = False
 
 class Constants:
-    ballColor = BallColors.RED
+
+    isRed = True
 
     # microsoft cam
     EXPOSURE_AUTO = 1  # 1 off 3 on
@@ -36,8 +32,9 @@ class Constants:
     FOCAL_LENGTH_Y = CAMERA_MATRIX[1][1]
 
     # TODO measure these
-    CAMERA_MOUNT_ANGLE = 30
-    CAMERA_GOAL_DELTA_H = 100
+    CAMERA_MOUNT_ANGLE = 25
+    CAMERA_HEIGHT = 0.91
+    CAMERA_GOAL_DELTA_H = 2.5 - CAMERA_HEIGHT
 
     # camera
     # matrix:
