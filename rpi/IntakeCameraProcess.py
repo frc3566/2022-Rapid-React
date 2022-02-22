@@ -269,7 +269,7 @@ class IntakeCameraProcess(mp.Process):
                     pt_3d = center_x, center_y, center_z
 
                     # convert for output
-                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5
+                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5 * m.cos(m.radians(35))
                     angle = m.degrees(m.atan(pt_3d[0] / dis_2d))
 
                     score = dis_2d + abs(angle) / 40

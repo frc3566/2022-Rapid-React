@@ -8,17 +8,22 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AimLock;
+import frc.robot.commands.Anchor;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.Eject;
+import frc.robot.commands.FindGoal;
+import frc.robot.commands.GoToBall;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.composite.AutoShoot;
+import frc.robot.commands.composite.GetAutoIntake;
+import frc.robot.commands.composite.GetAutoShoot;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeCamera;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -44,6 +49,7 @@ public class RobotContainer {
 
   private DriveSubsystem drive = new DriveSubsystem();
   private ShooterCamera shooterCamera = new ShooterCamera();
+  private IntakeCamera intakeCamera = new IntakeCamera();
   private IntakeSubsystem intake = new IntakeSubsystem();
   private IndexerSubsystem indexer = new IndexerSubsystem();
   private ShooterSubsystem shooter = new ShooterSubsystem();
@@ -60,13 +66,25 @@ public class RobotContainer {
 
   private Eject eject = new Eject(intake, indexer);
 
-  private AutoShoot autoShoot = new AutoShoot(drive, shooter, shooterCamera);
+  private FindGoal findGoal = new FindGoal(drive, shooterCamera);
+
+  private Anchor anchor = new Anchor(drive);
+
+  private GoToBall goToBall = new GoToBall(drive, intakeCamera);
 
   private DisabledCommand disabledCommand = new DisabledCommand(drive, intake, indexer, shooter);
 
   private AutoInit autoInit = new AutoInit(climber, drive, intake, shooter);
 
   private RamseteCommand trajectory = getAutoTrajectory.getTrajectory(drive);
+
+  private GetAutoIntake getAutoIntake = new GetAutoIntake(drive, intakeCommand, goToBall);
+
+  private Command autoIntake = getAutoIntake.getCommand();
+
+  private GetAutoShoot getAutoShoot = new GetAutoShoot(findGoal, aimLock, anchor, shoot);
+
+  private Command autoShoot = getAutoShoot.getCommand();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -197,6 +215,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // return autoShoot;
+    // return autoIntake;
     return aimLock;
     // return trajectory;
     // return null;

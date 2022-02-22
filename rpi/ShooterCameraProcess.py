@@ -103,19 +103,29 @@ class ShooterCameraProcess(mp.Process):
                 x_list.append(center[0])
                 y_list.append(center[1])
 
-            x_mid = 80
-            y_mid = 60
-
             if len(x_list) == 0 or len(y_list) == 0:
                 goal_detected = False
                 continue
             else:
                 goal_detected = True
 
-            x_angle = math.atan((center[0] - x_mid) / Constants.FOCAL_LENGTH_X)
-            y_angle = math.atan((center[1] - y_mid) / Constants.FOCAL_LENGTH_Y) + Constants.CAMERA_MOUNT_ANGLE
+            x_mean = sum(x_list) / len(x_list)
+            y_mean = sum(y_list) / len(y_list)
+
+            x_mid = 79
+            y_mid = 59
+
+            u = (x_mean - x_mid) * 4
+            v = (y_mean - y_mid) * 4
+
+            x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
+            y_angle = math.atan(v / Constants.FOCAL_LENGTH_Y) \
+                + math.radians(Constants.CAMERA_MOUNT_ANGLE)
 
             distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
+
+            x_angle = math.degrees(x_angle)
+            y_angle = math.degrees(y_angle)
 
             processing_time = time.time() - start_time
             fps = 1 / processing_time
