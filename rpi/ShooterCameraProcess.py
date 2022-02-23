@@ -26,6 +26,7 @@ class ShooterCameraProcess(mp.Process):
 
         # Allocating new images is very expensive, always try to preallocate
         input_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
+        hsv_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
 
         # Wait for NetworkTables to start
         time.sleep(0.5)
@@ -38,7 +39,7 @@ class ShooterCameraProcess(mp.Process):
         #     pass
         # self.logger.debug("yes frame")
 
-        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+        hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV, dst=hsv_img)
 
         width = 640
         height = 480
@@ -74,7 +75,7 @@ class ShooterCameraProcess(mp.Process):
             output_img = np.copy(input_img)
 
             # Convert to HSV and threshold image
-            hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV)
+            hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV, dst=hsv_img)
             binary_img = cv2.inRange(hsv_img, hsv_min, hsv_max)
 
             # print("center pixel: ", hsv_img[60, 80, 0], hsv_img[60, 80, 1], hsv_img[60, 80, 2], sep=" ")
@@ -115,8 +116,8 @@ class ShooterCameraProcess(mp.Process):
             x_mid = 79
             y_mid = 59
 
-            u = (x_mean - x_mid) * 4
-            v = (y_mean - y_mid) * 4
+            u = (x_mean - x_mid)  # * 4
+            v = (y_mean - y_mid)  # * 4
 
             x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
             y_angle = math.atan(v / Constants.FOCAL_LENGTH_Y) \
