@@ -11,6 +11,9 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -25,9 +28,14 @@ public class IndexerSubsystem extends SubsystemBase {
 
   private SparkMaxPIDController indexerPID;
 
-  DigitalInput entranceIR = new DigitalInput(0);
-  DigitalInput lowIR = new DigitalInput(1);
-  DigitalInput highIR = new DigitalInput(2);
+  private DigitalInput entranceIR = new DigitalInput(0);
+  private DigitalInput lowIR = new DigitalInput(1);
+  private DigitalInput highIR = new DigitalInput(2);
+
+       
+  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private NetworkTable nt = inst.getTable("LiveWindow/IndexerSubsystem");
+  private NetworkTableEntry ballCountEntry = nt.getEntry("ball_count");
 
   private int ballCnt;
 
@@ -68,7 +76,13 @@ public class IndexerSubsystem extends SubsystemBase {
   }
 
   public void setBallCount(int cnt){
-    ballCnt = cnt;
+    if(cnt > 2){
+      ballCnt = 2;
+    }else if(cnt < 0){
+      ballCnt = 0;
+    }else{
+      ballCnt = cnt;
+    }
     return;
   }
 
@@ -83,6 +97,8 @@ public class IndexerSubsystem extends SubsystemBase {
     // System.out.println("Entrance: " + entranceIR.get());
     // System.out.println("Low: " + lowIR.get());
     // System.out.println("High: " + highIR.get());
+
+    ballCountEntry.setDouble(ballCnt);
   }
 
   @Override

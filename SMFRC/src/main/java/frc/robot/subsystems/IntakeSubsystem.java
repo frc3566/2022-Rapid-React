@@ -27,6 +27,7 @@ public class IntakeSubsystem extends SubsystemBase {
   // Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
   private int ballCnt;
+  private boolean isExtented;
 
 
   public IntakeSubsystem() {
@@ -35,6 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.setIdleMode(IdleMode.kCoast);
 
     ballCnt = 1;
+    isExtented = false;
   }
 
   public void enableCompressor(){
@@ -47,10 +49,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void extendIntake(){
     // solenoid.set(true);
+    isExtented = true;
   }
 
   public void contractIntake(){
     // solenoid.set(false);
+    isExtented = false;
+  }
+
+  public void toggleIntake(){
+    if(isExtented){
+      contractIntake();
+    }else{
+      extendIntake();
+    }
   }
 
   public void setIntake(double power){

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
 
 import java.lang.annotation.Target;
@@ -49,6 +50,22 @@ private States state;
     indexer = indexerSubsystem;
     
     distance = tarDistance;
+    tarRPM = shooter.distanceToRPM(distance);
+
+    isFinished = false;
+
+    state = States.RETRACT;
+
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(indexer, shooter);
+  }
+
+  public ShootCommand(ShooterCamera camera, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
+
+    shooter = shooterSubsystem;
+    indexer = indexerSubsystem;
+    
+    distance = camera.getTarDistance();
     tarRPM = shooter.distanceToRPM(distance);
 
     isFinished = false;

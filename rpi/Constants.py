@@ -25,7 +25,7 @@ class Constants:
     # TODO measure these
     CAMERA_MOUNT_ANGLE = 25
     CAMERA_HEIGHT = 0.91
-    CAMERA_GOAL_DELTA_H = 2.5 - CAMERA_HEIGHT
+    CAMERA_GOAL_DELTA_H = 2.64 - CAMERA_HEIGHT
 
     # camera
     # matrix:

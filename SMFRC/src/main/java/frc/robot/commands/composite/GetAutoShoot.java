@@ -17,16 +17,18 @@ public class GetAutoShoot{
 
     private Command command;
 
-    public GetAutoShoot(FindGoal findGoal, AimLock aimLock, Anchor anchor, ShootCommand shoot) {
+    public GetAutoShoot(DriveSubsystem drive, IndexerSubsystem indexer, ShooterSubsystem shooter, ShooterCamera camera) {
         // find goal
         // aimlock
         // anchor | shoot
 
-        command = findGoal.andThen(aimLock).andThen(anchor.alongWith(shoot));
-    }
+        FindGoal findGoal = new FindGoal(drive, camera);
+        AimLock aimLock = new AimLock(drive, camera);
+        Anchor anchor = new Anchor(drive);
 
-    public GetAutoShoot(FindGoal findGoal, AimLock aimLock, Anchor anchor, IndexerSubsystem indexer,
-            ShooterSubsystem shooter) {
+        ShootCommand shoot = new ShootCommand(camera, indexer, shooter);
+
+        command = findGoal.andThen(aimLock).andThen(anchor.alongWith(shoot));
     }
 
     public Command getCommand(){

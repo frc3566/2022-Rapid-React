@@ -8,15 +8,15 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class GetAutoCommand extends SequentialCommandGroup {
 
+    // init
+    // trajectroy
+    // intake
+    // turn to goal
+    // aim lock
+    // anchor | shoot
+
     public GetAutoCommand(DriveSubsystem drive, AutoInit autoInit) {
         super();
-
-        // init
-        // trajectroy
-        // intake
-        // turn to goal
-        // aim lock
-        // anchor | shoot
 
         this.addCommands(autoInit);
         this.addCommands(getAutoTrajectory.getTrajectory(drive));

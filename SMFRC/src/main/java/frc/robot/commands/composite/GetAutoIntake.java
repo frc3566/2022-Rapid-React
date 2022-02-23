@@ -9,23 +9,22 @@ import frc.robot.commands.Move;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeCamera;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class GetAutoIntake{
 
     private Command command;
 
-    public GetAutoIntake(DriveSubsystem drive, IntakeCommand intake, GoToBall goToBall) {
+    // intake | go to ball
+    //        | move over ball
 
-        // intake | go to ball
-        //        | move over ball
+    public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, IntakeCamera camera) {
+        IntakeCommand intakeCommand = new IntakeCommand(intake, indexer);
+        GoToBall goToBall = new GoToBall(drive, camera);
         Move move = new Move(1.0, 1.0, 1.0, drive);
         
-        command = intake.alongWith(goToBall.andThen(move));     
-
-    }
-
-    public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, GoToBall goToBall) {
+        command = intakeCommand.alongWith(goToBall.andThen(move));   
     }
 
     public Command getCommand(){

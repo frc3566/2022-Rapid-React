@@ -26,6 +26,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double k = 1;
 
+    private double fieldCorrection;
+
     private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
      interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
 
@@ -33,6 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private NetworkTable nt = inst.getTable("LiveWindow/ShooterSubsystem");
     private NetworkTableEntry RPMEntry = nt.getEntry("RPM");
+    private NetworkTableEntry FieldCorrectionEntry = nt.getEntry("field_correction");
 
     public ShooterSubsystem() {
 
@@ -77,9 +80,14 @@ public class ShooterSubsystem extends SubsystemBase {
         for(double[] t : Constants.shooterData){
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
+
+        fieldCorrection = 0;
     }
 
     public void setRPM(double RPM){
+
+        RPM += fieldCorrection;
+
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
         masterPIDController.setReference(RPM, ControlType.kVelocity, 0, feedForward);
@@ -98,6 +106,14 @@ public class ShooterSubsystem extends SubsystemBase {
         return interpolator.getInterpolated(new InterpolatingDouble(distance)).value;
     }
 
+    public double getFieldCorrection(){
+        return fieldCorrection;
+    }
+
+    public void setFieldCorrection(double correction){
+        fieldCorrection = correction;
+    }
+
     public void disabled(){
         setRPM(0);
     }
@@ -110,6 +126,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
 
         RPMEntry.setDouble(getRPM());
+        FieldCorrectionEntry.setDouble(fieldCorrection);
     }
 
     @Override

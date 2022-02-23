@@ -27,11 +27,11 @@ public class AimLock extends CommandBase {
    * Creates a new ExampleCommand.
    *
    * @param driveSubsystem DriveSubsystem
-   * @param goalCamera GoalCamera
+   * @param shooterCamera GoalCamera
    */
-  public AimLock(DriveSubsystem driveSubsystem, ShooterCamera goalCamera) {
+  public AimLock(DriveSubsystem driveSubsystem, ShooterCamera shooterCamera) {
     drive = driveSubsystem;
-    camera = goalCamera;
+    camera = shooterCamera;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 

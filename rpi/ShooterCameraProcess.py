@@ -120,8 +120,8 @@ class ShooterCameraProcess(mp.Process):
             v = (y_mean - y_mid)  # * 4
 
             x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
-            y_angle = math.atan(v / Constants.FOCAL_LENGTH_Y) \
-                + math.radians(Constants.CAMERA_MOUNT_ANGLE)
+            y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y) \
+
 
             distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
 
@@ -166,8 +166,8 @@ class ShooterCameraProcess(mp.Process):
                 pass
 
             try:
-                self.frame_out_queue.put_nowait(output_img)
-                # self.frame_out_queue.put_nowait(binary_img)
+                # self.frame_out_queue.put_nowait(output_img)
+                self.frame_out_queue.put_nowait(binary_img)
             except Full:
                 pass
 
