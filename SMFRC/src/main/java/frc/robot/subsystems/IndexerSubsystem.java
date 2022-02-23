@@ -44,7 +44,7 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerPID.setP(0.3);
     indexerPID.setD(0.01);
 
-    ballCnt = 2;
+    ballCnt = 0;
   }
 
   public void setIndexer(double power){

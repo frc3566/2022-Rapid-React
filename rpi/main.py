@@ -20,9 +20,8 @@ print(sys.version)
 
 ntinst = NetworkTablesInstance
 print("Setting up NetworkTables")
-NetworkTables.startClientTeam(3566)
-NetworkTables.startDSClient()
-
+NetworkTables.initialize(server='roborio-3566-frc.local')
+# NetworkTables.startClientTeam(3566)
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -116,8 +115,8 @@ if __name__ == '__main__':
 
         if not NetworkTables.isConnected:
             print("connection lost, restarting network table")
-            NetworkTables.startClientTeam(3566)
-            NetworkTables.startDSClient()
+            # NetworkTables.startClientTeam(3566)
+            NetworkTables.initialize(server='roborio-3566-frc.local')
 
         img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 
@@ -155,7 +154,7 @@ if __name__ == '__main__':
         except Empty:
             pass
 
-        NetworkTables.flush()
+        # NetworkTables.flush()
 
         # update camera server
 

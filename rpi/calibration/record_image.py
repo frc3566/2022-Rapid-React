@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     framesPerSecond = cap.get(cv2.CAP_PROP_FPS)
 
-    it_secs_max = 3
+    it_secs_max = 0
     it = 0
     it_secs = 0
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
             print('good image')
 
         it += 1
-        if 0==numberOfImages:
+        if 0 == numberOfImages:
             break
 
     # When everything done, release the capture

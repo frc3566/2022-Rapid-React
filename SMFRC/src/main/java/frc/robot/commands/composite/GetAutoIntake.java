@@ -8,6 +8,8 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Move;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class GetAutoIntake{
 
@@ -21,6 +23,9 @@ public class GetAutoIntake{
         
         command = intake.alongWith(goToBall.andThen(move));     
 
+    }
+
+    public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, GoToBall goToBall) {
     }
 
     public Command getCommand(){

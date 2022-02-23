@@ -34,6 +34,10 @@ public class GoToBall extends CommandBase {
    * @param driveSubsystem DriveSubsystem
    * @param goalCamera GoalCamera
    */
+
+  double angularSetpoint;
+  double linearSetpoint;
+  
   public GoToBall(DriveSubsystem driveSubsystem, IntakeCamera intakeCamera) {
     drive = driveSubsystem;
     camera = intakeCamera;
@@ -46,13 +50,12 @@ public class GoToBall extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    angularSetpoint = camera.getTarAngle();
+    linearSetpoint= camera.getTarDistance();
     angularPIDController.reset();
     linearPIDController.reset();
     drive.resetEncoders();
   }
-
-  double angularSetpoint = camera.getTarAngle();
-  double linearSetpoint = camera.getTarDistance();
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

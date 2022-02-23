@@ -165,8 +165,8 @@ class ShooterCameraProcess(mp.Process):
                 pass
 
             try:
-                # self.frame_out_queue.put_nowait(output_img)
-                self.frame_out_queue.put_nowait(binary_img)
+                self.frame_out_queue.put_nowait(output_img)
+                # self.frame_out_queue.put_nowait(binary_img)
             except Full:
                 pass
 

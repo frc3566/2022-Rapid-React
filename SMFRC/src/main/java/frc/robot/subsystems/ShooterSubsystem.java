@@ -22,7 +22,9 @@ import frc.robot.util.InterpolatingTreeMap;
 public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax shooterMaster, shooterSlave;
     private RelativeEncoder masterEncoder, slaveEncoder;
-    private SparkMaxPIDController masterPIDController;
+    private SparkMaxPIDController masterPIDController, slavePIDController;
+
+    private double k = 1;
 
     private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
      interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
@@ -35,19 +37,22 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
 
         shooterMaster = new CANSparkMax(20, MotorType.kBrushless);
-        // shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
+        shooterSlave = new CANSparkMax(21, MotorType.kBrushless);
 
         shooterMaster.setInverted(true);
         shooterMaster.setClosedLoopRampRate(0.3);
         shooterMaster.setIdleMode(IdleMode.kCoast);
 
-        // shooterSlave.follow(shooterMaster,true);
+        shooterMaster.setInverted(true);
+        shooterMaster.setClosedLoopRampRate(0.3);
+        shooterMaster.setIdleMode(IdleMode.kCoast);
+        shooterSlave.follow(shooterMaster,true);
 
         masterEncoder = shooterMaster.getEncoder();
         masterEncoder.setVelocityConversionFactor(1);
 
-        // slaveEncoder = shooterSlave.getEncoder();
-        // slaveEncoder.setVelocityConversionFactor(1);
+        slaveEncoder = shooterSlave.getEncoder();
+        slaveEncoder.setVelocityConversionFactor(1);
 
         masterPIDController = shooterMaster.getPIDController();
         masterPIDController.setP(Constants.SHOOTER_GAINS.kP);
@@ -57,6 +62,15 @@ public class ShooterSubsystem extends SubsystemBase {
         masterPIDController.setFF(Constants.SHOOTER_GAINS.kFF);
 
         masterPIDController.setFeedbackDevice(masterEncoder);
+
+        slavePIDController = shooterSlave.getPIDController();
+        slavePIDController.setP(Constants.SHOOTER_GAINS.kP);
+        slavePIDController.setI(Constants.SHOOTER_GAINS.kI);
+        slavePIDController.setD(Constants.SHOOTER_GAINS.kD);
+
+        slavePIDController.setFF(Constants.SHOOTER_GAINS.kFF);
+
+        slavePIDController.setFeedbackDevice(slaveEncoder);
 
         setRPM(0);
 
@@ -68,8 +82,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setRPM(double RPM){
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
-        masterPIDController.setReference(RPM, ControlType.kVelocity, 
-        0, feedForward);
+        masterPIDController.setReference(RPM, ControlType.kVelocity, 0, feedForward);
+
+        slavePIDController.setReference(RPM * k, ControlType.kVelocity, 0, feedForward);
 
         // shooterMaster.set(1);
         // shooterSlave.set(1);

@@ -6,9 +6,9 @@ import frc.robot.commands.AutoInit;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class AutoCommand extends SequentialCommandGroup {
+public class GetAutoCommand extends SequentialCommandGroup {
 
-    public AutoCommand(DriveSubsystem drive, AutoInit autoInit) {
+    public GetAutoCommand(DriveSubsystem drive, AutoInit autoInit) {
         super();
 
         // init

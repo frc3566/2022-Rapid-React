@@ -78,11 +78,11 @@ public class RobotContainer {
 
   private RamseteCommand trajectory = getAutoTrajectory.getTrajectory(drive);
 
-  private GetAutoIntake getAutoIntake = new GetAutoIntake(drive, intakeCommand, goToBall);
+  private GetAutoIntake getAutoIntake = new GetAutoIntake(drive, intake, indexer, goToBall);
 
   private Command autoIntake = getAutoIntake.getCommand();
 
-  private GetAutoShoot getAutoShoot = new GetAutoShoot(findGoal, aimLock, anchor, shoot);
+  private GetAutoShoot getAutoShoot = new GetAutoShoot(findGoal, aimLock, anchor, indexer, shooter);
 
   private Command autoShoot = getAutoShoot.getCommand();
 
