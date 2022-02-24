@@ -43,6 +43,7 @@ public class BackEject extends CommandBase {
   public void end(boolean interrupted) {
     intake.setIntake(0);
     indexer.setIndexer(0);
+    indexer.setBallCount(0);
   }
   
   // Returns true when the command should end.

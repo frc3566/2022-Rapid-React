@@ -80,6 +80,15 @@ private States state;
   @Override
   public void initialize() {
     // shooter.setRPM(shooter.distanceToRPM(distance));
+
+    //recount the ball before shooting
+    indexer.setBallCount(0);
+    if(indexer.getHighIR()){
+      indexer.setBallCount(indexer.getBallCount()+1);
+    }
+    if(indexer.getLowIR()){
+      indexer.setBallCount(indexer.getBallCount()+1);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

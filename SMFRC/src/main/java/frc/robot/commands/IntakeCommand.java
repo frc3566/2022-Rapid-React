@@ -36,7 +36,7 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void initialize() {
       intake.extendIntake();
-      intake.setIntake(0.7);
+      intake.setIntake(0.9);
       indexer.setIndexer(0.7);
   }
 

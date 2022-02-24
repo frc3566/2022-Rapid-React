@@ -42,6 +42,7 @@ public class FrontEject extends CommandBase {
   public void end(boolean interrupted) {
     indexer.setIndexer(0);
     shooter.setRPM(0);
+    indexer.setBallCount(0);
   }
   
   // Returns true when the command should end.

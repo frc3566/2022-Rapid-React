@@ -105,6 +105,8 @@ if __name__ == '__main__':
 
         sys.exit()
 
+
+    # TODO check if webinterface use sigterm or sigkill and let the child process use the other one.
     for sig in (SIGABRT, SIGILL, SIGINT, SIGSEGV, SIGTERM):
         signal(sig, cleanup)
 

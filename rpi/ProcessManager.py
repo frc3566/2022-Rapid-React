@@ -65,4 +65,5 @@ class ProcessManager:
         # print("starting process")
 
     def end_process(self):
-        self.process.terminate
+        self.process.kill
+        # self.process.close
