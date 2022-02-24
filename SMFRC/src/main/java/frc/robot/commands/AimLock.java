@@ -7,6 +7,7 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ShooterCamera;
+import frc.robot.subsystems.ShooterCamera.LastSeen;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -35,7 +36,7 @@ public class AimLock extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    pidController.setTolerance(2, 5);
+    pidController.setTolerance(0.5);
 
     setpoint= camera.getTarAngle();
   }
@@ -49,33 +50,44 @@ public class AimLock extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(prevUpdateTime != camera.getLastUpdateTime()){
-      setpoint = drive.getHeading() + camera.getTarAngle();
-      // System.out.println("update turning");
+    if(camera.goalDetected()){
+      if(prevUpdateTime != camera.getLastUpdateTime()){
+        setpoint = drive.getHeading() + camera.getTarAngle();
+        // System.out.println("update turning");
+      }
+  
+      double tarAngle = setpoint - drive.getHeading();
+  
+      double leftFF = Constants.Drive_ks * Math.signum(tarAngle);
+      double rightFF = Constants.Drive_ks * Math.signum(tarAngle); 
+  
+      double pid = pidController.calculate(drive.getHeading(), setpoint);
+  
+      MathUtil.clamp(pid, 0, Constants.kMaxSpeed_Drive);
+  
+      drive.setVelocity(- leftFF - pid, rightFF + pid);
+    }else{
+      if(camera.lastSeen == LastSeen.RIGHT){
+        drive.setVelocity(-0.7, 0.7);
+      }else{
+        drive.setVelocity(0.7, -0.7);
+      }
     }
-
-    double tarAngle = setpoint - drive.getHeading();
-
-    double leftFF = Constants.Drive_ks * Math.signum(tarAngle);
-    double rightFF = Constants.Drive_ks * Math.signum(tarAngle); 
-
-    double pid = pidController.calculate(drive.getHeading(), setpoint);
-
-    MathUtil.clamp(pid, 0, Constants.kMaxSpeed_Drive);
-
-    drive.setVelocity(- leftFF - pid, rightFF + pid);
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drive.setVelocity(0, 0);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if(Math.abs(camera.getTarAngle()) <= 5){
-    //   return true;
-    // }
+    if(camera.goalDetected() && Math.abs(camera.getTarAngle()) <= 0.3){
+      return true;
+    }
     return false;
   }
 }

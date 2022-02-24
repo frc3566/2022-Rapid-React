@@ -98,8 +98,12 @@ public class ShooterSubsystem extends SubsystemBase {
         // shooterSlave.set(1);
     }
 
-    public double getRPM(){
+    public double getMasterRPM(){
         return masterEncoder.getVelocity();
+    }
+
+    public double getSlaveRPM(){
+        return slaveEncoder.getVelocity();
     }
 
     public double distanceToRPM(double distance){
@@ -122,11 +126,12 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
     // This method will be called once per scheduler run
     
-        // System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
-        // System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
+        System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
+        System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
 
-        RPMEntry.setDouble(getRPM());
+        RPMEntry.setDouble(getMasterRPM());
         FieldCorrectionEntry.setDouble(fieldCorrection);
+
     }
 
     @Override

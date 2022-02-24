@@ -62,7 +62,7 @@ public class GoToBall extends CommandBase {
   public void execute() {
     if(prevUpdateTime != camera.getLastUpdateTime()){
       angularSetpoint = drive.getHeading() + camera.getTarAngle();
-      linearSetpoint = drive.getAvgEncoderDistance() + camera.getTarDistance();
+      linearSetpoint = drive.getAvgEncoderDistance() - camera.getTarDistance();
       // System.out.println("update turning");
     }
 
@@ -75,7 +75,7 @@ public class GoToBall extends CommandBase {
 
     double angularPID = angularPIDController.calculate(drive.getHeading(), angularSetpoint);
     
-    double linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
+    double linearPID = - linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
 
     double left = linearPID - angularPID;
     double right = linearPID + angularPID;

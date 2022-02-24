@@ -2,6 +2,7 @@ import numpy as np
 
 
 class Constants:
+    DEBUG = True
 
     isRed = True
 
@@ -68,6 +69,5 @@ class Constants:
     DISCONNECT_DURATION = 1.0  # sec
     RESTART_DURATION = 10.0  # sec
 
-    DEBUG = True
     MA_MOMENTUM = 0.9
     UPDATE_PERIOD = 3  # sec

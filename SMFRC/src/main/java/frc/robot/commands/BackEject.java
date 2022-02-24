@@ -6,7 +6,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class Eject extends CommandBase {
+public class BackEject extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   IntakeSubsystem intake;
@@ -17,7 +17,7 @@ public class Eject extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Eject(IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
+  public BackEject(IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
     
     intake = intakeSubsystem;
     indexer = indexerSubsystem;

@@ -51,8 +51,8 @@ class ShooterCameraProcess(mp.Process):
 
             start_time = time.time()
 
-            hsv_min = (70, 200, 100)
-            hsv_max = (100, 255, 255)
+            hsv_min = (60, 80, 30)
+            hsv_max = (85, 255, 255)
 
             # Notify output of error and skip iteration
             try:
@@ -88,7 +88,7 @@ class ShooterCameraProcess(mp.Process):
             for contour in contour_list:
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
-                if area < 2:
+                if area < 5:
                     continue
 
                 x, y, w, h = cv2.boundingRect(contour)
@@ -106,22 +106,25 @@ class ShooterCameraProcess(mp.Process):
 
             if len(x_list) == 0 or len(y_list) == 0:
                 goal_detected = False
-                continue
             else:
                 goal_detected = True
 
-            x_mean = sum(x_list) / len(x_list)
-            y_mean = sum(y_list) / len(y_list)
-
             x_mid = 79
             y_mid = 59
+
+            try:
+                x_mean = sum(x_list) / len(x_list)
+                y_mean = sum(y_list) / len(y_list)
+            except ZeroDivisionError:
+                x_mean = x_mid
+                y_mean = y_mid
+                pass
 
             u = (x_mean - x_mid)  # * 4
             v = (y_mean - y_mid)  # * 4
 
             x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
-            y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y) \
-
+            y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y)
 
             distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
 

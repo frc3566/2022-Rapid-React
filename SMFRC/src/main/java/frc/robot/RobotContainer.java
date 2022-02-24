@@ -103,13 +103,13 @@ public class RobotContainer {
     //Joystick 1
     //audo shoot
     JoystickButton j1_b1 = new JoystickButton(js1, 1);
-    // j1_b1.whenPressed(autoShoot, true);
+    j1_b1.whenPressed(autoShoot, true);
 
     // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
 
-    // manual intake (press)
+    // manual intake (toggle)
     JoystickButton j1_b3 = new JoystickButton(js1, 3);
-    j1_b3.whenPressed(intakeCommand);
+    j1_b3.toggleWhenPressed(intakeCommand, true);
 
     // manual shoot (press)
     JoystickButton j1_b4 = new JoystickButton(js1, 4);
@@ -172,36 +172,36 @@ public class RobotContainer {
     // j1_p180.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), true));
 
     // increase/decrease ball count (press)
-    JoystickButton j2_b5 = new JoystickButton(js2, 5);
-    j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()+1)), true);
-    JoystickButton j2_b3 = new JoystickButton(js2, 3);
-    j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()-1)), true);
+    // JoystickButton j2_b5 = new JoystickButton(js2, 5);
+    // j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()+1)), true);
+    // JoystickButton j2_b3 = new JoystickButton(js2, 3);
+    // j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()-1)), true);
 
-    // increase/decrease shooter field correction (press)
-    JoystickButton j2_b6 = new JoystickButton(js2, 6);
-    j2_b6.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() + 100)), true);
-    JoystickButton j2_b4 = new JoystickButton(js2, 4);
-    j2_b4.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() - 100)), true);
+    // // increase/decrease shooter field correction (press)
+    // JoystickButton j2_b6 = new JoystickButton(js2, 6);
+    // j2_b6.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() + 100)), true);
+    // JoystickButton j2_b4 = new JoystickButton(js2, 4);
+    // j2_b4.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() - 100)), true);
 
-    // cancel all (press)
-    JoystickButton j2_b7 = new JoystickButton(js2, 7);
-    j2_b7.whenPressed(disabledCommand, true);
+    // // cancel all (press)
+    // JoystickButton j2_b7 = new JoystickButton(js2, 7);
+    // j2_b7.whenPressed(disabledCommand, true);
 
-    // intake extend/contract (toggle)
-    JoystickButton j2_b8 = new JoystickButton(js2, 8);
-    j2_b8.whenPressed(new InstantCommand(() -> intake.toggleIntake()), true);
+    // // intake extend/contract (toggle)
+    // JoystickButton j2_b8 = new JoystickButton(js2, 8);
+    // j2_b8.whenPressed(new InstantCommand(() -> intake.toggleIntake()), true);
 
-    // intake in/out (hold)
-    JoystickButton j2_b10 = new JoystickButton(js2, 10);
-    j2_b10.whenHeld(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0)), true);
-    JoystickButton j2_b9 = new JoystickButton(js2, 9);
-    j2_b9.whenHeld(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(0)), true);
+    // // intake in/out (hold)
+    // JoystickButton j2_b10 = new JoystickButton(js2, 10);
+    // j2_b10.whenHeld(new StartEndCommand(() -> intake.setIntake(0.7), () -> intake.setIntake(0)), true);
+    // JoystickButton j2_b9 = new JoystickButton(js2, 9);
+    // j2_b9.whenHeld(new StartEndCommand(() -> intake.setIntake(-0.7), () -> intake.setIntake(0)), true);
   
-    // indexer up/down (hold)
-    JoystickButton j2_b12 = new JoystickButton(js2, 12);
-    j2_b12.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0)), true);
-    JoystickButton j2_b11 = new JoystickButton(js2, 11);
-    j2_b11.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0)), true);
+    // // indexer up/down (hold)
+    // JoystickButton j2_b12 = new JoystickButton(js2, 12);
+    // j2_b12.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0)), true);
+    // JoystickButton j2_b11 = new JoystickButton(js2, 11);
+    // j2_b11.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0)), true);
   }
 
     /* button mapping:

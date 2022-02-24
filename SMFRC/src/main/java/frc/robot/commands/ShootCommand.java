@@ -97,8 +97,9 @@ private States state;
     }
 
     if(state == States.PRESPIN){
+      indexer.setIndexer(0);
       shooter.setRPM(tarRPM);
-      if(Math.abs(shooter.getRPM() - tarRPM) <= 400){
+      if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 75 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 75){
         state = States.CHAMBER;
       }
     }
@@ -115,7 +116,7 @@ private States state;
         indexer.setBallCount(indexer.getBallCount()-1);
         indexer.setIndexer(0);
 
-        waitTar = Timer.getFPGATimestamp() + 2;
+        waitTar = Timer.getFPGATimestamp() + 0;
         state = States.WAIT;
         System.out.print("bull's eye");
       }
@@ -123,7 +124,7 @@ private States state;
 
     if(state == States.WAIT){
       if(Timer.getFPGATimestamp() >= waitTar){
-        state = States.SHOOT;
+        state = States.PRESPIN;
       }
     }
 

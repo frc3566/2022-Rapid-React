@@ -49,8 +49,8 @@ public final class Constants {
     public static final double kMaxSpeed_Drive = 1.5; 
     public static final double kMaxAcceleration_Drive = 1.5;
 
-    //turning control
-    public static final Gains TURNING_GAINS = new Gains(0.135, 0, 0.00165, 0, 0, 1);
+    // turning control
+    public static final Gains TURNING_GAINS = new Gains(0.025, 0, 0.0022275, 0, 0, 1);
 
     // shooter subsystem
     public static final double Shooter_ks = 0.004588166667;
@@ -63,7 +63,7 @@ public final class Constants {
 
     //ten points in the frommat (meter, RPM) that are used to interpolate RPM for certain distance
     public static final double[][] shooterData = 
-    {{4.8768,4300},{5.7912,4600},{6.4008,4700},{7.0104,4900},{7.62,5090},{8.2296,7000}};
+    {{3,2800},{3.5,3200},{4,3200},{7.0104,4900},{7.62,5090},{8.2296,7000}};
     // ,{0,0},{0,0},{0,0},{0,0}};
 
     public static class Gains {

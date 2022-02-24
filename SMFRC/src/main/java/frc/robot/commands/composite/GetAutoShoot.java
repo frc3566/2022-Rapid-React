@@ -28,7 +28,7 @@ public class GetAutoShoot{
 
         ShootCommand shoot = new ShootCommand(camera, indexer, shooter);
 
-        command = findGoal.andThen(aimLock).andThen(anchor.alongWith(shoot));
+        command = aimLock.andThen(anchor.raceWith(shoot));
     }
 
     public Command getCommand(){
