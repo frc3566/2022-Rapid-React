@@ -52,7 +52,7 @@ class ShooterCameraProcess(mp.Process):
             start_time = time.time()
 
             hsv_min = (60, 80, 30)
-            hsv_max = (85, 255, 255)
+            hsv_max = (90, 255, 255)
 
             # Notify output of error and skip iteration
             try:
@@ -77,6 +77,9 @@ class ShooterCameraProcess(mp.Process):
             # Convert to HSV and threshold image
             hsv_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2HSV, dst=hsv_img)
             binary_img = cv2.inRange(hsv_img, hsv_min, hsv_max)
+
+            binary_img = cv2.morphologyEx(binary_img, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+            binary_img = cv2.morphologyEx(binary_img, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
 
             # print("center pixel: ", hsv_img[60, 80, 0], hsv_img[60, 80, 1], hsv_img[60, 80, 2], sep=" ")
 
@@ -162,7 +165,7 @@ class ShooterCameraProcess(mp.Process):
                 self.nt_queue.put_nowait(("y_angle", y_angle))
                 self.nt_queue.put_nowait(("distance", distance))
 
-                print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
+                # print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
                 # print(x_list, y_list, sep=" ")
             except Full:
                 logging.error("shooter nt full")

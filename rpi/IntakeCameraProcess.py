@@ -24,7 +24,7 @@ DEPTH_W = 640
 DIS_RADIUS_PRODUCT_MIN = 40
 DIS_RADIUS_PRODUCT_MAX = 100
 
-MIN_CONTOUR_SIZE = 50 # reduced resolution
+MIN_CONTOUR_SIZE = 100 # reduced resolution
 
 # hMin = 0
 # hMax = 255
@@ -104,7 +104,7 @@ class IntakeCameraProcess(mp.Process):
         config.enable_device('f1230148')
 
         config.enable_stream(rs.stream.depth, 320, 240, rs.format.z16, 30)
-        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 15)
+        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
         align_to = rs.stream.color
         align = rs.align(align_to)
@@ -130,13 +130,13 @@ class IntakeCameraProcess(mp.Process):
         )
 
         # setup preset
-        preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
-        for i in range(int(preset_range.max)):
-            visulpreset = depth_sensor.get_option_value_description(
-                rs.option.visual_preset, i)
-            # if visulpreset == 'Default':
-            #     print('set default')
-            #     depth_sensor.set_option(rs.option.visual_preset, i)
+        # preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
+        # for i in range(int(preset_range.max)):
+        #     visualpreset = depth_sensor.get_option_value_description(
+        #         rs.option.visual_preset, i)
+        #     if visualpreset == 'Default':
+        #         print('set default')
+        #         depth_sensor.set_option(rs.option.visual_preset, i)
 
         if Constants.isRed:
             hMin = red_hMin
@@ -156,6 +156,9 @@ class IntakeCameraProcess(mp.Process):
             vMax = blue_vMax
             color = (200, 0, 0)
             print("Playing as BLUE")
+
+        color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
+        hsv_color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
 
         try:
             while True:
@@ -178,17 +181,17 @@ class IntakeCameraProcess(mp.Process):
                 if not depth_frame or not color_frame:
                     raise Exception(
                         "depth_frame and/or color_frame unavailable")
-                color_img = np.asanyarray(color_frame.get_data())
-                # color_img = color_img[:, :, ::-1]
 
                 # Convert images to numpy arrays
+                color_img = np.asanyarray(color_frame.get_data())
+                # color_img = color_img[:, :, ::-1]
                 depth_frame = hole_filler.process(depth_frame)
                 depth_image = np.asanyarray(depth_frame.get_data())
                 depth_image = depth_image * DEPTH_UNIT
 
                 # print(color_img)
 
-                hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV)
+                hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV, dst=hsv_color_img)
 
                 color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
                                                (hMax, sMax, vMax))
@@ -332,7 +335,8 @@ class IntakeCameraProcess(mp.Process):
                 if self.frame_out_queue.full():
                     self.frame_out_queue.get_nowait()
 
-                self.frame_out_queue.put_nowait(color_img)
+                # self.frame_out_queue.put_nowait(color_img)
+                self.frame_out_queue.put_nowait(color_thresh_img)
 
         finally:
             print('stop')

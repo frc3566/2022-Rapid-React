@@ -22,9 +22,10 @@ public class GetAutoIntake{
     public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, IntakeCamera camera) {
         IntakeCommand intakeCommand = new IntakeCommand(intake, indexer);
         GoToBall goToBall = new GoToBall(drive, camera);
-        Move move = new Move(1.0, 1.0, 1.0, drive);
+        Move move = new Move(0.5, 0.5, 0.5, drive);
         
-        command = intakeCommand.alongWith(goToBall.andThen(move));   
+        command = goToBall.andThen(move);
+        // intakeCommand.raceWith(goToBall.andThen(move));   
     }
 
     public Command getCommand(){
