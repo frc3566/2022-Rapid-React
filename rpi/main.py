@@ -48,12 +48,9 @@ def intakeCamera_is_updated():
 
     if intakeCamera_last_update_time == current_update_time:
         return False
-    elif intakeCamera_last_update_time < current_update_time:
+    else:
         intakeCamera_last_update_time = current_update_time
         return True
-    else:
-        logging.error("Intake Camera Time Error")
-        return False
 
 
 shooterCameraTable = NetworkTables.getTable("LiveWindow/ShooterCamera");
@@ -68,12 +65,9 @@ def shooterCamera_is_updated():
 
     if shooterCamera_last_update_time == current_update_time:
         return False
-    elif shooterCamera_last_update_time < current_update_time:
+    else:
         shooterCamera_last_update_time = current_update_time
         return True
-    else:
-        logging.error("Intake Camera Time Error")
-        return False
 
 # processes
 
@@ -118,6 +112,7 @@ if __name__ == '__main__':
             print("connection lost, restarting network table")
             # NetworkTables.startClientTeam(3566)
             NetworkTables.initialize(server='roborio-3566-frc.local')
+            time.sleep(0.5)
 
         img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 

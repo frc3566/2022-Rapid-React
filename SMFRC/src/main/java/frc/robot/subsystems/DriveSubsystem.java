@@ -116,12 +116,16 @@ public class DriveSubsystem extends SubsystemBase {
     right3.follow(right1);
 
     rightEncoder = right1.getEncoder();
-    rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
-    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
+    rightEncoder.setPositionConversionFactor(Constants.ENCODER_UNIT2METER);
+    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_UNIT2METER);
 
     leftEncoder = left1.getEncoder();
-    leftEncoder.setPositionConversionFactor(Constants.ENCODER_UNITpMETER);
-    leftEncoder.setVelocityConversionFactor(Constants.ENCODER_UNITpMETER);
+    leftEncoder.setPositionConversionFactor(Constants.ENCODER_UNIT2METER);
+    leftEncoder.setVelocityConversionFactor(Constants.ENCODER_UNIT2METER);
+
+    leftController.setP(Constants.DRIVETRAIN_VELOCITY_GAINS.kP);
+    leftController.setI(Constants.DRIVETRAIN_VELOCITY_GAINS.kI);
+    leftController.setD(Constants.DRIVETRAIN_VELOCITY_GAINS.kD);
 
     gyro = new AHRS(SPI.Port.kMXP);
 

@@ -24,7 +24,7 @@ DEPTH_W = 640
 DIS_RADIUS_PRODUCT_MIN = 40
 DIS_RADIUS_PRODUCT_MAX = 100
 
-MIN_CONTOUR_SIZE = 100 # reduced resolution
+MIN_CONTOUR_SIZE = 50
 
 # hMin = 0
 # hMax = 255
@@ -33,21 +33,33 @@ MIN_CONTOUR_SIZE = 100 # reduced resolution
 # vMin = 0
 # vMax = 255
 
-# red
-red_hMin = 0
-red_hMax = 5
-red_sMin = 150
-red_sMax = 255
-red_vMin = 0
-red_vMax = 255
+def getColorThresh(hsv_img):
+    if Constants.isRed:
+        red_bottom = cv2.inRange(hsv_img, (0, 70, 0), (10, 255, 255))
+        red_top = cv2.inRange(hsv_img, (170, 70, 0), (180, 255, 255))
+        color_thresh_img = np.logical_or(red_bottom, red_top).astype(np.uint8) * 255
+    else:
+        color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (110, 255, 255))
+    return color_thresh_img
 
+
+# red
+# red_hMin = 0
+# red_hMax = 5
+# red_hMin = 170
+# red_hMax = 180
+# red_sMin = 150
+# red_sMax = 255
+# red_vMin = 0
+# red_vMax = 255
+#
 # blue
-blue_hMin = 90
-blue_hMax = 100
-blue_sMin = 70
-blue_sMax = 255
-blue_vMin = 0
-blue_vMax = 255
+# blue_hMin = 90
+# blue_hMax = 100
+# blue_sMin = 70
+# blue_sMax = 255
+# blue_vMin = 0
+# blue_vMax = 255
 
 HEIGHT = 17 * 0.0254
 
@@ -139,23 +151,12 @@ class IntakeCameraProcess(mp.Process):
         #         depth_sensor.set_option(rs.option.visual_preset, i)
 
         if Constants.isRed:
-            hMin = red_hMin
-            sMin = red_sMin
-            vMin = red_vMin
-            hMax = red_hMax
-            sMax = red_sMax
-            vMax = red_vMax
             color = (0, 0, 200)
             print("Playing as RED")
         else:
-            hMin = blue_hMin
-            sMin = blue_sMin
-            vMin = blue_vMin
-            hMax = blue_hMax
-            sMax = blue_sMax
-            vMax = blue_vMax
             color = (200, 0, 0)
             print("Playing as BLUE")
+
 
         color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
         hsv_color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
@@ -193,8 +194,7 @@ class IntakeCameraProcess(mp.Process):
 
                 hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV, dst=hsv_color_img)
 
-                color_thresh_img = cv2.inRange(hsv_color_img, (hMin, sMin, vMin),
-                                               (hMax, sMax, vMax))
+                color_thresh_img = getColorThresh(hsv_color_img)
 
                 color_thresh_img = cv2.dilate(color_thresh_img, None, iterations=4)
                 color_thresh_img = cv2.erode(color_thresh_img, None, iterations=2)
@@ -317,7 +317,7 @@ class IntakeCameraProcess(mp.Process):
 
 
                 try:
-                    self.nt_queue.put_nowait(("last_update_time", time.time()))
+                    self.nt_queue.put_nowait(("last_update_time", time.time() % 2048))
 
                     self.nt_queue.put_nowait(("processing_time", processing_time))
                     self.nt_queue.put_nowait(("fps", fps))
@@ -335,8 +335,8 @@ class IntakeCameraProcess(mp.Process):
                 if self.frame_out_queue.full():
                     self.frame_out_queue.get_nowait()
 
-                # self.frame_out_queue.put_nowait(color_img)
-                self.frame_out_queue.put_nowait(color_thresh_img)
+                self.frame_out_queue.put_nowait(color_img)
+                # self.frame_out_queue.put_nowait(color_thresh_img)
 
         finally:
             print('stop')

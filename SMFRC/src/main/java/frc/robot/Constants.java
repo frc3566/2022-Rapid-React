@@ -28,18 +28,13 @@ public final class Constants {
     public static final double WHEEL_DIAMETER =  6.28 * 0.0254 * Math.PI; // d(inch) * inch2meter * pi
     public static final double ENCODER_UNITpMETER = (1 / GEAR_RATIO) / WHEEL_DIAMETER;
     public static final double RPMpMPS = ENCODER_UNITpMETER * 60.0;
+    public static final double ENCODER_UNIT2METER = 1 / ENCODER_UNITpMETER;
 
     // drivetrain physical characteristic
     public static final double kTrackwidthMeters = 0.7112 / 0.93;
     public static final DifferentialDriveKinematics kDriveKinematics = 
     new DifferentialDriveKinematics(kTrackwidthMeters);
-
-    //drivetrain gains
-    public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
-        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
     
-    public static final Gains DRIVETRAIN_DISTANCE_GAINS = new Gains(
-        1 / 2 * RPMpMPS, 1 / 100 * RPMpMPS, 0, 0, 0.2 * Constants.RPMpMPS, 1);
 
 //TODO sysid
     public static final double Drive_ks = 0.101;
@@ -48,6 +43,17 @@ public final class Constants {
 
     public static final double kMaxSpeed_Drive = 1.5; 
     public static final double kMaxAcceleration_Drive = 1.5;
+
+    // velocity control
+    // public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
+    //     0.5 * ENCODER_UNIT2METER , 0, 0.01 * ENCODER_UNIT2METER , 0, 0.2, 1);
+
+    public static final Gains DRIVETRAIN_VELOCITY_GAINS = new Gains(
+        0.0014 , 0, 0.000028, 0, 0.2, 1);
+
+    // distance control
+    public static final Gains DRIVETRAIN_DISTANCE_GAINS = new Gains(
+        0.5, 0, 0.01, 0, 0, 1);
 
     // turning control
     public static final Gains TURNING_GAINS = new Gains(0.025, 0, 0.0022275, 0, 0, 1);

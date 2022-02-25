@@ -17,6 +17,7 @@ public class Move extends CommandBase {
   double left, right;
 
   double waitTar;
+  double duration;
 
   /**
    * Creates a new ExampleCommand.
@@ -29,9 +30,8 @@ public class Move extends CommandBase {
 
     left = leftMPS;
     right = rightMPS;
-
-    waitTar = Timer.getFPGATimestamp() + time;
     
+    this.duration = time;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
   }
@@ -40,6 +40,7 @@ public class Move extends CommandBase {
   @Override
   public void initialize() {
     drive.setVelocity(left, right);
+    waitTar = Timer.getFPGATimestamp() + duration;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

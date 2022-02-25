@@ -8,10 +8,13 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeCamera;
 
+import java.sql.Time;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -37,6 +40,13 @@ public class GoToBall extends CommandBase {
 
   double angularSetpoint;
   double linearSetpoint;
+
+  double angularUpdateTime;
+  double linearUpdateTime;
+
+  boolean angularComplete;
+  boolean linearComplete;
+
   
   public GoToBall(DriveSubsystem driveSubsystem, IntakeCamera intakeCamera) {
     drive = driveSubsystem;
@@ -47,24 +57,43 @@ public class GoToBall extends CommandBase {
     angularPIDController.setTolerance(2, 5);
   }
 
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    angularSetpoint = camera.getTarAngle();
-    linearSetpoint= camera.getTarDistance();
     angularPIDController.reset();
     linearPIDController.reset();
-    drive.resetEncoders();
+
+    angularSetpoint = drive.getHeading() + camera.getTarAngle();
+    linearSetpoint = drive.getAvgEncoderDistance() - camera.getTarDistance();
+
+    angularUpdateTime = Timer.getFPGATimestamp();
+    linearUpdateTime = Timer.getFPGATimestamp();
+
+    angularComplete = false;
+    linearComplete = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(prevUpdateTime != camera.getLastUpdateTime()){
+
+    if(camera.ballDetected() && Timer.getFPGATimestamp() > angularUpdateTime && angularComplete){
       angularSetpoint = drive.getHeading() + camera.getTarAngle();
-      linearSetpoint = drive.getAvgEncoderDistance() - camera.getTarDistance();
-      // System.out.println("update turning");
+      angularUpdateTime = Timer.getFPGATimestamp() + 0.6;
+      angularComplete = false;
+      System.out.println("update anuglar");
     }
+
+    if(camera.ballDetected() && Timer.getFPGATimestamp() > linearUpdateTime && linearComplete){
+      linearSetpoint = drive.getAvgEncoderDistance() - (camera.getTarDistance() - 1);
+      linearUpdateTime = Timer.getFPGATimestamp() + 0.6;
+      linearComplete = false;
+      System.out.println("update linear");
+    }
+
+    // System.out.println(drive.getAvgEncoderDistance() + " " + linearSetpoint + " " + linearComplete);
+
 
     // ChassisSpeeds adjustedSpeeds = new ChassisSpeeds(0, 0, v_angular);
 
@@ -73,12 +102,35 @@ public class GoToBall extends CommandBase {
     double leftFF = Constants.Drive_ks;
     double rightFF = Constants.Drive_ks; 
 
-    double angularPID = angularPIDController.calculate(drive.getHeading(), angularSetpoint);
-    
-    double linearPID = - linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
+    double angularPID;
+    double linearPID;
+
+    if(Math.abs(drive.getHeading() - angularSetpoint) <= 1){
+      angularPID = 0;
+      angularComplete = true;
+    }else{
+      angularPID = angularPIDController.calculate(drive.getHeading(), angularSetpoint);
+    }
+
+    if(Math.abs(drive.getAvgEncoderDistance() - linearSetpoint) <= 0.05){
+      linearPID = 0;
+      linearComplete = true;
+      // System.out.println("linear complete");
+    }else{
+      linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
+    }
 
     double left = linearPID - angularPID;
     double right = linearPID + angularPID;
+
+    // double left = linearPID;
+    // double right = linearPID;
+
+    // double left = - angularPID;
+    // double right = angularPID;
+
+    // System.out.println(left + " " + right);
+    
 
     if(Math.abs(left) > Constants.kMaxSpeed_Drive){
       left = Constants.kMaxSpeed_Drive;
@@ -90,7 +142,7 @@ public class GoToBall extends CommandBase {
       left = left * Constants.kMaxSpeed_Drive / right;
     }
 
-    drive.setVelocity(leftFF * Math.signum(left) + left, rightFF * Math.signum(rightFF) + right);
+    drive.setVelocity(leftFF * Math.signum(left) + left, rightFF * Math.signum(right) + right);
   }
 
   // Called once the command ends or is interrupted.
@@ -100,10 +152,10 @@ public class GoToBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(camera.getTarDistance() <= 1 && Math.abs(camera.getTarAngle()) <= 15){
+    if(camera.getTarDistance() <= 1 && Math.abs(camera.getTarAngle()) <= 10){
       return true;
     }
-
     return false;
   }
 }
+

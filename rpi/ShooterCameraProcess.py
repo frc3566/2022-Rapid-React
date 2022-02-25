@@ -154,7 +154,7 @@ class ShooterCameraProcess(mp.Process):
             # binary_stream.putFrame(binary_img)
 
             try:
-                self.nt_queue.put_nowait(("last_update_time", time.time()))
+                self.nt_queue.put_nowait(("last_update_time", time.time() % 2048))
 
                 self.nt_queue.put_nowait(("processing_time", processing_time))
                 self.nt_queue.put_nowait(("fps", fps))
