@@ -20,7 +20,7 @@ public class GetAutoIntake{
     //        | move over ball
 
     public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, IntakeCamera camera) {
-        IntakeCommand intakeCommand = new IntakeCommand(intake, indexer);
+        IntakeCommand intakeCommand = new IntakeCommand(indexer.getBallCount() + 1, intake, indexer);
         GoToBall goToBall = new GoToBall(drive, camera);
         Move move = new Move(-0.7, -0.7, 1.5, drive);
         

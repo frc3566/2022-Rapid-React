@@ -18,8 +18,8 @@ from queue import Full, Empty
 MIN_DIS = 0.25
 MAX_DIS = 9
 
-DEPTH_H = 480
 DEPTH_W = 640
+DEPTH_H = 480
 
 DIS_RADIUS_PRODUCT_MIN = 40
 DIS_RADIUS_PRODUCT_MAX = 100
@@ -166,11 +166,6 @@ class IntakeCameraProcess(mp.Process):
 
                 ball_detected = False
 
-                if not NetworkTables.isConnected:
-                    print("restarting network table in intake process")
-                    NetworkTables.startClientTeam(3566)
-                    NetworkTables.startDSClient()
-
                 start_time = time.time()
 
                 frames = pipeline.wait_for_frames()
@@ -205,7 +200,7 @@ class IntakeCameraProcess(mp.Process):
 
                 unknown_mask = np.isnan(image_3d[..., -1])
                 normal = normal_computer.apply(image_3d)
-                plane_labels, plane_coeffs = plane_computer.apply(image_3d, normal)
+                plane_labels, _ = plane_computer.apply(image_3d, normal)
                 dis_to_cam = la.norm(image_3d, axis=-1)
 
                 # print(dis_to_cam)

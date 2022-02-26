@@ -23,10 +23,20 @@ public class IntakeCommand extends CommandBase {
    IntakeSubsystem intake;
    IndexerSubsystem indexer;
 
-  public IntakeCommand(IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
+   int targetBallcnt;
+
+  public IntakeCommand(int tar, IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
 
     intake = intakeSubsystem;
     indexer = indexerSubsystem;
+
+    targetBallcnt = tar;
+
+    if(targetBallcnt > 2){
+      targetBallcnt = 2;
+    }else if (targetBallcnt < 0){
+      targetBallcnt = 0;
+    }
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake, indexer);
@@ -37,7 +47,7 @@ public class IntakeCommand extends CommandBase {
   public void initialize() {
       intake.extendIntake();
       intake.setIntake(0.9);
-      indexer.setIndexer(0.7);
+      indexer.setIndexer(0.9);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -63,7 +73,7 @@ public class IntakeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(indexer.getBallCount() == 2){
+    if(indexer.getBallCount() >= targetBallcnt){
         return true;
     }
     return false;

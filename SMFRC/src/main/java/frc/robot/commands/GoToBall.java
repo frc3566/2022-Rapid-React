@@ -47,6 +47,8 @@ public class GoToBall extends CommandBase {
   boolean angularComplete;
   boolean linearComplete;
 
+  double minLinearSpeed = -1;
+
   
   public GoToBall(DriveSubsystem driveSubsystem, IntakeCamera intakeCamera) {
     drive = driveSubsystem;
@@ -86,7 +88,7 @@ public class GoToBall extends CommandBase {
     }
 
     if(camera.ballDetected() && Timer.getFPGATimestamp() > linearUpdateTime && linearComplete){
-      linearSetpoint = drive.getAvgEncoderDistance() - (camera.getTarDistance() - 1);
+      linearSetpoint = drive.getAvgEncoderDistance() - (camera.getTarDistance());
       linearUpdateTime = Timer.getFPGATimestamp() + 0.6;
       linearComplete = false;
       System.out.println("update linear");
@@ -120,6 +122,10 @@ public class GoToBall extends CommandBase {
       linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
     }
 
+    if(linearPID > minLinearSpeed){
+      linearPID = minLinearSpeed;
+    }
+
     double left = linearPID - angularPID;
     double right = linearPID + angularPID;
 
@@ -129,16 +135,15 @@ public class GoToBall extends CommandBase {
     // double left = - angularPID;
     // double right = angularPID;
 
-    // System.out.println(left + " " + right);
-    
+    System.out.println(left + " " + right);
 
     if(Math.abs(left) > Constants.kMaxSpeed_Drive){
-      left = Constants.kMaxSpeed_Drive;
+      left = Constants.kMaxSpeed_Drive * Math.signum(left);
       right = right * Constants.kMaxSpeed_Drive / left;
     }
 
     if(Math.abs(right) > Constants.kMaxSpeed_Drive){
-      right = Constants.kMaxSpeed_Drive;
+      right = Constants.kMaxSpeed_Drive * Math.signum(right);
       left = left * Constants.kMaxSpeed_Drive / right;
     }
 

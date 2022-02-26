@@ -59,7 +59,7 @@ public class RobotContainer {
 
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(js1, drive);
 
-  private IntakeCommand intakeCommand = new IntakeCommand(intake, indexer);
+  private IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
 
   private ShootCommand shoot = new ShootCommand(5, indexer, shooter);
 
