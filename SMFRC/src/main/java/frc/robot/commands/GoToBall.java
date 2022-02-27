@@ -47,7 +47,7 @@ public class GoToBall extends CommandBase {
   boolean angularComplete;
   boolean linearComplete;
 
-  double minLinearSpeed = -1;
+  double minLinearSpeed = 1;
 
   
   public GoToBall(DriveSubsystem driveSubsystem, IntakeCamera intakeCamera) {
@@ -67,7 +67,7 @@ public class GoToBall extends CommandBase {
     linearPIDController.reset();
 
     angularSetpoint = drive.getHeading() + camera.getTarAngle();
-    linearSetpoint = drive.getAvgEncoderDistance() - camera.getTarDistance();
+    linearSetpoint = drive.getAvgEncoderDistance() + camera.getTarDistance();
 
     angularUpdateTime = Timer.getFPGATimestamp();
     linearUpdateTime = Timer.getFPGATimestamp();
@@ -122,7 +122,7 @@ public class GoToBall extends CommandBase {
       linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
     }
 
-    if(camera.ballDetected() && linearPID > minLinearSpeed){
+    if(camera.ballDetected() && linearPID < minLinearSpeed){
       linearPID = minLinearSpeed;
     }
 

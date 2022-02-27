@@ -94,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // good boy
     left1 = new CANSparkMax(1, MotorType.kBrushless);
-    left1.setInverted(true);;
+    left1.setInverted(false);;
     leftController = left1.getPIDController();
     setControler(leftController);
 
@@ -105,7 +105,7 @@ public class DriveSubsystem extends SubsystemBase {
     left3.follow(left1);
 
     right1 = new CANSparkMax(4, MotorType.kBrushless);
-    right1.setInverted(false);
+    right1.setInverted(true);
     rightController = right1.getPIDController();
     setControler(rightController);
 
