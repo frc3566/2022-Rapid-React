@@ -82,6 +82,8 @@ private States state;
     // shooter.setRPM(shooter.distanceToRPM(distance));
 
     //recount the ball before shooting
+    state = States.RETRACT;
+
     indexer.setBallCount(0);
     if(indexer.getHighIR()){
       indexer.setBallCount(indexer.getBallCount()+1);
@@ -95,12 +97,10 @@ private States state;
   @Override
   public void execute() {
     if(state == States.RETRACT){
-      indexer.setIndexer(-0.2);
-      if(indexer.getBallCount() == 1 && indexer.getHighIR() == false){
-        state = States.PRESPIN;
-      }
-
-      if(indexer.getBallCount() == 2 && (indexer.getHighIR() == false || indexer.getEntranceIR() == true)){
+      indexer.setIndexer(-0.3);
+      // shooter.setPower(-0.3);
+      // if(indexer.getHighIR() == false || indexer.getEntranceIR() == true){
+      if(indexer.getHighIR() == false){
         state = States.PRESPIN;
       }
     }
@@ -125,7 +125,7 @@ private States state;
         indexer.setBallCount(indexer.getBallCount()-1);
         indexer.setIndexer(0);
 
-        waitTar = Timer.getFPGATimestamp() + 0;
+        waitTar = Timer.getFPGATimestamp() + 0.5;
         state = States.WAIT;
         System.out.print("bull's eye");
       }

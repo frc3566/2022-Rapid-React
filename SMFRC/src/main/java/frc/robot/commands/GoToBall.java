@@ -122,7 +122,7 @@ public class GoToBall extends CommandBase {
       linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
     }
 
-    if(linearPID > minLinearSpeed){
+    if(camera.ballDetected() && linearPID > minLinearSpeed){
       linearPID = minLinearSpeed;
     }
 

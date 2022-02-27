@@ -121,10 +121,9 @@ class ShooterCameraProcess(mp.Process):
             except ZeroDivisionError:
                 x_mean = x_mid
                 y_mean = y_mid
-                pass
 
-            u = (x_mean - x_mid)  # * 4
-            v = (y_mean - y_mid)  # * 4
+            u = x_mean - x_mid  # * 4
+            v = y_mean - y_mid  # * 4
 
             x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
             y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y)

@@ -199,8 +199,9 @@ class IntakeCameraProcess(mp.Process):
                 # show('image_3d', image_3d)
 
                 unknown_mask = np.isnan(image_3d[..., -1])
-                normal = normal_computer.apply(image_3d)
-                plane_labels, _ = plane_computer.apply(image_3d, normal)
+                # normal = normal_computer.apply(image_3d)
+                # plane_labels, _ = plane_computer.apply(image_3d, normal)
+                plane_labels, _ = plane_computer.apply(image_3d)
                 dis_to_cam = la.norm(image_3d, axis=-1)
 
                 # print(dis_to_cam)
@@ -257,7 +258,7 @@ class IntakeCameraProcess(mp.Process):
                     sphere_r, center_x, center_y, center_z = sphere
                     center_dis = (center_x ** 2 + center_y ** 2 + center_z ** 2) ** 0.5
 
-                    print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
+                    # print(f"{confidence:.5f} {sphere_r:.5f} {dis:.5f} {center_dis:.5f}")
                     if confidence < 0.4 or sphere_r > 2 or sphere_r < 0.05:
                         # print("skip")
                         continue
@@ -330,8 +331,9 @@ class IntakeCameraProcess(mp.Process):
                 if self.frame_out_queue.full():
                     self.frame_out_queue.get_nowait()
 
-                self.frame_out_queue.put_nowait(color_img)
+                # self.frame_out_queue.put_nowait(color_img)
                 # self.frame_out_queue.put_nowait(color_thresh_img)
+                self.frame_out_queue.put_nowait(final_mask)
 
         finally:
             print('stop')

@@ -45,9 +45,18 @@ public class IntakeCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-      intake.extendIntake();
-      intake.setIntake(0.9);
-      indexer.setIndexer(0.9);
+    intake.extendIntake();
+    intake.setIntake(0.9);
+    indexer.setIndexer(0.9);
+
+    //recount the ball before shooting
+    indexer.setBallCount(0);
+    if(indexer.getHighIR()){
+      indexer.setBallCount(indexer.getBallCount()+1);
+    }
+    if(indexer.getLowIR()){
+      indexer.setBallCount(indexer.getBallCount()+1);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

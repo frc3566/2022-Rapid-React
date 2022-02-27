@@ -4,7 +4,7 @@ import numpy as np
 class Constants:
     DEBUG = True
 
-    isRed = True
+    isRed = False # True = Red, False = Blue
 
     # microsoft cam
     EXPOSURE_AUTO = 1  # 1 off 3 on
@@ -23,7 +23,7 @@ class Constants:
     FOCAL_LENGTH_X = CAMERA_MATRIX[0][0]
     FOCAL_LENGTH_Y = CAMERA_MATRIX[1][1]
 
-    CAMERA_MOUNT_ANGLE = 40
+    CAMERA_MOUNT_ANGLE = 50
     CAMERA_HEIGHT = 0.91
     CAMERA_GOAL_DELTA_H = 2.64 - CAMERA_HEIGHT
 

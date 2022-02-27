@@ -20,8 +20,7 @@ print(sys.version)
 
 ntinst = NetworkTablesInstance
 print("Setting up NetworkTables")
-NetworkTables.initialize(server='roborio-3566-frc.local')
-# NetworkTables.startClientTeam(3566)
+NetworkTables.initialize(server='roboRIO-3566-FRC.local')
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -69,8 +68,6 @@ def shooterCamera_is_updated():
         shooterCamera_last_update_time = current_update_time
         return True
 
-# processes
-
 
 if __name__ == '__main__':
     CameraServer.getInstance().startAutomaticCapture(name="shooter",
@@ -90,6 +87,10 @@ if __name__ == '__main__':
                                                  shooter_frame_in_queue, shooter_frame_out_queue),
                                                  name="shooter_camera_process")
 
+    # CameraServer.getInstance().startAutomaticCapture(name="climber",
+    #     path="/dev/v4l/by-id/usb-Microsoft_Microsoft®_LifeCam_HD-3000-video-index1"
+    #                                                         )
+
     def cleanup(*args):
         intakeCameraProcesManager.end_process()
 
@@ -108,11 +109,13 @@ if __name__ == '__main__':
     # main loop
     while True:
 
-        if not NetworkTables.isConnected:
-            print("connection lost, restarting network table")
-            # NetworkTables.startClientTeam(3566)
-            NetworkTables.initialize(server='roborio-3566-frc.local')
-            time.sleep(0.5)
+        # print(NetworkTables.isConnected())
+        #
+        # if not NetworkTables.isConnected:
+        #     print("connection lost, restarting network table")
+        #     NetworkTables.startClientTeam(3566)
+        #     # NetworkTables.initialize(server='10.35.66.2')
+        #     time.sleep(0.5)
 
         img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 

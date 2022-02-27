@@ -16,46 +16,50 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-  // private CANSparkMax left = new CANSparkMax(30, MotorType.kBrushless);
-  // private CANSparkMax right = new CANSparkMax(31, MotorType.kBrushless);
+  private CANSparkMax left = new CANSparkMax(30, MotorType.kBrushless);
+  private CANSparkMax right = new CANSparkMax(31, MotorType.kBrushless);
 
   private RelativeEncoder leftEncoder, rightEncoder;
 
   private SparkMaxPIDController leftPID, rightPID;
 
   private boolean isExtended;
+
+  private double leftZero, rightZero;
   
   public ClimberSubsystem() {
-    // left.setInverted(false);
-    // left.setClosedLoopRampRate(0.3);
-    // left.setIdleMode(IdleMode.kBrake);
+    left.setInverted(false);
+    left.setClosedLoopRampRate(0.3);
+    left.setIdleMode(IdleMode.kBrake);
 
-    // right.setInverted(false);
-    // right.setClosedLoopRampRate(0.3);
-    // right.setIdleMode(IdleMode.kBrake);
+    right.setInverted(false);
+    right.setClosedLoopRampRate(0.3);
+    right.setIdleMode(IdleMode.kBrake);
 
-    // leftEncoder = left.getEncoder();
-    // leftEncoder.setVelocityConversionFactor(1);
+    leftEncoder = left.getEncoder();
+    leftEncoder.setVelocityConversionFactor(1);
 
-    // rightEncoder = right.getEncoder();
-    // rightEncoder.setVelocityConversionFactor(1);
+    rightEncoder = right.getEncoder();
+    rightEncoder.setVelocityConversionFactor(1);
 
-    // leftPID = left.getPIDController();
-    // leftPID.setP(0.3);
-    // leftPID.setI(0);
-    // leftPID.setD(0.01);
+    leftPID = left.getPIDController();
+    leftPID.setP(0.3);
+    leftPID.setI(0);
+    leftPID.setD(0.01);
 
-    // rightPID = left.getPIDController();
-    // rightPID.setP(0.3);
-    // rightPID.setI(0);
-    // rightPID.setD(0.01);
+    rightPID = left.getPIDController();
+    rightPID.setP(0.3);
+    rightPID.setI(0);
+    rightPID.setD(0.01);
 
     isExtended = false;
+
+    setZero();
   }
 
   public void setPower(double power){
     // left.set(power);
-    // right.set(power);
+    right.set(power);
   }
 
   public void extend(){
@@ -86,9 +90,28 @@ public class ClimberSubsystem extends SubsystemBase {
     isExtended = false;
   }
 
+  public void setZero(){
+    leftZero = leftEncoder.getPosition();
+    rightZero = rightEncoder.getPosition();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    //soft pertection
+    if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+      left.set(0);
+    }
+    if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
+      left.set(0);
+    }
+    if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+      right.set(0);
+    }
+    if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
+      right.set(0);
+    }
   }
 
   @Override
