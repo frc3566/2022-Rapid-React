@@ -26,6 +26,8 @@ public class ClimberSubsystem extends SubsystemBase {
   private boolean isExtended;
 
   private double leftZero, rightZero;
+
+  private double minSpeed = 100;
   
   public ClimberSubsystem() {
     left.setInverted(false);
@@ -100,18 +102,28 @@ public class ClimberSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //soft pertection
-    if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+    // if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+    //   left.set(0);
+    // }
+    // if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
+    //   left.set(0);
+    // }
+    // if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+    //   right.set(0);
+    // }
+    // if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
+    //   right.set(0);
+    // }
+    if(left.get() != 0 && Math.abs(leftEncoder.getVelocity()) < minSpeed){
       left.set(0);
     }
-    if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
-      left.set(0);
-    }
-    if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+
+    if(right.get() != 0 && Math.abs(rightEncoder.getVelocity()) < minSpeed){
       right.set(0);
     }
-    if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
-      right.set(0);
-    }
+
+    System.out.println("left velocity: " + leftEncoder.getVelocity());
+    System.out.println("right velocity: " + rightEncoder.getVelocity());
   }
 
   @Override
