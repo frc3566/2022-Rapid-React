@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,6 +27,10 @@ public class ClimberSubsystem extends SubsystemBase {
   private boolean isExtended;
 
   private double leftZero, rightZero;
+
+  private double protectionDelayTarget;
+
+  private boolean calibrationMode;
 
   private double minSpeed = 100;
   
@@ -55,8 +60,13 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPID.setD(0.01);
 
     isExtended = false;
+    calibrationMode = false;
 
     setZero();
+  }
+
+  public void setCalibrationMode(boolean mode){
+    calibrationMode = mode;
   }
 
   public void setPower(double power){
@@ -102,24 +112,31 @@ public class ClimberSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //soft pertection
-    // if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
-    //   left.set(0);
-    // }
-    // if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
-    //   left.set(0);
-    // }
-    // if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
-    //   right.set(0);
-    // }
-    // if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
-    //   right.set(0);
-    // }
-    if(left.get() != 0 && Math.abs(leftEncoder.getVelocity()) < minSpeed){
-      left.set(0);
+    if(!calibrationMode){
+      if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+        left.set(0);
+      }
+      if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
+        left.set(0);
+      }
+      if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+        right.set(0);
+      }
+      if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
+        right.set(0);
+      }
     }
 
-    if(right.get() != 0 && Math.abs(rightEncoder.getVelocity()) < minSpeed){
+
+    if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(leftEncoder.getVelocity()) < minSpeed){
+      left.set(0);
+    }
+    if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(rightEncoder.getVelocity()) < minSpeed){
       right.set(0);
+    }
+
+    if(left.get() == 0 || right.get() == 0){
+      protectionDelayTarget = Timer.getFPGATimestamp() + 0.5;
     }
 
     System.out.println("left velocity: " + leftEncoder.getVelocity());
