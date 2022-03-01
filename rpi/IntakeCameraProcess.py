@@ -341,9 +341,13 @@ class IntakeCameraProcess(mp.Process):
                     # logging.error("intake nt full")
                     pass
 
-                self.frame_out_queue.put_nowait(color_img)
-                # self.frame_out_queue.put_nowait(color_thresh_img)
-                # self.frame_out_queue.put_nowait(final_mask)
+                try:
+                    self.frame_out_queue.put_nowait(color_img)
+                    # self.frame_out_queue.put_nowait(color_thresh_img)
+                    # self.frame_out_queue.put_nowait(final_mask)
+
+                except Full:
+                    pass
 
         finally:
             print('stop')

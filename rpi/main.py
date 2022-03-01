@@ -26,6 +26,9 @@ if not NetworkTables.isConnected():
     # NetworkTables.initialize(server='10.35.66.2')
     time.sleep(1)
 
+if NetworkTables.isConnected():
+    print("Network table connected")
+
 logging.getLogger().setLevel(logging.DEBUG)
 
 # sharing data with mp queue

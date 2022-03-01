@@ -15,23 +15,31 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class GetAutoShoot{
 
-    private Command command;
+    private DriveSubsystem drive;
+    private IndexerSubsystem indexer;
+    private ShooterSubsystem shooter;
+    private ShooterCamera camera;
+
+    // find goal
+    // aimlock
+    // anchor | shoot
 
     public GetAutoShoot(DriveSubsystem drive, IndexerSubsystem indexer, ShooterSubsystem shooter, ShooterCamera camera) {
-        // find goal
-        // aimlock
-        // anchor | shoot
+        this.drive = drive;
+        this.indexer = indexer;
+        this.shooter = shooter;
+        this.camera = camera;
+    }
 
-        FindGoal findGoal = new FindGoal(drive, camera);
+    public Command getCommand(){
+        Command command;
+        // FindGoal findGoal = new FindGoal(drive, camera);
         AimLock aimLock = new AimLock(drive, camera);
         Anchor anchor = new Anchor(drive);
 
         ShootCommand shoot = new ShootCommand(camera, indexer, shooter);
 
         command = aimLock.andThen(anchor.raceWith(shoot));
-    }
-
-    public Command getCommand(){
         return command;
     }
     

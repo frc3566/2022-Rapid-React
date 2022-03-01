@@ -18,11 +18,11 @@ class ProcessManager:
         """
 
         self.end_queue = mp.Queue(1);
-        self.new_process_fn = new_process_fn(self.end_queue)
+        self.new_process_fn = new_process_fn
         self.disconnect_duration = disconnect_duration
         self.restart_duration = restart_duration
 
-        self.process = self.new_process_fn()
+        self.process = self.new_process_fn(self.end_queue)
         self.process.daemon = True
         self.process.name = name
         self.process.start()

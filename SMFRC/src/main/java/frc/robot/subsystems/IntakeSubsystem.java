@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
 
-  Solenoid leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
+  Solenoid leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
   Solenoid rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
 
   private int ballCnt;
@@ -54,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void contractIntake(){
     leftSolenoid.set(false);
-    rightSolenoid.set(true);
+    rightSolenoid.set(false);
     isExtented = false;
   }
 
@@ -80,6 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void disabled(){
     intake.set(0);
+    this.contractIntake();
   }
 
 

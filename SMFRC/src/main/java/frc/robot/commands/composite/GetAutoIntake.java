@@ -14,21 +14,29 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class GetAutoIntake{
 
-    private Command command;
+    private DriveSubsystem drive;
+    private IntakeSubsystem intake;
+    private IndexerSubsystem indexer;
+    private IntakeCamera camera;
 
     // intake | go to ball
     //        | move over ball
 
     public GetAutoIntake(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, IntakeCamera camera) {
-        IntakeCommand intakeCommand = new IntakeCommand(indexer.getBallCount() + 1, intake, indexer);
-        GoToBall goToBall = new GoToBall(drive, camera);
-        Move move = new Move(-0.7, -0.7, 1.5, drive);
-        
-        command = intakeCommand.raceWith(goToBall.andThen(move)); 
+        this.drive = drive;
+        this.intake = intake;
+        this.indexer = indexer;
+        this.camera = camera;
         // command = goToBall;
     }
 
     public Command getCommand(){
+        Command command;
+        IntakeCommand intakeCommand = new IntakeCommand(indexer.getBallCount() + 1, intake, indexer);
+        GoToBall goToBall = new GoToBall(drive, camera);
+        Move move = new Move(-0.7, -0.7, 1.5, drive);
+        
+        command = intakeCommand.raceWith(goToBall.andThen(move));
         return command;
     }
     

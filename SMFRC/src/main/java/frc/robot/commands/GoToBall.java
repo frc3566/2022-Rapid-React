@@ -157,7 +157,7 @@ public class GoToBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(camera.getTarDistance() <= 1 && Math.abs(camera.getTarAngle()) <= 10){
+    if(camera.getTarDistance() <= 1.5 && Math.abs(camera.getTarAngle()) <= 10){
       return true;
     }
     return false;

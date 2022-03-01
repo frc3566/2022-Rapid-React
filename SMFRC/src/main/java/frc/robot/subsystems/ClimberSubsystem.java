@@ -60,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPID.setD(0.01);
 
     isExtended = false;
-    calibrationMode = true;
+    calibrationMode = false;
 
     setZero();
   }
@@ -70,7 +70,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void setPower(double power){
-    // left.set(power);
+    left.set(power);
     right.set(power);
   }
 
@@ -79,8 +79,8 @@ public class ClimberSubsystem extends SubsystemBase {
       return;
     }
 
-    double leftTar = leftEncoder.getPosition() + 140;
-    double rightTar = leftEncoder.getPosition()  + 140;
+    double leftTar = leftEncoder.getPosition() + 180;
+    double rightTar = leftEncoder.getPosition()  + 180;
 
     leftPID.setReference(leftTar, ControlType.kPosition);
     rightPID.setReference(rightTar, ControlType.kPosition);
@@ -93,8 +93,8 @@ public class ClimberSubsystem extends SubsystemBase {
       return;
     }
 
-    double leftTar = leftEncoder.getPosition() - 140;
-    double rightTar = leftEncoder.getPosition() - 140;
+    double leftTar = leftEncoder.getPosition() - 180;
+    double rightTar = leftEncoder.getPosition() - 190;
 
     // leftPID.setReference(leftTar, ControlType.kPosition);
     // rightPID.setReference(rightTar, ControlType.kPosition);
@@ -112,20 +112,20 @@ public class ClimberSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // soft pertection
-    // if(!calibrationMode){
-    //   if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
-    //     left.set(0);
-    //   }
-    //   if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
-    //     left.set(0);
-    //   }
-    //   if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
-    //     right.set(0);
-    //   }
-    //   if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
-    //     right.set(0);
-    //   }
-    // }
+    if(!calibrationMode){
+      if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+        left.set(0);
+      }
+      if(leftEncoder.getPosition() >= leftZero + 180 && left.get() > 0){
+        left.set(0);
+      }
+      if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+        right.set(0);
+      }
+      if(rightEncoder.getPosition() >= rightZero + 180 && right.get() > 0){
+        right.set(0);
+      }
+    }
 
 
     // if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(leftEncoder.getVelocity()) < minSpeed){
@@ -141,6 +141,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
     System.out.println("left velocity: " + leftEncoder.getVelocity());
     System.out.println("right velocity: " + rightEncoder.getVelocity());
+
+    System.out.println("left position: " + leftEncoder.getPosition());
+    System.out.println("right position: " + rightEncoder.getPosition());
   }
 
   @Override

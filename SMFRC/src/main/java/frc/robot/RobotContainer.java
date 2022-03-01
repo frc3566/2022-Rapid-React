@@ -83,7 +83,7 @@ public class RobotContainer {
 
   private Command autoShoot = getAutoShoot.getCommand();
 
-  private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, autoInit, getAutoIntake.getCommand() , getAutoShoot.getCommand());
+  private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, autoInit, getAutoIntake, getAutoShoot);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -106,9 +106,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     //Joystick 1
-    //audo shoot
+    // cancel all (press)
     JoystickButton j1_b1 = new JoystickButton(js1, 1);
-    j1_b1.whenPressed(autoShoot, true);
+    j1_b1.whenPressed(cancellAll, true);
 
     // JoystickButton j1_b2 = new JoystickButton(js1, 2); //quick turn in driveWithJoystick
 
@@ -116,13 +116,13 @@ public class RobotContainer {
     JoystickButton j1_b3 = new JoystickButton(js1, 3);
     j1_b3.toggleWhenPressed(intakeCommand, true);
 
-    // manual shoot (press)
+    // auto shoot (press)
     JoystickButton j1_b4 = new JoystickButton(js1, 4);
-    j1_b4.whenPressed(shoot, true);
+    j1_b4.whenPressed(autoShoot, true);
 
-    // cancel all (press)
+    // manual shoot (press)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
-    j1_b5.whenPressed(cancellAll, true);
+    j1_b5.whenPressed(shoot, true);
 
     // auto intake (press)
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
@@ -136,15 +136,18 @@ public class RobotContainer {
     JoystickButton j1_b9 = new JoystickButton(js1, 9);
     j1_b9.whenHeld(backEject, true);
 
-    // climer up/down (hold)
+    // intake extend/contact (press)
     JoystickButton j1_b7 = new JoystickButton(js1, 7);
-    j1_b7.whenHeld(new StartEndCommand(() -> climber.setPower(0.7), () -> climber.setPower(0), climber), true);
+    j1_b7.whenPressed(new InstantCommand(() -> intake.extendIntake(), intake), true);
     JoystickButton j1_b8 = new JoystickButton(js1, 8);
-    j1_b8.whenHeld(new StartEndCommand(() -> climber.setPower(-0.7), () -> climber.setPower(0), climber), true);
+    j1_b8.whenPressed(new InstantCommand(() -> intake.contractIntake(), intake), true);
 
-    //
+    // climer up/down (hold)
     JoystickButton j1_b13 = new JoystickButton(js1, 13);
+    j1_b13.whenHeld(new StartEndCommand(() -> climber.setPower(0.7), () -> climber.setPower(0), climber), true);
     JoystickButton j1_b14 = new JoystickButton(js1, 14);
+    j1_b14.whenHeld(new StartEndCommand(() -> climber.setPower(-0.7), () -> climber.setPower(0), climber), true);
+    
 
     // intake in/out (hold)
     JoystickButton j1_b12 = new JoystickButton(js1, 12);
@@ -161,7 +164,7 @@ public class RobotContainer {
     
     //Joystick 2
 
-    //control climber with joystick and pov buttons
+    // control climber with joystick and pov buttons
     // POVButton j1_p0 = new POVButton(js1, 0);
     // j1_p0.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), true);
     // POVButton j1_p315 = new POVButton(js1, 315);
@@ -176,19 +179,23 @@ public class RobotContainer {
     // POVButton j1_p180 = new POVButton(js1, 180);
     // j1_p180.whenHeld(new RunCommand(() -> climber.setPower(-1), indexer), true));
 
+    // cancel all (press)
+    JoystickButton j2_b1 = new JoystickButton(js2, 1);
+    j2_b1.whenPressed(cancellAll, true);
+
     // increase/decrease ball count (press)
-    // JoystickButton j2_b5 = new JoystickButton(js2, 5);
-    // j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()+1)), true);
-    // JoystickButton j2_b3 = new JoystickButton(js2, 3);
-    // j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()-1)), true);
+    JoystickButton j2_b5 = new JoystickButton(js2, 5);
+    j2_b5.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()+1)), true);
+    JoystickButton j2_b3 = new JoystickButton(js2, 3);
+    j2_b3.whenPressed(new InstantCommand(() -> indexer.setBallCount(indexer.getBallCount()-1)), true);
 
-    // // increase/decrease shooter field correction (press)
-    // JoystickButton j2_b6 = new JoystickButton(js2, 6);
-    // j2_b6.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() + 100)), true);
-    // JoystickButton j2_b4 = new JoystickButton(js2, 4);
-    // j2_b4.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() - 100)), true);
+    // increase/decrease shooter field correction (press)
+    JoystickButton j2_b6 = new JoystickButton(js2, 6);
+    j2_b6.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() + 100)), true);
+    JoystickButton j2_b4 = new JoystickButton(js2, 4);
+    j2_b4.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() - 100)), true);
 
-    // // cancel all (press)
+    // 
     // JoystickButton j2_b7 = new JoystickButton(js2, 7);
     // j2_b7.whenPressed(disabledCommand, true);
 
