@@ -61,7 +61,7 @@ public class RobotContainer {
 
   private IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
 
-  private ShootCommand shoot = new ShootCommand(5, indexer, shooter);
+  private ShootCommand shoot = new ShootCommand(2, indexer, shooter);
 
   private FrontEject frontEject = new FrontEject(indexer, shooter);
   private BackEject backEject = new BackEject(intake, indexer);
@@ -247,8 +247,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // return autoShoot;
     // return autoIntake;
-    return new AimLock(drive, shooterCamera);
-    // return trajectory;
+    // return new AimLock(drive, shooterCamera);
+    return trajectory;
     // return null;
   }
 

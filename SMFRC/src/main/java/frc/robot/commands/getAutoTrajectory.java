@@ -34,12 +34,12 @@ private static DifferentialDriveVoltageConstraint autoVoltageConstraint =
             Constants.Drive_kv,
             Constants.Drive_ka),
         Constants.kDriveKinematics,
-        10);
+        5);
 
 // Create config for trajectory
 private static TrajectoryConfig config =
     new TrajectoryConfig(
-            Constants.kMaxSpeed_Drive,
+            0.5,
             Constants.kMaxAcceleration_Drive)
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(Constants.kDriveKinematics)
@@ -59,7 +59,8 @@ private static TrajectoryConfig config =
 
 private static RamseteController controller;
 
-private static String trajectoryJSON = "1.wpilib.json";
+// private static String trajectoryJSON = "paths/1.wpilib.json";
+private static String trajectoryJSON = "paths/testtest.wpilib.json";
 private static Trajectory trajectory = new Trajectory();
 
   public static RamseteCommand getTrajectory(DriveSubsystem driveSubsystem) {

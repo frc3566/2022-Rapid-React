@@ -32,7 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private boolean calibrationMode;
 
-  private double minSpeed = 100;
+  private double minSpeed = 10000;
   
   public ClimberSubsystem() {
     left.setInverted(false);
@@ -60,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPID.setD(0.01);
 
     isExtended = false;
-    calibrationMode = false;
+    calibrationMode = true;
 
     setZero();
   }
@@ -111,29 +111,29 @@ public class ClimberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    //soft pertection
-    if(!calibrationMode){
-      if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
-        left.set(0);
-      }
-      if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
-        left.set(0);
-      }
-      if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
-        right.set(0);
-      }
-      if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
-        right.set(0);
-      }
-    }
+    // soft pertection
+    // if(!calibrationMode){
+    //   if(leftEncoder.getPosition() <= leftZero && left.get() < 0){
+    //     left.set(0);
+    //   }
+    //   if(leftEncoder.getPosition() >= leftZero + 140 && left.get() > 0){
+    //     left.set(0);
+    //   }
+    //   if(rightEncoder.getPosition() <= rightZero && right.get() < 0){
+    //     right.set(0);
+    //   }
+    //   if(rightEncoder.getPosition() >= rightZero + 140 && right.get() > 0){
+    //     right.set(0);
+    //   }
+    // }
 
 
-    if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(leftEncoder.getVelocity()) < minSpeed){
-      left.set(0);
-    }
-    if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(rightEncoder.getVelocity()) < minSpeed){
-      right.set(0);
-    }
+    // if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(leftEncoder.getVelocity()) < minSpeed){
+    //   left.set(0);
+    // }
+    // if(Timer.getFPGATimestamp() > protectionDelayTarget && Math.abs(rightEncoder.getVelocity()) < minSpeed){
+    //   right.set(0);
+    // }
 
     if(left.get() == 0 || right.get() == 0){
       protectionDelayTarget = Timer.getFPGATimestamp() + 0.5;

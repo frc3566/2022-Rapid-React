@@ -47,6 +47,7 @@ public class AutoInit extends CommandBase {
     drive.resetGyro();
     drive.resetEncoders();
     drive.resetOdometry(new Pose2d());
+    drive.setBrake(true);
     intake.extendIntake();
     shooter.setRPM(2000);
     finished = true;

@@ -167,7 +167,7 @@ class ShooterCameraProcess(mp.Process):
                 # print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
                 # print(x_list, y_list, sep=" ")
             except Full:
-                logging.error("shooter nt full")
+                # logging.error("shooter nt full")
                 pass
 
             try:

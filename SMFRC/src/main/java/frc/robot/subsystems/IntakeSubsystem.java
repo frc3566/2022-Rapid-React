@@ -20,18 +20,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
 
-  // Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
+  Compressor compressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
 
-  // private CANSparkMax indexer = new CANSparkMax(12, MotorType.kBrushless);
-
-  // Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  Solenoid leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
+  Solenoid rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
 
   private int ballCnt;
   private boolean isExtented;
 
 
   public IntakeSubsystem() {
-    intake.setInverted(true);
+    intake.setInverted(false);
     intake.setClosedLoopRampRate(0.3);
     intake.setIdleMode(IdleMode.kCoast);
 
@@ -40,20 +39,22 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void enableCompressor(){
-    // compressor.enableDigital();
+    compressor.enableDigital();
   }
 
   public void disableCompressor(){
-    // compressor.disable();
+    compressor.disable();
   }
 
   public void extendIntake(){
-    // solenoid.set(true);
+    leftSolenoid.set(true);
+    rightSolenoid.set(true);
     isExtented = true;
   }
 
   public void contractIntake(){
-    // solenoid.set(false);
+    leftSolenoid.set(false);
+    rightSolenoid.set(true);
     isExtented = false;
   }
 

@@ -57,7 +57,8 @@ class ProcessManager:
             self.last_update_time = time.time()
 
     def restart_process(self):
-        self.process.terminate()
+        # self.process.terminate()
+        self.process.kill
         self.process = self.new_process_fn()
         self.process.daemon = True
         self.process.start()
@@ -66,4 +67,4 @@ class ProcessManager:
 
     def end_process(self):
         self.process.kill
-        # self.process.close
+        self.process.close

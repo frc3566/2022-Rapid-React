@@ -18,9 +18,13 @@ from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 
 print(sys.version)
 
-ntinst = NetworkTablesInstance
+# ntinst = NetworkTablesInstance
 print("Setting up NetworkTables")
-NetworkTables.initialize(server='roboRIO-3566-FRC.local')
+if not NetworkTables.isConnected():
+    print("connecting network table")
+    NetworkTables.startClientTeam(3566)
+    # NetworkTables.initialize(server='10.35.66.2')
+    time.sleep(1)
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -36,8 +40,10 @@ intake_nt_queue = mp.Queue(100)
 
 # create process managers
 
-intakeCameraTable = NetworkTables.getTable("LiveWindow/IntakeCamera");
+intakeCameraTable = NetworkTables.getTable("LiveWindow/IntakeCamera")
 intakeCamera_last_update_time = intakeCameraTable.getNumber("last_update_time", 0.0)
+
+time.sleep(0.5)
 
 def intakeCamera_is_updated():
     global intakeCamera_last_update_time
@@ -96,7 +102,11 @@ if __name__ == '__main__':
 
         shooterCameraProcessManager.end_process()
 
-        logging.info("cleaned up processes")
+        NetworkTables.stopClient()
+
+        NetworkTables.shutdown()
+
+        logging.info("cleaned up processes and network table")
 
         sys.exit()
 
@@ -110,12 +120,12 @@ if __name__ == '__main__':
     while True:
 
         # print(NetworkTables.isConnected())
-        #
-        # if not NetworkTables.isConnected:
-        #     print("connection lost, restarting network table")
-        #     NetworkTables.startClientTeam(3566)
-        #     # NetworkTables.initialize(server='10.35.66.2')
-        #     time.sleep(0.5)
+
+        if not NetworkTables.isConnected():
+            print("connection lost, restarting network table")
+            NetworkTables.startClientTeam(3566)
+            # NetworkTables.initialize(server='10.35.66.2')
+            time.sleep(1)
 
         img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
 

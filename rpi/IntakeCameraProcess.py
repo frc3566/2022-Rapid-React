@@ -110,6 +110,8 @@ class IntakeCameraProcess(mp.Process):
 
     def process_method(self):
 
+
+
         pipeline = rs.pipeline()
         config = rs.config()
 
@@ -268,7 +270,7 @@ class IntakeCameraProcess(mp.Process):
                     pt_3d = center_x, center_y, center_z
 
                     # convert for output
-                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5 * m.cos(m.radians(35))
+                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5 * m.cos(m.radians(17))
                     angle = m.degrees(m.atan(pt_3d[0] / dis_2d))
 
                     score = dis_2d + abs(angle) / 40
@@ -326,14 +328,12 @@ class IntakeCameraProcess(mp.Process):
                     # print("intake camera: ", ball_dis, ball_angle, sep=" ")
 
                 except Full:
-                    logging.error("intake nt full")
+                    # logging.error("intake nt full")
+                    pass
 
-                if self.frame_out_queue.full():
-                    self.frame_out_queue.get_nowait()
-
-                # self.frame_out_queue.put_nowait(color_img)
+                self.frame_out_queue.put_nowait(color_img)
                 # self.frame_out_queue.put_nowait(color_thresh_img)
-                self.frame_out_queue.put_nowait(final_mask)
+                # self.frame_out_queue.put_nowait(final_mask)
 
         finally:
             print('stop')
