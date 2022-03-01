@@ -7,6 +7,7 @@ import cv2
 import random
 import multiprocessing as mp
 import logging
+import sys
 from util.SphereFitting import *
 from statistics import mean
 from util.showImage import show
@@ -65,7 +66,7 @@ HEIGHT = 17 * 0.0254
 
 class IntakeCameraProcess(mp.Process):
 
-    def __init__(self, nt_queue, frame_in_queue, frame_out_queue):
+    def __init__(self, nt_queue, frame_in_queue, frame_out_queue, end_queue):
         super().__init__()
         self.logger = logging.getLogger(__name__)
 
@@ -73,6 +74,8 @@ class IntakeCameraProcess(mp.Process):
 
         self.frame_in_queue = frame_in_queue
         self.frame_out_queue = frame_out_queue
+
+        self.end_queue = end_queue
 
         # self.cs = CameraServer.getInstance()
         # self.cs.enableLogging()
@@ -165,6 +168,13 @@ class IntakeCameraProcess(mp.Process):
 
         try:
             while True:
+
+                try:
+                    message = self.end_queue.get_nowait()
+                    if message == "END":
+                        sys.exit()
+                except Empty:
+                    pass
 
                 ball_detected = False
 

@@ -4,6 +4,7 @@ import numpy as np
 import time
 import logging
 import math
+import sys
 from Constants import Constants
 from multiprocessing import Queue
 from queue import Full, Empty
@@ -11,13 +12,14 @@ from queue import Full, Empty
 
 class ShooterCameraProcess(mp.Process):
 
-    def __init__(self, nt_queue, frame_in_queue, frame_out_queue):
+    def __init__(self, nt_queue, frame_in_queue, frame_out_queue, end_queue):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.goal_detected = False
         self.nt_queue = nt_queue
         self.frame_in_queue = frame_in_queue
         self.frame_out_queue = frame_out_queue
+        self.end_queue = end_queue
 
     def process_method(self):
 
@@ -48,6 +50,13 @@ class ShooterCameraProcess(mp.Process):
 
         # loop forever
         while True:
+
+            try:
+                message = self.end_queue.get_nowait()
+                if message == "END":
+                    sys.exit()
+            except Empty:
+                pass
 
             start_time = time.time()
 

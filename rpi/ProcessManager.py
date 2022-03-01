@@ -1,6 +1,8 @@
 import time
 from Constants import Constants
 import logging
+import multiprocessing as mp
+from queue import Full, Empty
 
 
 class ProcessManager:
@@ -14,7 +16,9 @@ class ProcessManager:
 
         :param new_process_fn: callable, returns a new process
         """
-        self.new_process_fn = new_process_fn
+
+        self.end_queue = mp.Queue(1);
+        self.new_process_fn = new_process_fn(self.end_queue)
         self.disconnect_duration = disconnect_duration
         self.restart_duration = restart_duration
 
@@ -57,14 +61,24 @@ class ProcessManager:
             self.last_update_time = time.time()
 
     def restart_process(self):
+        try:
+            self.end_queue.put_nowait("END")
+        except Full:
+            pass
         # self.process.terminate()
         self.process.kill
-        self.process = self.new_process_fn()
+        self.end_queue = mp.Queue(1)
+        self.process = self.new_process_fn(self.end_queue)
         self.process.daemon = True
         self.process.start()
         self.last_connect_time = time.time()
         # print("starting process")
 
     def end_process(self):
+        try:
+            self.end_queue.put_nowait("END")
+        except Full:
+            pass
+
         self.process.kill
         self.process.close

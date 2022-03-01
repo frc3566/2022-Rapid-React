@@ -85,12 +85,12 @@ if __name__ == '__main__':
     shooter_in_stream = CameraServer.getInstance().getVideo()
     shooter_out_stream = CameraServer.getInstance().putVideo('shooter_processed', Constants.WIDTH, Constants.HEIGHT)
 
-    intakeCameraProcesManager = ProcessManager(lambda: IntakeCameraProcess(intake_nt_queue,
-                                               intake_frame_in_queue, intake_frame_out_queue),
+    intakeCameraProcesManager = ProcessManager(lambda end_queue: IntakeCameraProcess(intake_nt_queue,
+                                               intake_frame_in_queue, intake_frame_out_queue, end_queue),
                                                name="intake_camera_proces")
 
-    shooterCameraProcessManager = ProcessManager(lambda: ShooterCameraProcess(shooter_nt_queue,
-                                                 shooter_frame_in_queue, shooter_frame_out_queue),
+    shooterCameraProcessManager = ProcessManager(lambda end_queue: ShooterCameraProcess(shooter_nt_queue,
+                                                 shooter_frame_in_queue, shooter_frame_out_queue, end_queue),
                                                  name="shooter_camera_process")
 
     # CameraServer.getInstance().startAutomaticCapture(name="climber",
