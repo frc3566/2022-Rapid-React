@@ -31,8 +31,8 @@ private static DifferentialDriveVoltageConstraint autoVoltageConstraint =
     new DifferentialDriveVoltageConstraint(
         new SimpleMotorFeedforward(
             Constants.Drive_ks,
-            Constants.Drive_kv,
-            Constants.Drive_ka),
+            0,
+            0),
         Constants.kDriveKinematics,
         5);
 

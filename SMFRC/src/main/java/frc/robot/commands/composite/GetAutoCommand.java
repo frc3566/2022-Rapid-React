@@ -20,18 +20,19 @@ public class GetAutoCommand extends SequentialCommandGroup {
     // aim lock
     // anchor | shoot
 
-    public GetAutoCommand(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, AutoInit autoInit) {
+    public GetAutoCommand(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, AutoInit autoInit, Command autoIntake, Command autoShoot) {
         super();
         
         IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
 
         this.addCommands(autoInit);
         // this.addCommands(intakeCommand);
-        // this.addCommands(new Autointake(intake, intakeCamera, );
-        this.addCommands(new Move(0.5,0.5,1.0,drive));
-        
-        this.addCommands(getAutoTrajectory.getTrajectory(drive));
-
+        this.addCommands(autoShoot);
+        this.addCommands(new Move(0.5, 0.5, 1.0, drive));
+        this.addCommands(autoIntake);
+        this.addCommands(new Move(-0.5, -0.5, 1.0, drive));
+        this.addCommands(autoShoot);
+        // this.addCommands(getAutoTrajectory.getTrajectory(drive)); 
 
     }
     

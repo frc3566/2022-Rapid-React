@@ -19,6 +19,7 @@ import frc.robot.commands.FrontEject;
 import frc.robot.commands.GoToBall;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.composite.GetAutoCommand;
 import frc.robot.commands.composite.GetAutoIntake;
 import frc.robot.commands.composite.GetAutoShoot;
 import frc.robot.commands.getAutoTrajectory;
@@ -57,7 +58,6 @@ public class RobotContainer {
   private ShooterSubsystem shooter = new ShooterSubsystem();
   private ClimberSubsystem climber = new ClimberSubsystem();
 
-
   private DriveWithJoystick driveWithJoystick = new DriveWithJoystick(js1, drive);
 
   private IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
@@ -82,6 +82,8 @@ public class RobotContainer {
   private GetAutoShoot getAutoShoot = new GetAutoShoot(drive, indexer, shooter, shooterCamera);
 
   private Command autoShoot = getAutoShoot.getCommand();
+
+  private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, autoInit, getAutoIntake.getCommand() , getAutoShoot.getCommand());
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -248,10 +250,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    return getAutoCommand;
     // return autoShoot;
     // return autoIntake;
     // return new AimLock(drive, shooterCamera);
-    return trajectory;
+    // return trajectory;
     // return null;
   }
 
