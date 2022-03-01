@@ -13,6 +13,7 @@ import frc.robot.commands.AutoInit;
 import frc.robot.commands.DisabledCommand;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.BackEject;
+import frc.robot.commands.CancellAll;
 import frc.robot.commands.FindGoal;
 import frc.robot.commands.FrontEject;
 import frc.robot.commands.GoToBall;
@@ -68,6 +69,8 @@ public class RobotContainer {
 
   private DisabledCommand disabledCommand = new DisabledCommand(drive, intake, indexer, shooter);
 
+  private CancellAll cancellAll = new CancellAll(drive, intake, indexer, shooter);
+
   private AutoInit autoInit = new AutoInit(climber, drive, intake, shooter);
 
   private RamseteCommand trajectory = getAutoTrajectory.getTrajectory(drive);
@@ -117,7 +120,7 @@ public class RobotContainer {
 
     // cancel all (press)
     JoystickButton j1_b5 = new JoystickButton(js1, 5);
-    j1_b5.whenPressed(disabledCommand, true);
+    j1_b5.whenPressed(cancellAll, true);
 
     // auto intake (press)
     JoystickButton j1_b10 = new JoystickButton(js1, 10);
