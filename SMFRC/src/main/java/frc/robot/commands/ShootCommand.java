@@ -85,11 +85,12 @@ private States state;
     state = States.RETRACT;
 
     indexer.setBallCount(0);
-    if(indexer.getHighIR()){
-      indexer.setBallCount(indexer.getBallCount()+1);
+    if(indexer.getHighIR() || indexer.getHighIR()){
+      indexer.setBallCount(1);
     }
-    if(indexer.getLowIR()){
-      indexer.setBallCount(indexer.getBallCount()+1);
+
+    if(indexer.getHighIR() && indexer.getHighIR()){
+      indexer.setBallCount(2);
     }
   }
 

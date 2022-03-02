@@ -51,24 +51,26 @@ public class IntakeCommand extends CommandBase {
 
     //recount the ball before shooting
     indexer.setBallCount(0);
-    if(indexer.getHighIR()){
-      indexer.setBallCount(indexer.getBallCount()+1);
+    if(indexer.getHighIR() || indexer.getHighIR()){
+      indexer.setBallCount(1);
     }
-    if(indexer.getLowIR()){
-      indexer.setBallCount(indexer.getBallCount()+1);
+
+    if(indexer.getHighIR() && indexer.getHighIR()){
+      indexer.setBallCount(2);
     }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      if(indexer.getBallCount() == 0 && indexer.getHighIR()){
-        indexer.setBallCount(1);
-      }
+    if(indexer.getHighIR() || indexer.getHighIR()){
+      indexer.setBallCount(1);
+    }
 
-      if(indexer.getBallCount() == 1 && indexer.getLowIR()){
-        indexer.setBallCount(2);
-      }
+    if(indexer.getHighIR() && indexer.getHighIR()){
+      indexer.setBallCount(2);
+    }
+
   }
 
   // Called once the command ends or is interrupted.
@@ -82,7 +84,7 @@ public class IntakeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(indexer.getBallCount() >= targetBallcnt){
+    if(indexer.getBallCount() >= targetBallcnt && !indexer.getLowIR()){
         return true;
     }
     return false;

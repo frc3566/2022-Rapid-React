@@ -211,9 +211,9 @@ class IntakeCameraProcess(mp.Process):
                 # show('image_3d', image_3d)
 
                 unknown_mask = np.isnan(image_3d[..., -1])
-                # normal = normal_computer.apply(image_3d)
-                # plane_labels, _ = plane_computer.apply(image_3d, normal)
-                plane_labels, _ = plane_computer.apply(image_3d)
+                normal = normal_computer.apply(image_3d)
+                plane_labels, _ = plane_computer.apply(image_3d, normal)
+                # plane_labels, _ = plane_computer.apply(image_3d)
                 dis_to_cam = la.norm(image_3d, axis=-1)
 
                 # print(dis_to_cam)
@@ -280,7 +280,7 @@ class IntakeCameraProcess(mp.Process):
                     pt_3d = center_x, center_y, center_z
 
                     # convert for output
-                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5 * m.cos(m.radians(17))
+                    dis_2d = (center_x ** 2 + center_z ** 2) ** 0.5 * m.cos(m.radians(35))
                     angle = m.degrees(m.atan(pt_3d[0] / dis_2d))
 
                     score = dis_2d + abs(angle) / 40
@@ -344,7 +344,7 @@ class IntakeCameraProcess(mp.Process):
                 try:
                     self.frame_out_queue.put_nowait(color_img)
                     # self.frame_out_queue.put_nowait(color_thresh_img)
-                    # self.frame_out_queue.put_nowait(final_mask)
+                    # self.frame_out_queue.put_nowait(final_mask.astype(np.uint8))
 
                 except Full:
                     pass

@@ -47,14 +47,14 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void extendIntake(){
-    leftSolenoid.set(true);
-    rightSolenoid.set(true);
+    leftSolenoid.set(false);
+    rightSolenoid.set(false);
     isExtented = true;
   }
 
   public void contractIntake(){
-    leftSolenoid.set(false);
-    rightSolenoid.set(false);
+    leftSolenoid.set(true);
+    rightSolenoid.set(true);
     isExtented = false;
   }
 
@@ -80,7 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void disabled(){
     intake.set(0);
-    this.contractIntake();
+    // this.contractIntake();
   }
 
 

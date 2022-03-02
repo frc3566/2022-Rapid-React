@@ -93,26 +93,26 @@ public class DriveSubsystem extends SubsystemBase {
     // setTalon(right3, true);
 
     // good boy
-    left1 = new CANSparkMax(1, MotorType.kBrushless);
+    left1 = new CANSparkMax(4, MotorType.kBrushless);
     left1.setInverted(false);;
     leftController = left1.getPIDController();
     setControler(leftController);
 
-    left2 = new CANSparkMax(2, MotorType.kBrushless);
+    left2 = new CANSparkMax(5, MotorType.kBrushless);
     left2.follow(left1);
 
-    left3 = new CANSparkMax(3, MotorType.kBrushless);
+    left3 = new CANSparkMax(6, MotorType.kBrushless);
     left3.follow(left1);
 
-    right1 = new CANSparkMax(4, MotorType.kBrushless);
+    right1 = new CANSparkMax(1, MotorType.kBrushless);
     right1.setInverted(true);
     rightController = right1.getPIDController();
     setControler(rightController);
 
-    right2 = new CANSparkMax(5, MotorType.kBrushless);
+    right2 = new CANSparkMax(2, MotorType.kBrushless);
     right2.follow(right1);
 
-    right3 = new CANSparkMax(6, MotorType.kBrushless);
+    right3 = new CANSparkMax(3, MotorType.kBrushless);
     right3.follow(right1);
 
     rightEncoder = right1.getEncoder();

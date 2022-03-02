@@ -88,7 +88,7 @@ public class GoToBall extends CommandBase {
     }
 
     if(camera.ballDetected() && Timer.getFPGATimestamp() > linearUpdateTime && linearComplete){
-      linearSetpoint = drive.getAvgEncoderDistance() - (camera.getTarDistance());
+      linearSetpoint = drive.getAvgEncoderDistance() + (camera.getTarDistance());
       linearUpdateTime = Timer.getFPGATimestamp() + 0.6;
       linearComplete = false;
       System.out.println("update linear");
@@ -126,14 +126,14 @@ public class GoToBall extends CommandBase {
       linearPID = minLinearSpeed;
     }
 
-    double left = linearPID - angularPID;
-    double right = linearPID + angularPID;
+    double left = linearPID + angularPID;
+    double right = linearPID - angularPID;
 
     // double left = linearPID;
     // double right = linearPID;
 
-    // double left = - angularPID;
-    // double right = angularPID;
+    // double left = angularPID;
+    // double right = - angularPID;
 
     System.out.println(left + " " + right);
 
@@ -157,7 +157,7 @@ public class GoToBall extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(camera.getTarDistance() <= 1.5 && Math.abs(camera.getTarAngle()) <= 10){
+    if(camera.getTarDistance() <= 1 && Math.abs(camera.getTarAngle()) <= 10){
       return true;
     }
     return false;

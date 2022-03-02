@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoInit;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Move;
+import frc.robot.commands.MoveDistance;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -24,6 +25,8 @@ public class GetAutoCommand extends SequentialCommandGroup {
         super();
         
         IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
+        MoveDistance move = new MoveDistance(1.0, drive);
+        MoveDistance turn = new MoveDistance(90.0, drive);
 
         this.addCommands(autoInit);
         this.addCommands(intakeCommand);
