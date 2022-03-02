@@ -40,7 +40,7 @@ def getColorThresh(hsv_img):
         red_top = cv2.inRange(hsv_img, (170, 70, 0), (180, 255, 255))
         color_thresh_img = np.logical_or(red_bottom, red_top).astype(np.uint8) * 255
     else:
-        color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (110, 255, 255))
+        color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (130, 255, 255))
     return color_thresh_img
 
 
@@ -112,8 +112,6 @@ class IntakeCameraProcess(mp.Process):
         return mean(dis_list)
 
     def process_method(self):
-
-
 
         pipeline = rs.pipeline()
         config = rs.config()
