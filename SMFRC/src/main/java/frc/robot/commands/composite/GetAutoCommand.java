@@ -32,17 +32,17 @@ public class GetAutoCommand extends SequentialCommandGroup {
         TurnAngle turn = new TurnAngle(90.0, drive);
 
         // 2 ball basic
-        // this.addCommands(autoInit);
-        // this.addCommands(new ShootCommand(2, intake, indexer, shooter));
-        // this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
-        // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
-
-        // 2 ball pid
         this.addCommands(autoInit);
         this.addCommands(new ShootCommand(2, intake, indexer, shooter));
-        this.addCommands((new MoveDistance(-1.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
         this.addCommands(new ShootCommand(3, intake, indexer, shooter));
-        this.addCommands(new TurnAngle(90.0, drive));
+
+        // 2 ball pid
+        // this.addCommands(autoInit);
+        // this.addCommands(new ShootCommand(2, intake, indexer, shooter));
+        // this.addCommands((new MoveDistance(-1.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+        // this.addCommands(new TurnAngle(90.0, drive));
 
         // this.addCommands(getAutoIntake.getCommand());
         // this.addCommands(new Move(-0.5, -0.5, 1.0, drive));
