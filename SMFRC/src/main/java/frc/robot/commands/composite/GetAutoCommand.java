@@ -44,6 +44,25 @@ public class GetAutoCommand extends SequentialCommandGroup {
         // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
         // this.addCommands(new TurnAngle(90.0, drive));
 
+        // 3 ball left
+        // this.addCommands(autoInit);
+        // this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+        // this.addCommands(new TurnAngle(120.0, drive)));
+        // this.addCommands((new Move(-0.7, -0.7, 5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(getAutoIntake.getCommand());
+        // this.addCommands(getAutoShoot.getCommand());
+
+
+        // 3 ball right
+        // this.addCommands(autoInit);
+        // this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+        // this.addCommands(new TurnAngle(-120.0, drive)));
+        // this.addCommands((new Move(-0.7, -0.7, 5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(getAutoIntake.getCommand());
+        // this.addCommands(getAutoShoot.getCommand());
+
         // this.addCommands(getAutoIntake.getCommand());
         // this.addCommands(new Move(-0.5, -0.5, 1.0, drive));
         // this.addCommands(autoShoot);
