@@ -41,7 +41,7 @@ public class CancellAll extends CommandBase {
   @Override
   public void initialize() {
     drive.disabled();
-    intake.disabled();
+    intake.setIntake(0);;
     shooter.disabled();
     indexer.disabled();
     drive.setBrake(true);

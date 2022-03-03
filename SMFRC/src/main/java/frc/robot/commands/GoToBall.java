@@ -56,7 +56,7 @@ public class GoToBall extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
 
-    angularPIDController.setTolerance(2, 5);
+    angularPIDController.setTolerance(0.5);
   }
 
 
@@ -67,7 +67,7 @@ public class GoToBall extends CommandBase {
     linearPIDController.reset();
 
     angularSetpoint = drive.getHeading() + camera.getTarAngle();
-    linearSetpoint = drive.getAvgEncoderDistance() + camera.getTarDistance();
+    linearSetpoint = drive.getAvgEncoderDistance() - camera.getTarDistance();
 
     angularUpdateTime = Timer.getFPGATimestamp();
     linearUpdateTime = Timer.getFPGATimestamp();
@@ -88,7 +88,7 @@ public class GoToBall extends CommandBase {
     }
 
     if(camera.ballDetected() && Timer.getFPGATimestamp() > linearUpdateTime && linearComplete){
-      linearSetpoint = drive.getAvgEncoderDistance() + (camera.getTarDistance());
+      linearSetpoint = drive.getAvgEncoderDistance() - (camera.getTarDistance());
       linearUpdateTime = Timer.getFPGATimestamp() + 0.6;
       linearComplete = false;
       System.out.println("update linear");
@@ -122,8 +122,8 @@ public class GoToBall extends CommandBase {
       linearPID = linearPIDController.calculate(drive.getAvgEncoderDistance(), linearSetpoint);
     }
 
-    if(camera.ballDetected() && linearPID < minLinearSpeed){
-      linearPID = minLinearSpeed;
+    if(camera.ballDetected() && Math.abs(linearPID)< minLinearSpeed){
+      linearPID = Math.signum(minLinearSpeed);
     }
 
     double left = linearPID + angularPID;
@@ -135,19 +135,19 @@ public class GoToBall extends CommandBase {
     // double left = angularPID;
     // double right = - angularPID;
 
-    System.out.println(left + " " + right);
-
     if(Math.abs(left) > Constants.kMaxSpeed_Drive){
       left = Constants.kMaxSpeed_Drive * Math.signum(left);
-      right = right * Constants.kMaxSpeed_Drive / left;
+      right = right * Constants.kMaxSpeed_Drive / Math.abs(left);
     }
 
     if(Math.abs(right) > Constants.kMaxSpeed_Drive){
       right = Constants.kMaxSpeed_Drive * Math.signum(right);
-      left = left * Constants.kMaxSpeed_Drive / right;
+      left = left * Constants.kMaxSpeed_Drive / Math.abs(right);
     }
 
     drive.setVelocity(leftFF * Math.signum(left) + left, rightFF * Math.signum(right) + right);
+    
+    System.out.println(left + " " + right);
   }
 
   // Called once the command ends or is interrupted.

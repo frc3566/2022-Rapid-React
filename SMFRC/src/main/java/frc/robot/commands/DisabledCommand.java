@@ -41,6 +41,7 @@ public class DisabledCommand extends CommandBase {
   @Override
   public void initialize() {
     drive.disabled();
+    drive.setBrake(false);
     intake.disabled();
     shooter.disabled();
     indexer.disabled();
@@ -56,6 +57,7 @@ public class DisabledCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drive.disabled();
+    drive.setBrake(false);
     intake.disabled();
     shooter.disabled();
     indexer.disabled();

@@ -21,6 +21,7 @@ public class AutoInit extends CommandBase {
    *
    * @param 
    */
+  
   ClimberSubsystem climer;
   DriveSubsystem drive;
   IntakeSubsystem intake;
@@ -43,13 +44,11 @@ public class AutoInit extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    climer.contract();
     drive.resetGyro();
     drive.resetEncoders();
     drive.resetOdometry(new Pose2d());
     drive.setBrake(true);
     intake.extendIntake();
-    shooter.setRPM(2000);
     finished = true;
   }
 

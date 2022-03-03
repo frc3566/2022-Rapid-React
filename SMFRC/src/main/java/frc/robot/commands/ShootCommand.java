@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class ShootCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
+IntakeSubsystem intake;
 IndexerSubsystem indexer;
 ShooterSubsystem shooter;
 
@@ -44,7 +45,8 @@ private States state;
    * @param shooterSubsystem
    */
 
-  public ShootCommand(double tarDistance, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
+  public ShootCommand(double tarDistance, IntakeSubsystem intake, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
+    this.intake = intake;
 
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
@@ -60,8 +62,9 @@ private States state;
     addRequirements(indexer, shooter);
   }
 
-  public ShootCommand(ShooterCamera camera, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
+  public ShootCommand(ShooterCamera camera, IntakeSubsystem intake, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem) {
 
+    this.intake = intake;
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
     
@@ -84,21 +87,25 @@ private States state;
     //recount the ball before shooting
     state = States.RETRACT;
 
+    intake.extendIntake();
+
     indexer.setBallCount(0);
-    if(indexer.getHighIR() || indexer.getHighIR()){
+    if(indexer.getHighIR() || indexer.getLowIR()){
       indexer.setBallCount(1);
     }
 
-    if(indexer.getHighIR() && indexer.getHighIR()){
+    if(indexer.getHighIR() && indexer.getLowIR()){
       indexer.setBallCount(2);
     }
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println(this.state);
     if(state == States.RETRACT){
-      indexer.setIndexer(-0.3);
+      indexer.setIndexer(-0.5);
       // shooter.setPower(-0.3);
       // if(indexer.getHighIR() == false || indexer.getEntranceIR() == true){
       if(indexer.getHighIR() == false){
@@ -109,7 +116,7 @@ private States state;
     if(state == States.PRESPIN){
       indexer.setIndexer(0);
       shooter.setRPM(tarRPM);
-      if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 75 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 75){
+      if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 100 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 100){
         state = States.CHAMBER;
       }
     }

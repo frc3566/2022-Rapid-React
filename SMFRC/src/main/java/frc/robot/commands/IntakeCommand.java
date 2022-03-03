@@ -7,6 +7,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -24,6 +25,7 @@ public class IntakeCommand extends CommandBase {
    IndexerSubsystem indexer;
 
    int targetBallcnt;
+   double delayTar;
 
   public IntakeCommand(int tar, IntakeSubsystem intakeSubsystem, IndexerSubsystem indexerSubsystem) {
 
@@ -51,24 +53,22 @@ public class IntakeCommand extends CommandBase {
 
     //recount the ball before shooting
     indexer.setBallCount(0);
-    if(indexer.getHighIR() || indexer.getHighIR()){
+    if(indexer.getHighIR() || indexer.getLowIR()){
       indexer.setBallCount(1);
-    }
-
-    if(indexer.getHighIR() && indexer.getHighIR()){
-      indexer.setBallCount(2);
     }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(indexer.getHighIR() || indexer.getHighIR()){
+    if(indexer.getHighIR() || indexer.getLowIR()){
       indexer.setBallCount(1);
     }
 
-    if(indexer.getHighIR() && indexer.getHighIR()){
+    if(indexer.getHighIR() && indexer.getLowIR() && Timer.getFPGATimestamp() >= delayTar){
       indexer.setBallCount(2);
+    }else if(indexer.getHighIR() && indexer.getLowIR()){
+      delayTar = Timer.getFPGATimestamp() + 0.2;
     }
 
   }
@@ -77,14 +77,13 @@ public class IntakeCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
       intake.setIntake(0);
-      intake.contractIntake();
       indexer.setIndexer(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(indexer.getBallCount() >= targetBallcnt && !indexer.getLowIR()){
+    if(indexer.getBallCount() >= targetBallcnt){
         return true;
     }
     return false;

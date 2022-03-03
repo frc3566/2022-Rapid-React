@@ -10,12 +10,14 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class GetAutoShoot{
 
     private DriveSubsystem drive;
+    private IntakeSubsystem intake;
     private IndexerSubsystem indexer;
     private ShooterSubsystem shooter;
     private ShooterCamera camera;
@@ -24,8 +26,9 @@ public class GetAutoShoot{
     // aimlock
     // anchor | shoot
 
-    public GetAutoShoot(DriveSubsystem drive, IndexerSubsystem indexer, ShooterSubsystem shooter, ShooterCamera camera) {
+    public GetAutoShoot(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, ShooterCamera camera) {
         this.drive = drive;
+        this.intake = intake;
         this.indexer = indexer;
         this.shooter = shooter;
         this.camera = camera;
@@ -37,9 +40,9 @@ public class GetAutoShoot{
         AimLock aimLock = new AimLock(drive, camera);
         Anchor anchor = new Anchor(drive);
 
-        ShootCommand shoot = new ShootCommand(camera, indexer, shooter);
+        ShootCommand shoot = new ShootCommand(camera, intake, indexer, shooter);
 
-        command = aimLock.andThen(anchor.raceWith(shoot));
+        command = aimLock.andThen(shoot);
         return command;
     }
     

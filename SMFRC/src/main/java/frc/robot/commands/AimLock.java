@@ -66,6 +66,8 @@ public class AimLock extends CommandBase {
       MathUtil.clamp(pid, 0, Constants.kMaxSpeed_Drive);
   
       drive.setVelocity((leftFF + pid), -(rightFF + pid));
+
+      System.out.println(pid);
     }else{
       if(camera.lastSeen == LastSeen.RIGHT){
         drive.setVelocity(0.7, -0.7);

@@ -79,6 +79,6 @@ class ProcessManager:
             self.end_queue.put_nowait("END")
         except Full:
             pass
-
+        self.process.terminate()
         self.process.kill
         self.process.close

@@ -7,6 +7,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Move;
 import frc.robot.commands.MoveDistance;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.TurnAngle;
 import frc.robot.commands.getAutoTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -28,12 +29,21 @@ public class GetAutoCommand extends SequentialCommandGroup {
         
         IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
         MoveDistance move = new MoveDistance(1.0, drive);
-        MoveDistance turn = new MoveDistance(90.0, drive);
+        TurnAngle turn = new TurnAngle(90.0, drive);
 
+        // 2 ball basic
+        // this.addCommands(autoInit);
+        // this.addCommands(new ShootCommand(2, intake, indexer, shooter));
+        // this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+
+        // 2 ball pid
         this.addCommands(autoInit);
-        this.addCommands(new ShootCommand(2, indexer, shooter));
-        this.addCommands(intakeCommand.alongWith(new Move(0.5, 0.5, 1.0, drive)));
-        this.addCommands(new ShootCommand(3, indexer, shooter));
+        this.addCommands(new ShootCommand(2, intake, indexer, shooter));
+        this.addCommands((new MoveDistance(-1.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+        this.addCommands(new TurnAngle(90.0, drive));
+
         // this.addCommands(getAutoIntake.getCommand());
         // this.addCommands(new Move(-0.5, -0.5, 1.0, drive));
         // this.addCommands(autoShoot);

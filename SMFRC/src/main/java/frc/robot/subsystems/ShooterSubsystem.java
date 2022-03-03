@@ -24,7 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private RelativeEncoder masterEncoder, slaveEncoder;
     private SparkMaxPIDController masterPIDController, slavePIDController;
 
-    private double k = 1;
+    private double k = 1050/1000;
 
     private double fieldCorrection;
 

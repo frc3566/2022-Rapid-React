@@ -30,7 +30,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private double protectionDelayTarget;
 
-  private boolean calibrationMode;
+  private boolean calibrationMode = false;
 
   private double minSpeed = 10000;
   
@@ -60,7 +60,6 @@ public class ClimberSubsystem extends SubsystemBase {
     rightPID.setD(0.01);
 
     isExtended = false;
-    calibrationMode = false;
 
     setZero();
   }
@@ -71,6 +70,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void setPower(double power){
     left.set(power);
+    right.set(power);
+  }
+
+  public void setLeft(double power){
+    left.set(power);
+  }
+
+  public void setRight(double power){
     right.set(power);
   }
 

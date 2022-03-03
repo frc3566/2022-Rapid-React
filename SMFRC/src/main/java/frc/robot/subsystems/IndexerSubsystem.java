@@ -52,7 +52,7 @@ public class IndexerSubsystem extends SubsystemBase {
     indexerPID.setP(0.3);
     indexerPID.setD(0.01);
 
-    ballCnt = 0;
+    ballCnt = 1;
   }
 
   public void setIndexer(double power){
@@ -94,11 +94,12 @@ public class IndexerSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    System.out.println("Entrance: " + entranceIR.get());
-    System.out.println("Low: " + lowIR.get());
-    System.out.println("High: " + highIR.get());
+    System.out.println("Entrance: " + getEntranceIR());
+    System.out.println("Low: " + getLowIR());
+    System.out.println("High: " + getHighIR());
 
     ballCountEntry.setDouble(ballCnt);
+    
   }
 
   @Override
