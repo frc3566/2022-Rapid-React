@@ -51,8 +51,10 @@ private States state;
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
     
-    distance = tarDistance;
-    tarRPM = shooter.distanceToRPM(distance);
+    tarRPM = shooter.getFieldCorrection();
+
+    // distance = tarDistance;
+    // tarRPM = shooter.distanceToRPM(distance);
 
     isFinished = false;
 
@@ -68,8 +70,10 @@ private States state;
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
     
-    distance = camera.getTarDistance();
-    tarRPM = shooter.distanceToRPM(distance);
+    // distance = camera.getTarDistance();
+    // tarRPM = shooter.distanceToRPM(distance);
+
+    tarRPM = shooter.getFieldCorrection();
 
     isFinished = false;
 
@@ -110,14 +114,17 @@ private States state;
       // if(indexer.getHighIR() == false || indexer.getEntranceIR() == true){
       if(indexer.getHighIR() == false){
         state = States.PRESPIN;
+        waitTar = Timer.getFPGATimestamp() + 4;
       }
     }
 
     if(state == States.PRESPIN){
+
       indexer.setIndexer(0);
       shooter.setRPM(tarRPM);
       if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 100 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 100){
         state = States.CHAMBER;
+        waitTar = Timer.getFPGATimestamp() + 2;
       }
     }
 
@@ -125,14 +132,14 @@ private States state;
       indexer.setIndexer(0.7);
       if(indexer.getHighIR()){
         state = States.SHOOT;
+        waitTar = Timer.getFPGATimestamp() + 2;
       }
     }
 
-    if(state == States.SHOOT){
+    if(Timer.getFPGATimestamp() >= waitTar || state == States.SHOOT){
       if(indexer.getHighIR() == false){
         indexer.setBallCount(indexer.getBallCount()-1);
         indexer.setIndexer(0);
-
         waitTar = Timer.getFPGATimestamp() + 0.5;
         state = States.WAIT;
         System.out.print("bull's eye");

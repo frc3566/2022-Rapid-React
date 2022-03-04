@@ -175,7 +175,7 @@ if __name__ == '__main__':
         try:
             while True:
                 frame = intake_frame_out_queue.get_nowait()
-                intake_out_stream.putFrame(frame)
+                # intake_out_stream.putFrame(frame)
         except Empty:
             pass
 

@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.util.InterpolatingDouble;
+import frc.robot.util.InterpolatingTreeMap;
+import frc.robot.Constants;
 
 public class ShooterCamera extends SubsystemBase {
 
@@ -32,7 +35,16 @@ public class ShooterCamera extends SubsystemBase {
 
   public LastSeen lastSeen = LastSeen.LEFT;
 
+  private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+  interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
+
+  private NetworkTableEntry PredictedRPMEntry = nt.getEntry("predicted_RPM");
+
   public ShooterCamera() {
+
+    for(double[] t : Constants.shooterData){
+      interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
+  }
 
   }
 
@@ -56,6 +68,10 @@ public class ShooterCamera extends SubsystemBase {
     return goalDetected_entry.getDouble(0.0) == 1.0;
   }
 
+  public double distanceToRPM(double distance){
+    return interpolator.getInterpolated(new InterpolatingDouble(distance)).value;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -67,6 +83,8 @@ public class ShooterCamera extends SubsystemBase {
         lastSeen = LastSeen.RIGHT;
       }
     }
+
+    PredictedRPMEntry.setDouble(distanceToRPM(getTarDistance()));
 
     // System.out.println(goalDetected());
 

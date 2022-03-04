@@ -93,6 +93,7 @@ public class RobotContainer {
     drive.setDefaultCommand(driveWithJoystick);
     indexer.setDefaultCommand(new RunCommand(() -> indexer.setIndexer(0), indexer));
     climber.setDefaultCommand(new RunCommand(() -> climber.setPower(0), climber));
+    shooter.setDefaultCommand(new RunCommand(() -> shooter.setPower(0), shooter));
   }
 
   // TODO button place to number mapping

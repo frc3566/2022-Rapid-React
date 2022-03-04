@@ -81,10 +81,14 @@ public class ShooterSubsystem extends SubsystemBase {
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
 
-        fieldCorrection = 0;
+        fieldCorrection = 2950;
     }
 
     public void setRPM(double RPM){
+        if(RPM == 0){
+            shooterMaster.set(0);
+            shooterSlave.set(0);
+        }
 
         RPM += fieldCorrection;
 
@@ -125,6 +129,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void disabled(){
         setRPM(0);
+    }
+
+    public double getManualRPM(){
+        return fieldCorrection;
     }
 
     @Override

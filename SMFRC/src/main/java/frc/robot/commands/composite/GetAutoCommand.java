@@ -3,6 +3,7 @@ package frc.robot.commands.composite;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoInit;
+import frc.robot.commands.FrontEject;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Move;
 import frc.robot.commands.MoveDistance;
@@ -31,11 +32,21 @@ public class GetAutoCommand extends SequentialCommandGroup {
         MoveDistance move = new MoveDistance(1.0, drive);
         TurnAngle turn = new TurnAngle(90.0, drive);
 
-        // 2 ball basic
         this.addCommands(autoInit);
-        this.addCommands(new ShootCommand(2, intake, indexer, shooter));
-        this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
-        this.addCommands(new ShootCommand(3, intake, indexer, shooter));
+        this.addCommands((new Move(-0.7, -0.7, 5.0, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(4)));
+
+        // this.addCommands(autoInit);
+        // this.addCommands((new Move(-0.8, -0.8, 2, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(4)));
+        // this.addCommands(new Move(0.9, 0.9, 3.0, drive));
+        // this.addCommands(new Move(0.5, 0.5, 1, drive));
+        // this.addCommands(new ShootCommand(0, intake, indexer, shooter).withTimeout(4));
+        // this.addCommands(new Move(-0.9, -0.9, 5, drive));
+
+        // 2 ball basic
+        // this.addCommands(autoInit);
+        // this.addCommands(new ShootCommand(2.25, intake, indexer, shooter));
+        // this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        // this.addCommands(new ShootCommand(2.4, intake, indexer, shooter));
 
         // 2 ball pid
         // this.addCommands(autoInit);
