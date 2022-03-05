@@ -83,7 +83,7 @@ public class RobotContainer {
 
   private Command autoShoot = getAutoShoot.getCommand();
 
-  private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, shooter, autoInit, getAutoIntake, getAutoShoot);
+  private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, shooter, shooterCamera, autoInit, getAutoIntake, getAutoShoot);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

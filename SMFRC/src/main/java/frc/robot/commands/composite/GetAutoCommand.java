@@ -14,6 +14,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeCamera;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterCamera;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class GetAutoCommand extends SequentialCommandGroup {
@@ -25,15 +26,15 @@ public class GetAutoCommand extends SequentialCommandGroup {
     // aim lock
     // anchor | shoot
 
-    public GetAutoCommand(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, AutoInit autoInit, GetAutoIntake getAutoIntake, GetAutoShoot getAutoShoot) {
+    public GetAutoCommand(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, ShooterCamera camera, AutoInit autoInit, GetAutoIntake getAutoIntake, GetAutoShoot getAutoShoot) {
         super();
         
         IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
         MoveDistance move = new MoveDistance(1.0, drive);
         TurnAngle turn = new TurnAngle(90.0, drive);
 
-        this.addCommands(autoInit);
-        this.addCommands((new Move(-0.7, -0.7, 5.0, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(4)));
+        // this.addCommands(autoInit);
+        // this.addCommands((new Move(-0.7, -0.7, 5.0, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(4)));
 
         // this.addCommands(autoInit);
         // this.addCommands((new Move(-0.8, -0.8, 2, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(4)));
@@ -41,6 +42,12 @@ public class GetAutoCommand extends SequentialCommandGroup {
         // this.addCommands(new Move(0.5, 0.5, 1, drive));
         // this.addCommands(new ShootCommand(0, intake, indexer, shooter).withTimeout(4));
         // this.addCommands(new Move(-0.9, -0.9, 5, drive));
+
+        // 2 ball camera basic
+        this.addCommands(autoInit);
+        this.addCommands(new ShootCommand(camera, intake, indexer, shooter));
+        this.addCommands((new Move(-0.7, -0.7, 2.5, drive).alongWith(new IntakeCommand(2, intake, indexer)).withTimeout(6)));
+        this.addCommands(new ShootCommand(camera, intake, indexer, shooter));
 
         // 2 ball basic
         // this.addCommands(autoInit);
