@@ -85,12 +85,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setRPM(double RPM){
-        if(RPM == 0){
-            shooterMaster.set(0);
-            shooterSlave.set(0);
-        }
 
-        RPM += fieldCorrection;
+        // RPM += fieldCorrection;
 
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
@@ -134,6 +130,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getManualRPM(){
         return fieldCorrection;
     }
+
+    public void setBrake(boolean isBrake){
+        IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
+        shooterMaster.setIdleMode(sparkMode);
+    };
 
     @Override
     public void periodic() {
