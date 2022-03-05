@@ -70,10 +70,10 @@ private States state;
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
     
-    // distance = camera.getTarDistance();
-    // tarRPM = shooter.distanceToRPM(distance);
+    distance = camera.getTarDistance();
+    tarRPM = shooter.distanceToRPM(distance);
 
-    tarRPM = shooter.getFieldCorrection();
+    // tarRPM = shooter.getFieldCorrection();
 
     isFinished = false;
 
