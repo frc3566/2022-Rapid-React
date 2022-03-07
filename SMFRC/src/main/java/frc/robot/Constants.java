@@ -69,7 +69,8 @@ public final class Constants {
 
     //ten points in the frommat (meter, RPM) that are used to interpolate RPM for certain distance
     public static final double[][] shooterData = 
-    {{1.7,2304},{1.8,2304},{2,2634},{2.16, 2950}, {2.25, 3128}, {2.4,3868}};
+    {{1.37, 2700},{1.53, 3150}};
+    // {{1.7,2304},{1.8,2304},{2,2634},{2.16, 2950}, {2.25, 3128}, {2.4,3868}};
     // {{1.7,2100},{1.8,2100},{2,2400},{2.25, 2850}, {2.4,3525}};
     // 2600
     public static class Gains {

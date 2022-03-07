@@ -30,8 +30,7 @@ public class FrontEject extends CommandBase {
   @Override
   public void initialize() {
     indexer.setIndexer(0.7);
-    // shooter.setRPM(700);
-    shooter.setRPM(shooter.getManualRPM());
+    shooter.setRPM(700);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

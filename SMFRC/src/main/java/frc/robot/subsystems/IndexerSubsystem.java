@@ -94,9 +94,9 @@ public class IndexerSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    System.out.println("Entrance: " + getEntranceIR());
-    System.out.println("Low: " + getLowIR());
-    System.out.println("High: " + getHighIR());
+    //System.out.println("Entrance: " + getEntranceIR());
+    //System.out.println("Low: " + getLowIR());
+    //System.out.println("High: " + getHighIR());
 
     ballCountEntry.setDouble(ballCnt);
     

@@ -81,12 +81,10 @@ public class ShooterSubsystem extends SubsystemBase {
             interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
         }
 
-        fieldCorrection = 2950;
+        fieldCorrection = 0;
     }
 
     public void setRPM(double RPM){
-
-        // RPM += fieldCorrection;
 
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
@@ -127,10 +125,6 @@ public class ShooterSubsystem extends SubsystemBase {
         setRPM(0);
     }
 
-    public double getManualRPM(){
-        return fieldCorrection;
-    }
-
     public void setBrake(boolean isBrake){
         IdleMode sparkMode = isBrake? IdleMode.kBrake : IdleMode.kCoast;
         shooterMaster.setIdleMode(sparkMode);
@@ -140,8 +134,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
     // This method will be called once per scheduler run
     
-        System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
-        System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
+        //System.out.println("Shooter Master RPM: " + masterEncoder.getVelocity());
+        //System.out.println("Shooter Slave RPM: " + slaveEncoder.getVelocity());
 
         RPMEntry.setDouble(getMasterRPM());
         FieldCorrectionEntry.setDouble(fieldCorrection);

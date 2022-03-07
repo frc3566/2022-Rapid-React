@@ -51,8 +51,8 @@ private States state;
     shooter = shooterSubsystem;
     indexer = indexerSubsystem;
     
-    tarRPM = shooter.getFieldCorrection();
-
+    // tarRPM = shooter.getFieldCorrection();
+    tarRPM = tarDistance;
     // distance = tarDistance;
     // tarRPM = shooter.distanceToRPM(distance);
 
@@ -71,7 +71,7 @@ private States state;
     indexer = indexerSubsystem;
     
     distance = camera.getTarDistance();
-    tarRPM = shooter.distanceToRPM(distance);
+    tarRPM = shooter.distanceToRPM(distance) + shooter.getFieldCorrection();
 
     // tarRPM = shooter.getFieldCorrection();
 

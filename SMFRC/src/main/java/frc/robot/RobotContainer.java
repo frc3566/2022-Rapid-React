@@ -62,7 +62,8 @@ public class RobotContainer {
 
   private IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
 
-  private ShootCommand shoot = new ShootCommand(2, intake, indexer, shooter);
+  // private ShootCommand shoot = new ShootCommand(2000, intake, indexer, shooter);
+  private ShootCommand shoot = new ShootCommand(2950, intake, indexer, shooter);
 
   private FrontEject frontEject = new FrontEject(indexer, shooter);
   private BackEject backEject = new BackEject(intake, indexer);
@@ -94,6 +95,8 @@ public class RobotContainer {
     indexer.setDefaultCommand(new RunCommand(() -> indexer.setIndexer(0), indexer));
     climber.setDefaultCommand(new RunCommand(() -> climber.setPower(0), climber));
     shooter.setDefaultCommand(new StartEndCommand(() -> {shooter.setPower(0); shooter.setBrake(true);}, () -> shooter.setBrake(false), shooter));
+    // shooter.setDefaultCommand(new StartEndCommand(() -> shooter.setRPM(2000), () -> shooter.setBrake(false), shooter));
+
   }
 
   // TODO button place to number mapping
