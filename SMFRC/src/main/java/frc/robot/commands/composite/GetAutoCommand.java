@@ -1,9 +1,7 @@
 package frc.robot.commands.composite;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AutoInit;
-import frc.robot.commands.FrontEject;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Move;
 import frc.robot.commands.MoveDistance;

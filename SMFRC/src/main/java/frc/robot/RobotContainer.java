@@ -255,17 +255,12 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return getAutoCommand;
+    return getAutoCommand;
     // return autoShoot;
     // return autoIntake;
     // return new AimLock(drive, shooterCamera);
     // return trajectory;
-    return null;
-  }
-
-  public Command getDisabledCommand(){
-    // return disabledCommand;
-    return null;
+    // return null;
   }
 
     public Command getTestCommand(){

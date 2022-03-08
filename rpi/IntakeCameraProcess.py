@@ -333,7 +333,7 @@ class IntakeCameraProcess(mp.Process):
 
                     self.nt_queue.put_nowait(("ball_detected", ball_detected))
 
-                    print("intake camera: ", ball_dis, ball_angle, sep=" ")
+                    # print("intake camera: ", ball_dis, ball_angle, sep=" ")
 
                 except Full:
                     # logging.error("intake nt full")

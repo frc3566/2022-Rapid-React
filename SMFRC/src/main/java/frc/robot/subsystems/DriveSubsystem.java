@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -160,21 +158,21 @@ public class DriveSubsystem extends SubsystemBase {
     setPower(left, right);
   }
 
-  //we will not need this if we have all spark motors
-  public void talonFollow(){
-    double leftPwm = left1.get();
-    left2.set(leftPwm);
-    left3.set(leftPwm);
+  // //we will not need this if we have all spark motors
+  // public void talonFollow(){
+  //   double leftPwm = left1.get();
+  //   left2.set(leftPwm);
+  //   left3.set(leftPwm);
 
-    double rightPwm = right1.get();
-    left2.set(rightPwm);
-    left2.set(rightPwm);
-  }
+  //   double rightPwm = right1.get();
+  //   left2.set(rightPwm);
+  //   left2.set(rightPwm);
+  // }
 
-  private void setTalon(WPI_TalonSRX talon, boolean inverted){
-    talon.setInverted(inverted);
-    // left2.setNeutralMode(NeutralMode.Brake);;
-  }
+  // private void setTalon(WPI_TalonSRX talon, boolean inverted){
+  //   talon.setInverted(inverted);
+  //   // left2.setNeutralMode(NeutralMode.Brake);;
+  // }
 
   private void setControler(SparkMaxPIDController controller){
     controller.setP(Constants.DRIVETRAIN_VELOCITY_GAINS.kP);

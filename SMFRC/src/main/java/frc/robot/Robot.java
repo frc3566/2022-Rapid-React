@@ -54,9 +54,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     // m_disableCommand = m_robotContainer.getDisabledCommand();
 
-    if (m_disableCommand != null) {
-      m_disableCommand.schedule();
-    }
+    // if (m_disableCommand != null) {
+    //   m_disableCommand.schedule();
+    // }
   }
 
   @Override

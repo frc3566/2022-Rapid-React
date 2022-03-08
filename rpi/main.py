@@ -119,6 +119,14 @@ if __name__ == '__main__':
 
     atexit.register(cleanup)
 
+    # FMSTable = NetworkTables.getTable("IsRedAlliance");
+    #
+    # def updateAllianceColor(table, key, value, isNew):
+    #     # Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
+    #     print("Switched to alliance: ", Constants.isRed, sep=" ")
+    #
+    # FMSTable.addEntryListener(updateAllianceColor)
+
     # main loop
     while True:
 

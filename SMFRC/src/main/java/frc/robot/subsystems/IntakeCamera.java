@@ -5,29 +5,35 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.ballColors;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class IntakeCamera extends SubsystemBase {
 
-    private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private NetworkTable nt = inst.getTable("LiveWindow/IntakeCamera");
+    private NetworkTableEntry lastUpdateTime_entry;
 
-    private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
+    private NetworkTableEntry processingTime_entry;
+    private NetworkTableEntry fps_entry;
 
-    private NetworkTableEntry processingTime_entry = nt.getEntry("processing_time");
-    private NetworkTableEntry fps_entry = nt.getEntry("fps");
+    private NetworkTableEntry ballDistance_entry;
+    private NetworkTableEntry ballAngle_entry;
 
-    private NetworkTableEntry ballDistance_entry = nt.getEntry("ball_distance");
-    private NetworkTableEntry ballAngle_entry = nt.getEntry("ball_angle");
-
-    private NetworkTableEntry ballDetected_entry = nt.getEntry("ball_detected");
+    private NetworkTableEntry ballDetected_entry;
 
     public IntakeCamera() {
-      
+      NetworkTableInstance inst = NetworkTableInstance.getDefault();
+      NetworkTable nt = inst.getTable("LiveWindow/IntakeCamera");
+  
+      lastUpdateTime_entry = nt.getEntry("last_update_time");
+  
+      processingTime_entry = nt.getEntry("processing_time");
+      fps_entry = nt.getEntry("fps");
+  
+      ballDistance_entry = nt.getEntry("ball_distance");
+      ballAngle_entry = nt.getEntry("ball_angle");
+  
+      ballDetected_entry = nt.getEntry("ball_detected");
     }
 
 public double getLastUpdateTime(){

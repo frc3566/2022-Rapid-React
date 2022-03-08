@@ -14,20 +14,19 @@ import frc.robot.Constants;
 
 public class ShooterCamera extends SubsystemBase {
 
-  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  private NetworkTable nt = inst.getTable("LiveWindow/ShooterCamera");
+  private NetworkTableEntry lastUpdateTime_entry;
 
-  private NetworkTableEntry lastUpdateTime_entry = nt.getEntry("last_update_time");
+  private NetworkTableEntry processingTime_entry;
+  private NetworkTableEntry fps_entry;
 
-  private NetworkTableEntry processingTime_entry = nt.getEntry("processing_time");
-  private NetworkTableEntry fps_entry = nt.getEntry("fps");
+  private NetworkTableEntry goalDetected_entry;
 
-  private NetworkTableEntry goalDetected_entry = nt.getEntry("goal_detected");
+  private NetworkTableEntry xAngle_entry;
+  private NetworkTableEntry yAngle_entry;
 
-  private NetworkTableEntry xAngle_entry = nt.getEntry("x_angle");
-  private NetworkTableEntry yAngle_entry = nt.getEntry("y_angle");
+  private NetworkTableEntry distance_entry;
 
-  private NetworkTableEntry distance_entry = nt.getEntry("distance");
+  private NetworkTableEntry PredictedRPMEntry;
 
   private double prevUpdateTime = 0;
 
@@ -38,9 +37,24 @@ public class ShooterCamera extends SubsystemBase {
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
   interpolator = new InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>(100);
 
-  private NetworkTableEntry PredictedRPMEntry = nt.getEntry("predicted_RPM");
 
   public ShooterCamera() {
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    NetworkTable nt = inst.getTable("LiveWindow/ShooterCamera");
+  
+    lastUpdateTime_entry = nt.getEntry("last_update_time");
+  
+    processingTime_entry = nt.getEntry("processing_time");
+    fps_entry = nt.getEntry("fps");
+  
+    goalDetected_entry = nt.getEntry("goal_detected");
+  
+    xAngle_entry = nt.getEntry("x_angle");
+    yAngle_entry = nt.getEntry("y_angle");
+  
+    distance_entry = nt.getEntry("distance");
+
+    PredictedRPMEntry = nt.getEntry("predicted_RPM");
 
     for(double[] t : Constants.shooterData){
       interpolator.put(new InterpolatingDouble(t[0]), new InterpolatingDouble(t[1]));
