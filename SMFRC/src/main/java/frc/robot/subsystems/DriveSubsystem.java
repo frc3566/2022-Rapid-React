@@ -307,8 +307,8 @@ public class DriveSubsystem extends SubsystemBase {
     rightRPMEntry.setDouble(rightEncoder.getVelocity());
     headingEntry.setDouble(getHeading());
 
-    odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
-     this.getRightEncoderDistance());
+    // odometry.update(this.getRotation2d(), this.getLeftEncoderDistance(),
+    //  this.getRightEncoderDistance());
 
     // System.out.println("left RPM: " + leftEncoder.getVelocity());
     // System.out.println("right RPM: " + rightEncoder.getVelocity());

@@ -86,6 +86,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setRPM(double RPM){
 
+        // RPM += fieldCorrection; sinfull code
+
         double feedForward = Constants.Shooter_ks * Math.signum(RPM) + RPM * Constants.Shooter_kv;
 
         masterPIDController.setReference(RPM, ControlType.kVelocity, 0, feedForward);

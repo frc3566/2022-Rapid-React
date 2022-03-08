@@ -86,7 +86,7 @@ private States state;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // shooter.setRPM(shooter.distanceToRPM(distance));
+    shooter.setRPM(shooter.distanceToRPM(distance));
 
     //recount the ball before shooting
     state = States.RETRACT;
@@ -107,51 +107,47 @@ private States state;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println(this.state);
-    if(state == States.RETRACT){
-      indexer.setIndexer(-0.5);
-      // shooter.setPower(-0.3);
-      // if(indexer.getHighIR() == false || indexer.getEntranceIR() == true){
-      if(indexer.getHighIR() == false){
-        state = States.PRESPIN;
-        waitTar = Timer.getFPGATimestamp() + 4;
-      }
-    }
+    // System.out.println(this.state);
+    switch (this.state){
+      case RETRACT:
+        indexer.setIndexer(-0.5);
+        // shooter.setPower(-0.3);
+        // if(indexer.getHighIR() == false || indexer.getEntranceIR() == true){
+        if(indexer.getHighIR() == false){
+          state = States.PRESPIN;
+          waitTar = Timer.getFPGATimestamp() + 4;
+        }
 
-    if(state == States.PRESPIN){
-
-      indexer.setIndexer(0);
-      shooter.setRPM(tarRPM);
-      if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 100 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 100){
-        state = States.CHAMBER;
-        waitTar = Timer.getFPGATimestamp() + 2;
-      }
-    }
-
-    if(state == States.CHAMBER){
-      indexer.setIndexer(0.7);
-      if(indexer.getHighIR()){
-        state = States.SHOOT;
-        waitTar = Timer.getFPGATimestamp() + 2;
-      }
-    }
-
-    if(Timer.getFPGATimestamp() >= waitTar || state == States.SHOOT){
-      if(indexer.getHighIR() == false){
-        indexer.setBallCount(indexer.getBallCount()-1);
+      case PRESPIN:
         indexer.setIndexer(0);
-        waitTar = Timer.getFPGATimestamp() + 0.5;
-        state = States.WAIT;
-        System.out.print("bull's eye");
-      }
-    }
+        shooter.setRPM(tarRPM);
+        if(Math.abs(shooter.getMasterRPM() - tarRPM) <= 100 && Math.abs(shooter.getSlaveRPM() - tarRPM) <= 100){
+          state = States.CHAMBER;
+          waitTar = Timer.getFPGATimestamp() + 2;
+        }
 
-    if(state == States.WAIT){
-      if(Timer.getFPGATimestamp() >= waitTar){
-        state = States.PRESPIN;
-      }
-    }
 
+      case CHAMBER:
+        indexer.setIndexer(0.7);
+        if(indexer.getHighIR()){
+          state = States.SHOOT;
+          waitTar = Timer.getFPGATimestamp() + 2;
+        }
+
+       case SHOOT:
+        if(indexer.getHighIR() == false){
+          indexer.setBallCount(indexer.getBallCount()-1);
+          indexer.setIndexer(0);
+          waitTar = Timer.getFPGATimestamp() + 0.5;
+          state = States.WAIT;
+          System.out.print("bull's eye");
+        }
+
+      case WAIT:
+        if(Timer.getFPGATimestamp() >= waitTar){
+          state = States.PRESPIN;
+        }
+    }
   }
 
   // Called once the command ends or is interrupted.

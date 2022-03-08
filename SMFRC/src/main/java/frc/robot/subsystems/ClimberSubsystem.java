@@ -142,15 +142,15 @@ public class ClimberSubsystem extends SubsystemBase {
     //   right.set(0);
     // }
 
-    if(left.get() == 0 || right.get() == 0){
-      protectionDelayTarget = Timer.getFPGATimestamp() + 0.5;
-    }
+    // if(left.get() == 0 || right.get() == 0){
+    //   protectionDelayTarget = Timer.getFPGATimestamp() + 0.5;
+    // }
 
-    System.out.println("left velocity: " + leftEncoder.getVelocity());
-    System.out.println("right velocity: " + rightEncoder.getVelocity());
+    // System.out.println("left velocity: " + leftEncoder.getVelocity());
+    // System.out.println("right velocity: " + rightEncoder.getVelocity());
 
-    System.out.println("left position: " + leftEncoder.getPosition());
-    System.out.println("right position: " + rightEncoder.getPosition());
+    // System.out.println("left position: " + leftEncoder.getPosition());
+    // System.out.println("right position: " + rightEncoder.getPosition());
   }
 
   @Override

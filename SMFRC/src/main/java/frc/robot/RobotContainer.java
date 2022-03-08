@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AimLock;
 import frc.robot.commands.Anchor;
 import frc.robot.commands.AutoInit;
@@ -34,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -62,8 +59,8 @@ public class RobotContainer {
 
   private IntakeCommand intakeCommand = new IntakeCommand(2, intake, indexer);
 
-  // private ShootCommand shoot = new ShootCommand(2000, intake, indexer, shooter);
-  private ShootCommand shoot = new ShootCommand(2950, intake, indexer, shooter);
+  private ShootCommand shoot = new ShootCommand(shooterCamera, intake, indexer, shooter);
+  // private ShootCommand shoot = new ShootCommand(2950, intake, indexer, shooter);
 
   private FrontEject frontEject = new FrontEject(indexer, shooter);
   private BackEject backEject = new BackEject(intake, indexer);
@@ -86,7 +83,7 @@ public class RobotContainer {
 
   private GetAutoCommand getAutoCommand = new GetAutoCommand(drive, intake, indexer, shooter, shooterCamera, autoInit, getAutoIntake, getAutoShoot);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  // /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
@@ -99,14 +96,12 @@ public class RobotContainer {
 
   }
 
-  // TODO button place to number mapping
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+  // /**
+  //  * Use this method to define your button->command mappings. Buttons can be created by
+  //  * instantiating a {@link GenericHID} or one of its subclasses ({@link
+  //  * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+  //  * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+  //  */
   private void configureButtonBindings() {
 
     //Joystick 1
@@ -166,7 +161,7 @@ public class RobotContainer {
     j1_b16.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0), indexer), true);
     
     
-    //Joystick 2
+  //   //Joystick 2
 
     // control climber with joystick and pov buttons
     // POVButton j1_p0 = new POVButton(js2, 0);
@@ -212,11 +207,11 @@ public class RobotContainer {
     j2_b10.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() + 50)), true);
     j2_b9.whenPressed(new InstantCommand(() -> shooter.setFieldCorrection(shooter.getFieldCorrection() - 50)), true);
   
-    // // indexer up/down (hold)
-    // JoystickButton j2_b12 = new JoystickButton(js2, 12);
-    // j2_b12.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0)), true);
-    // JoystickButton j2_b11 = new JoystickButton(js2, 11);
-    // j2_b11.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0)), true);
+    // indexer up/down (hold)
+    JoystickButton j2_b12 = new JoystickButton(js2, 12);
+    j2_b12.whenHeld(new StartEndCommand(() -> indexer.setIndexer(0.7), () -> indexer.setIndexer(0)), true);
+    JoystickButton j2_b11 = new JoystickButton(js2, 11);
+    j2_b11.whenHeld(new StartEndCommand(() -> indexer.setIndexer(-0.7), () -> indexer.setIndexer(0)), true);
   }
 
     /* button mapping:
@@ -260,16 +255,17 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return getAutoCommand;
+    // return getAutoCommand;
     // return autoShoot;
     // return autoIntake;
     // return new AimLock(drive, shooterCamera);
     // return trajectory;
-    // return null;
+    return null;
   }
 
   public Command getDisabledCommand(){
-    return disabledCommand;
+    // return disabledCommand;
+    return null;
   }
 
     public Command getTestCommand(){
