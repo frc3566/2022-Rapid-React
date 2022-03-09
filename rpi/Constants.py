@@ -17,8 +17,8 @@ class Constants:
          [0., 0., 1.]]
     )
 
-    # DISTORTION_COEF = np.array([0.434228643, -12.2270248, -0.0078620537,
-    #                             0.0164108833, 99.6424132])
+    DIST_COEF = np.array([0.434228643, -12.2270248, -0.0078620537,
+                                0.0164108833, 99.6424132])
 
     FOCAL_LENGTH_X = CAMERA_MATRIX[0][0]
     FOCAL_LENGTH_Y = CAMERA_MATRIX[1][1]

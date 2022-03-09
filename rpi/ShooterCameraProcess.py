@@ -97,6 +97,10 @@ class ShooterCameraProcess(mp.Process):
             x_list = []
             y_list = []
 
+            y_min = 1000
+            x_tar = 0
+            y_tar = 0
+
             for contour in contour_list:
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
@@ -116,6 +120,11 @@ class ShooterCameraProcess(mp.Process):
                 x_list.append(center[0])
                 y_list.append(center[1])
 
+                if center[1] < y_min:
+                    y_min = center[1]
+                    x_tar = center[0]
+                    y_tar = center[1]
+
             if len(x_list) == 0 or len(y_list) == 0:
                 goal_detected = False
             else:
@@ -131,11 +140,16 @@ class ShooterCameraProcess(mp.Process):
                 x_mean = x_mid
                 y_mean = y_mid
 
-            u = x_mean - x_mid  # * 4
-            v = y_mean - y_mid  # * 4
+            # u = x_mean - x_mid  # * 4
+            # v = y_mean - y_mid  # * 4
+
+            u = x_tar - x_mid
+            v = y_tar - y_mid
 
             x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
             y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y)
+
+            # print(y_angle)
 
             distance = Constants.CAMERA_GOAL_DELTA_H / math.tan(y_angle)
 
@@ -172,6 +186,8 @@ class ShooterCameraProcess(mp.Process):
                 self.nt_queue.put_nowait(("x_angle", x_angle))
                 self.nt_queue.put_nowait(("y_angle", y_angle))
                 self.nt_queue.put_nowait(("distance", distance))
+
+                self.nt_queue.put_nowait(("y_min", y_min))
 
                 # print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
                 # print(x_list, y_list, sep=" ")
