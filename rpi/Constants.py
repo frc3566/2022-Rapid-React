@@ -70,3 +70,6 @@ class Constants:
 
     MA_MOMENTUM = 0.9
     UPDATE_PERIOD = 3  # sec
+
+    def setColorRed(self, isRed):
+        self.isRed = isRed

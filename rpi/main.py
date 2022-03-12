@@ -35,8 +35,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 shooter_frame_in_queue = mp.Queue(10)
 intake_frame_in_queue = mp.Queue(10)
 
-shooter_frame_out_queue = mp.Queue(1)
-intake_frame_out_queue = mp.Queue(1)
+shooter_frame_out_queue = mp.Queue(10)
+intake_frame_out_queue = mp.Queue(10)
 
 shooter_nt_queue = mp.Queue(100)
 intake_nt_queue = mp.Queue(100)
@@ -121,20 +121,35 @@ if __name__ == '__main__':
 
     FMSTable = NetworkTables.getTable("FMSInfo")
 
+    isRed = True;
+
     def update_alliance_color(table, key, value, isNew):
-        Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
-        if(Constants.isRed):
+        isRed = FMSTable.getBoolean("IsRedAlliance", True)
+        if(isRed):
             print("Switched to alliance: ", "RED", sep=" ")
         else:
             print("Switched to alliance: ", "BLUE", sep=" ")
 
+        try:
+            intake_frame_in_queue.put_nowait(isRed)
+        except Full:
+            # print("shooter frame in full")
+            pass
+
     FMSTable.addEntryListener(update_alliance_color)
 
-    Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
+    isRed = FMSTable.getBoolean("IsRedAlliance", True)
+
     if (Constants.isRed):
         print("Switched to alliance: ", "RED", sep=" ")
     else:
         print("Switched to alliance: ", "BLUE", sep=" ")
+
+    try:
+        intake_frame_in_queue.put_nowait(isRed)
+    except Full:
+        # print("shooter frame in full")
+        pass
 
     # main loop
     while True:
@@ -156,6 +171,7 @@ if __name__ == '__main__':
             except Full:
                 # print("shooter frame in full")
                 pass
+
 
         # print(img)
         # print(shooter_frame_in_queue.qsize())
@@ -200,6 +216,7 @@ if __name__ == '__main__':
             while True:
                 frame = shooter_frame_out_queue.get_nowait()
                 shooter_out_stream.putFrame(frame)
+
         except Empty:
             pass
 

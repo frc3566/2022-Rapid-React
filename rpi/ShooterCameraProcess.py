@@ -104,7 +104,7 @@ class ShooterCameraProcess(mp.Process):
             for contour in contour_list:
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
-                if area < 5:
+                if area < 25:
                     continue
 
                 x, y, w, h = cv2.boundingRect(contour)

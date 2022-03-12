@@ -34,14 +34,6 @@ MIN_CONTOUR_SIZE = 50
 # vMin = 0
 # vMax = 255
 
-def getColorThresh(hsv_img):
-    if Constants.isRed:
-        red_bottom = cv2.inRange(hsv_img, (0, 70, 0), (15, 255, 255))  # h 10 to 15
-        red_top = cv2.inRange(hsv_img, (165, 70, 0), (180, 255, 255))  # h 170 to 165
-        color_thresh_img = np.logical_or(red_bottom, red_top).astype(np.uint8) * 255
-    else:
-        color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (130, 255, 255))
-    return color_thresh_img
 
 
 # red
@@ -77,8 +69,28 @@ class IntakeCameraProcess(mp.Process):
 
         self.end_queue = end_queue
 
+        self.isRed = True
+
         # self.cs = CameraServer.getInstance()
         # self.cs.enableLogging()
+
+    def getColorThresh(self, hsv_img):
+        try:
+            self.isRed = self.frame_in_queue.get_nowait()
+        except Empty:
+            pass
+
+        # print(self.isRed)
+
+        if self.isRed:
+            red_bottom = cv2.inRange(hsv_img, (0, 70, 0), (10, 255, 255))
+            red_top = cv2.inRange(hsv_img, (170, 70, 0), (180, 255, 255))
+            color_thresh_img = np.logical_or(red_bottom, red_top).astype(np.uint8) * 255
+            color = (0, 0, 200)
+        else:
+            color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (130, 255, 255))
+            color = (200, 0, 0)
+        return color_thresh_img
 
     def get_intrinsics(self, profile):
         intrin = profile.get_stream(rs.stream.color).as_video_stream_profile().get_intrinsics()
@@ -158,7 +170,7 @@ class IntakeCameraProcess(mp.Process):
 
         try:
             while True:
-                if Constants.isRed:
+                if self.isRed:
                     color = (0, 0, 200)
                     # print("Playing as RED")
                 else:
@@ -197,7 +209,7 @@ class IntakeCameraProcess(mp.Process):
 
                 hsv_color_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2HSV, dst=hsv_color_img)
 
-                color_thresh_img = getColorThresh(hsv_color_img)
+                color_thresh_img = self.getColorThresh(hsv_color_img)
 
                 color_thresh_img = cv2.dilate(color_thresh_img, None, iterations=4)
                 color_thresh_img = cv2.erode(color_thresh_img, None, iterations=2)
