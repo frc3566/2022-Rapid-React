@@ -60,7 +60,7 @@ class ShooterCameraProcess(mp.Process):
 
             start_time = time.time()
 
-            hsv_min = (60, 80, 15)
+            hsv_min = (60, 80, 80)
             hsv_max = (90, 255, 255)
 
             # Notify output of error and skip iteration
@@ -98,13 +98,13 @@ class ShooterCameraProcess(mp.Process):
             y_list = []
 
             y_min = 1000
-            x_tar = 0
+            x_tar = x_mid
             y_tar = 0
 
             for contour in contour_list:
                 # Ignore small contours that could be because of noise/bad thresholding
                 area = cv2.contourArea(contour)
-                if area < 25:
+                if area < 5:
                     continue
 
                 x, y, w, h = cv2.boundingRect(contour)

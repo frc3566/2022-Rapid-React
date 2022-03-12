@@ -170,6 +170,7 @@ class IntakeCameraProcess(mp.Process):
 
         try:
             while True:
+
                 if self.isRed:
                     color = (0, 0, 200)
                     # print("Playing as RED")

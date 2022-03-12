@@ -35,8 +35,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 shooter_frame_in_queue = mp.Queue(10)
 intake_frame_in_queue = mp.Queue(10)
 
-shooter_frame_out_queue = mp.Queue(10)
-intake_frame_out_queue = mp.Queue(10)
+shooter_frame_out_queue = mp.Queue(1)
+intake_frame_out_queue = mp.Queue(1)
 
 shooter_nt_queue = mp.Queue(100)
 intake_nt_queue = mp.Queue(100)
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     FMSTable = NetworkTables.getTable("FMSInfo")
 
-    isRed = True;
+    isRed = True
 
     def update_alliance_color(table, key, value, isNew):
         isRed = FMSTable.getBoolean("IsRedAlliance", True)
