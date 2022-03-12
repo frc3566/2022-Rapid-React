@@ -56,7 +56,7 @@ class Constants:
                           [-0.0635, 0.178, 0.6755]])  # top right
 
     MIN_TARGET_AREA = 180
-    MIN_TARGET2RECT_RATIO = 0.25
+    MIN_TARGET2RECT_RATIO = 0.5
     MAX_TARGET_DISTANCE = 10
     MIN_TARGET_DISTANCE = 2
     EXTREME_VECTOR = np.array([[-2.5, 1], [-2.5, -1], [2.5, -1], [2.5, 1]])
