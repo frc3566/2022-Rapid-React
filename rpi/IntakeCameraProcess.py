@@ -219,6 +219,8 @@ class IntakeCameraProcess(mp.Process):
                 valid_mask = (dis_to_cam < MAX_DIS) * (dis_to_cam > MIN_DIS) * \
                              (plane_labels == 255)
 
+                # valid_mask = (dis_to_cam < MAX_DIS) * (dis_to_cam > MIN_DIS)
+
                 # print(valid_mask)
 
                 # print(valid_mask.shape)
@@ -345,6 +347,8 @@ class IntakeCameraProcess(mp.Process):
                     # self.frame_out_queue.put_nowait(final_mask.astype(np.uint8))
 
                 except Full:
+                    pass
+                except UnboundLocalError:
                     pass
 
         finally:

@@ -119,13 +119,13 @@ if __name__ == '__main__':
 
     atexit.register(cleanup)
 
-    # FMSTable = NetworkTables.getTable("IsRedAlliance");
-    #
-    # def updateAllianceColor(table, key, value, isNew):
-    #     # Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
-    #     print("Switched to alliance: ", Constants.isRed, sep=" ")
-    #
-    # FMSTable.addEntryListener(updateAllianceColor)
+    FMSTable = NetworkTables.getTable("FMSInfo")
+
+    def update_alliance_color(table, key, value, isNew):
+        Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
+        print("Switched to alliance: ", Constants.isRed, sep=" ")
+
+    FMSTable.addEntryListener(update_alliance_color)
 
     # main loop
     while True:
@@ -183,7 +183,7 @@ if __name__ == '__main__':
         try:
             while True:
                 frame = intake_frame_out_queue.get_nowait()
-                # intake_out_stream.putFrame(frame)
+                intake_out_stream.putFrame(frame)
         except Empty:
             pass
 
