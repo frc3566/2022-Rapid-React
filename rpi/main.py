@@ -123,9 +123,18 @@ if __name__ == '__main__':
 
     def update_alliance_color(table, key, value, isNew):
         Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
-        print("Switched to alliance: ", Constants.isRed, sep=" ")
+        if(Constants.isRed):
+            print("Switched to alliance: ", "RED", sep=" ")
+        else:
+            print("Switched to alliance: ", "BLUE", sep=" ")
 
     FMSTable.addEntryListener(update_alliance_color)
+
+    Constants.isRed = FMSTable.getBoolean("IsRedAlliance", True)
+    if (Constants.isRed):
+        print("Switched to alliance: ", "RED", sep=" ")
+    else:
+        print("Switched to alliance: ", "BLUE", sep=" ")
 
     # main loop
     while True:

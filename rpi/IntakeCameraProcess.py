@@ -36,8 +36,8 @@ MIN_CONTOUR_SIZE = 50
 
 def getColorThresh(hsv_img):
     if Constants.isRed:
-        red_bottom = cv2.inRange(hsv_img, (0, 70, 0), (10, 255, 255))
-        red_top = cv2.inRange(hsv_img, (170, 70, 0), (180, 255, 255))
+        red_bottom = cv2.inRange(hsv_img, (0, 70, 0), (15, 255, 255))  # h 10 to 15
+        red_top = cv2.inRange(hsv_img, (165, 70, 0), (180, 255, 255))  # h 170 to 165
         color_thresh_img = np.logical_or(red_bottom, red_top).astype(np.uint8) * 255
     else:
         color_thresh_img = cv2.inRange(hsv_img, (90, 70, 0), (130, 255, 255))
@@ -153,19 +153,17 @@ class IntakeCameraProcess(mp.Process):
         #         print('set default')
         #         depth_sensor.set_option(rs.option.visual_preset, i)
 
-        if Constants.isRed:
-            color = (0, 0, 200)
-            print("Playing as RED")
-        else:
-            color = (200, 0, 0)
-            print("Playing as BLUE")
-
-
         color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
         hsv_color_img = np.zeros(shape=(640, 480, 3), dtype=np.uint8)
 
         try:
             while True:
+                if Constants.isRed:
+                    color = (0, 0, 200)
+                    # print("Playing as RED")
+                else:
+                    color = (200, 0, 0)
+                    # print("Playing as BLUE")
 
                 try:
                     message = self.end_queue.get_nowait()

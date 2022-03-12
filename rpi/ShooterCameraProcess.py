@@ -143,6 +143,8 @@ class ShooterCameraProcess(mp.Process):
             # u = x_mean - x_mid  # * 4
             # v = y_mean - y_mid  # * 4
 
+            dis = 1.162 * y_min + 78.171
+
             u = x_tar - x_mid
             v = y_tar - y_mid
 
@@ -188,6 +190,8 @@ class ShooterCameraProcess(mp.Process):
                 self.nt_queue.put_nowait(("distance", distance))
 
                 self.nt_queue.put_nowait(("y_min", y_min))
+
+                self.nt_queue.put_nowait(("line_best_fit", dis))
 
                 # print("shooter camera: ", goal_detected, x_angle, y_angle, distance, sep=" ")
                 # print(x_list, y_list, sep=" ")
