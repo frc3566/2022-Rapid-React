@@ -98,7 +98,7 @@ class ShooterCameraProcess(mp.Process):
             y_list = []
 
             y_min = 1000
-            x_tar = x_mid
+            x_tar = 0
             y_tar = 0
 
             for contour in contour_list:
