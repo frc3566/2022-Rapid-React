@@ -60,7 +60,7 @@ class ShooterCameraProcess(mp.Process):
 
             start_time = time.time()
 
-            hsv_min = (60, 80, 80)
+            hsv_min = (60, 80, 50)
             hsv_max = (90, 255, 255)
 
             # Notify output of error and skip iteration
