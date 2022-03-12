@@ -130,7 +130,6 @@ class ShooterCameraProcess(mp.Process):
             else:
                 goal_detected = True
 
-            x_mid = 79
             y_mid = 59
 
             try:
@@ -140,15 +139,15 @@ class ShooterCameraProcess(mp.Process):
                 x_mean = x_mid
                 y_mean = y_mid
 
-            # u = x_mean - x_mid  # * 4
-            # v = y_mean - y_mid  # * 4
-
+            # this is the dis used
             dis = 1.162 * y_min + 78.171
-
+            # this is the angle used
+            x_mid = 79  # pixel
             u = x_tar - x_mid
+            x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
+
             v = y_tar - y_mid
 
-            x_angle = math.atan(u / Constants.FOCAL_LENGTH_X)
             y_angle = math.radians(Constants.CAMERA_MOUNT_ANGLE) - math.atan(v / Constants.FOCAL_LENGTH_Y)
 
             # print(y_angle)
@@ -161,21 +160,6 @@ class ShooterCameraProcess(mp.Process):
             processing_time = time.time() - start_time
             fps = 1 / processing_time
             # cv2.putText(output_img, str(round(fps, 1)), (0, 40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255))
-
-            # update nt
-            # self.nt.putNumber("last_update_time", time.time())
-            #
-            # self.nt.putNumber("processing_time", processing_time)
-            # self.nt.putNumber("fps", fps)
-            #
-            # self.nt.putBoolean("goal_detected", goal_detected)
-            #
-            # self.nt.putNumber("x_angle", x_angle)
-            # self.nt.putNumber("y_angle", y_angle)
-            # self.nt.putNumber("distance", distance)
-            #
-            # output_stream.putFrame(output_img)
-            # binary_stream.putFrame(binary_img)
 
             try:
                 self.nt_queue.put_nowait(("last_update_time", time.time() % 2048))
